@@ -714,3 +714,826 @@ mahjong-scoring-app/
    - 統計數據分析
    - 多局遊戲支援
    - 線上多人對戰
+
+---
+
+## 9. 比賽歷史記錄功能設計
+
+### 9.1 資料結構設計
+
+#### 9.1.1 MatchHistory 類型定義
+
+```typescript
+// 比賽歷史記錄摘要 (用於列表顯示)
+export interface MatchHistorySummary {
+  id: string;                      // 比賽唯一識別碼
+  createdAt: Date;                 // 比賽開始時間
+  finishedAt: Date | null;         // 比賽結束時間
+  status: GameStatus;              // 比賽狀態
+  
+  // 玩家摘要資訊
+  players: PlayerSummary[];        // 玩家列表 (含最終分數)
+  
+  // 比賽統計
+  totalRounds: number;             // 總局數
+  finalWind: Wind;                 // 最終圈風
+  
+  // 單位金額
+  unitAmount: number;              // 每單位金額
+}
+
+// 玩家摘要資訊
+export interface PlayerSummary {
+  id: string;
+  name: string;
+  position: Wind;                  // 初始座位風位
+  finalScore: number;              // 最終分數
+  isWinner: boolean;               // 是否為最終贏家
+}
+
+// 完整比賽歷史記錄 (用於詳情/編輯)
+export interface MatchHistoryDetail extends MatchHistorySummary {
+  // 完整玩家資訊
+  players: Player[];               // 完整玩家資料
+  
+  // 完整回合記錄
+  rounds: Round[];                 // 所有回合記錄
+  
+  // 結算資訊
+  settlements: Settlement[];       // 最簡化找數結果
+  
+  // 莊家資訊
+  dealerIndex: number;             // 最終莊家索引
+  prevailingWind: Wind;            // 最終圈風
+}
+
+// 歷史記錄列表狀態
+export interface HistoryListState {
+  matches: MatchHistorySummary[];
+  isLoading: boolean;
+  error: string | null;
+  sortBy: 'date' | 'rounds';       // 排序方式
+  sortOrder: 'asc' | 'desc';       // 排序順序
+}
+```
+
+#### 9.1.2 與現有類型的關係
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    現有類型                                  │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
+│  │ GameState   │  │ Player      │  │ Round       │        │
+│  │ - id        │  │ - id        │  │ - id        │        │
+│  │ - createdAt │  │ - name      │  │ - winnerId  │        │
+│  │ - players   │  │ - position  │  │ - fan       │        │
+│  │ - rounds    │  │ - score     │  │ - ...       │        │
+│  │ - ...       │  │ - ...       │  │             │        │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘        │
+└─────────┼────────────────┼────────────────┼────────────────┘
+          │                │                │
+          ▼                ▼                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    新增類型                                  │
+│  ┌─────────────────────┐  ┌─────────────────────┐          │
+│  │ MatchHistorySummary │  │ MatchHistoryDetail  │          │
+│  │ - id                │  │ extends Summary     │          │
+│  │ - createdAt         │  │ + players: Player[] │          │
+│  │ - players: Summary[]│  │ + rounds: Round[]   │          │
+│  │ - totalRounds       │  │ + settlements       │          │
+│  └─────────────────────┘  └─────────────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 9.2 儲存機制設計
+
+#### 9.2.1 儲存架構
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      AsyncStorage                            │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ mahjong-game-storage (現有)                          │   │
+│  │ - 當前進行中的遊戲狀態                                │   │
+│  │ - 由 gameStore 管理                                  │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ mahjong-history-list (新增)                          │   │
+│  │ - MatchHistorySummary[] 的 JSON 陣列                 │   │
+│  │ - 用於列表快速載入                                   │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ mahjong-history-{id} (新增)                          │   │
+│  │ - MatchHistoryDetail 的 JSON 物件                    │   │
+│  │ - 每場比賽一個 key                                   │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 9.2.2 History Store 設計
+
+```typescript
+// src/store/historyStore.ts
+
+interface HistoryStore {
+  // 狀態
+  matches: MatchHistorySummary[];
+  currentMatch: MatchHistoryDetail | null;
+  isLoading: boolean;
+  error: string | null;
+  
+  // Actions - 列表操作
+  loadHistoryList: () => Promise<void>;
+  deleteMatch: (id: string) => Promise<void>;
+  deleteAllMatches: () => Promise<void>;
+  
+  // Actions - 單場比賽操作
+  loadMatchDetail: (id: string) => Promise<void>;
+  saveCurrentGame: () => Promise<void>;
+  updateMatch: (id: string, updates: Partial<MatchHistoryDetail>) => Promise<void>;
+  
+  // Actions - 編輯功能
+  editMatchPlayers: (id: string, players: Player[]) => Promise<void>;
+  editMatchRounds: (id: string, rounds: Round[]) => Promise<void>;
+  
+  // Helpers
+  getMatchById: (id: string) => MatchHistorySummary | undefined;
+  sortMatches: (sortBy: 'date' | 'rounds', order: 'asc' | 'desc') => void;
+}
+
+// 儲存 Key 常數
+const STORAGE_KEYS = {
+  HISTORY_LIST: 'mahjong-history-list',
+  HISTORY_DETAIL: (id: string) => `mahjong-history-${id}`,
+  CURRENT_GAME: 'mahjong-game-storage',
+};
+```
+
+#### 9.2.3 儲存服務 API 設計
+
+```typescript
+// src/services/historyService.ts
+
+interface HistoryService {
+  // 列表操作
+  getHistoryList(): Promise<MatchHistorySummary[]>;
+  saveHistoryList(list: MatchHistorySummary[]): Promise<void>;
+  
+  // 單場比賽操作
+  getMatchDetail(id: string): Promise<MatchHistoryDetail | null>;
+  saveMatchDetail(match: MatchHistoryDetail): Promise<void>;
+  deleteMatch(id: string): Promise<void>;
+  
+  // 從當前遊戲建立歷史記錄
+  createFromCurrentGame(gameState: GameState): Promise<MatchHistoryDetail>;
+  
+  // 更新操作
+  updateMatchSummary(id: string, summary: Partial<MatchHistorySummary>): Promise<void>;
+  updateMatchDetail(id: string, detail: Partial<MatchHistoryDetail>): Promise<void>;
+}
+
+// 實作範例
+export const historyService: HistoryService = {
+  async getHistoryList() {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.HISTORY_LIST);
+    return data ? JSON.parse(data) : [];
+  },
+  
+  async saveHistoryList(list) {
+    await AsyncStorage.setItem(STORAGE_KEYS.HISTORY_LIST, JSON.stringify(list));
+  },
+  
+  async getMatchDetail(id) {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.HISTORY_DETAIL(id));
+    return data ? JSON.parse(data) : null;
+  },
+  
+  async saveMatchDetail(match) {
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.HISTORY_DETAIL(match.id),
+      JSON.stringify(match)
+    );
+  },
+  
+  async deleteMatch(id) {
+    // 從列表移除
+    const list = await this.getHistoryList();
+    const newList = list.filter(m => m.id !== id);
+    await this.saveHistoryList(newList);
+    
+    // 刪除詳細資料
+    await AsyncStorage.removeItem(STORAGE_KEYS.HISTORY_DETAIL(id));
+  },
+  
+  // ... 其他方法實作
+};
+```
+
+### 9.3 頁面流程設計
+
+#### 9.3.1 頁面導航結構
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        頁面流程                              │
+│                                                              │
+│  ┌─────────────┐                                            │
+│  │   首頁      │                                            │
+│  │  index.tsx  │                                            │
+│  │             │                                            │
+│  │ ┌─────────┐ │     ┌─────────────┐                       │
+│  │ │歷史列表 │──────►│ 比賽詳情    │                       │
+│  │ └─────────┘ │     │ history/    │                       │
+│  │             │     │ [id].tsx    │                       │
+│  │ ┌─────────┐ │     └──────┬──────┘                       │
+│  │ │新遊戲   │──┼───────────┼──────────────────────┐       │
+│  │ └─────────┘ │           │                      │       │
+│  └─────────────┘           ▼                      ▼       │
+│                     ┌─────────────┐        ┌─────────────┐ │
+│                     │ 編輯比賽    │        │ 設定畫面    │ │
+│                     │ history/    │        │ setup.tsx   │ │
+│                     │ [id]/edit   │        └──────┬──────┘ │
+│                     └─────────────┘               │        │
+│                                                  ▼        │
+│                                           ┌─────────────┐ │
+│                                           │ 遊戲畫面    │ │
+│                                           │ game.tsx    │ │
+│                                           └──────┬──────┘ │
+│                                                  │        │
+│                                                  ▼        │
+│                                           ┌─────────────┐ │
+│                                           │ 結算畫面    │ │
+│                                           │ settlement  │ │
+│                                           └─────────────┘ │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 9.3.2 首頁設計
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         首頁                                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Header                                               │   │
+│  │ ┌───────────────┐  ┌───────────────┐                │   │
+│  │ │ 麻將計分      │  │ 排序按鈕      │                │   │
+│  │ └───────────────┘  └───────────────┘                │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 新遊戲按鈕 (主要 CTA)                                │   │
+│  │ [  +  開始新局  ]                                    │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 歷史記錄標題                                         │   │
+│  │ 歷史記錄                                    查看全部 │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ MatchHistoryList                                     │   │
+│  │ ┌─────────────────────────────────────────────────┐ │   │
+│  │ │ MatchHistoryCard                                 │ │   │
+│  │ │ ┌─────────┐  ┌─────────────────────────────┐   │ │   │
+│  │ │ │ 日期    │  │ 玩家: A, B, C, D            │   │ │   │
+│  │ │ │ 03/17   │  │ 局數: 8 局                   │   │ │   │
+│  │ │ │ 14:30   │  │ 贏家: A (+$120)              │   │ │   │
+│  │ │ └─────────┘  └─────────────────────────────┘   │ │   │
+│  │ └─────────────────────────────────────────────────┘ │   │
+│  │                                                       │   │
+│  │ ┌─────────────────────────────────────────────────┐ │   │
+│  │ │ MatchHistoryCard                                 │ │   │
+│  │ │ ...                                               │ │   │
+│  │ └─────────────────────────────────────────────────┘ │   │
+│  │                                                       │   │
+│  │ ┌─────────────────────────────────────────────────┐ │   │
+│  │ │ 空狀態 (無歷史記錄)                              │ │   │
+│  │ │ [圖示]                                          │ │   │
+│  │ │ 尚無比賽記錄                                     │ │   │
+│  │ │ 開始你的第一場比賽吧！                           │ │   │
+│  │ └─────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 進行中的遊戲 (條件顯示)                              │   │
+│  │ ┌─────────────────────────────────────────────────┐ │   │
+│  │ │ 🎮 繼續遊戲                                      │ │   │
+│  │ │ 玩家: A, B, C, D  |  第 5 局                    │ │   │
+│  │ │ [繼續]                           [放棄]         │ │   │
+│  │ └─────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 9.3.3 比賽詳情頁面設計
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      比賽詳情頁                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Header                                               │   │
+│  │ ┌─────┐  比賽詳情                    ┌───────────┐  │   │
+│  │ │ ←   │                              │ 編輯 | 刪除│  │   │
+│  │ └─────┘                              └───────────┘  │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 比賽資訊卡片                                         │   │
+│  │ ┌─────────────────────────────────────────────────┐ │   │
+│  │ │ 日期: 2024/03/17 14:30                          │ │   │
+│  │ │ 總局數: 8 局                                     │ │   │
+│  │ │ 單位金額: $10                                    │ │   │
+│  │ │ 最終圈風: 南風                                   │ │   │
+│  │ └─────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 最終分數                                             │   │
+│  │ ┌─────────────────────────────────────────────────┐ │   │
+│  │ │ 🏆 A: +$120  (東)                               │ │   │
+│  │ │    B: -$30   (南)                               │ │   │
+│  │ │    C: -$50   (西)                               │ │   │
+│  │ │    D: -$40   (北)                               │ │   │
+│  │ └─────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 結算明細                                             │   │
+│  │ ┌─────────────────────────────────────────────────┐ │   │
+│  │ │ B → A: $30                                       │ │   │
+│  │ │ D → A: $90                                       │ │   │
+│  │ │ D → C: $50                                       │ │   │
+│  │ └─────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 回合記錄 (可展開)                                    │   │
+│  │ ┌─────────────────────────────────────────────────┐ │   │
+│  │ │ ▼ 第 1 局 - A 自摸 3 番                         │ │   │
+│  │ │   莊家: A (連莊)                                │ │   │
+│  │ │   A: +$120, B: -$40, C: -$40, D: -$40          │ │   │
+│  │ ├─────────────────────────────────────────────────┤ │   │
+│  │ │ ▶ 第 2 局 - B 出銃 2 番                         │ │   │
+│  │ ├─────────────────────────────────────────────────┤ │   │
+│  │ │ ▶ 第 3 局 - 流局                               │ │   │
+│  │ └─────────────────────────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 9.3.4 刪除確認流程
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      刪除確認流程                            │
+│                                                              │
+│  用戶點擊刪除                                                │
+│       │                                                      │
+│       ▼                                                      │
+│  ┌─────────────┐                                            │
+│  │ 彈出確認對話框│                                            │
+│  │             │                                            │
+│  │ 確定要刪除  │                                            │
+│  │ 這場比賽嗎？│                                            │
+│  │             │                                            │
+│  │ [取消][刪除]│                                            │
+│  └──────┬──────┘                                            │
+│         │                                                    │
+│    ┌────┴────┐                                               │
+│    │         │                                               │
+│    ▼         ▼                                               │
+│ [取消]    [刪除]                                             │
+│    │         │                                               │
+│    ▼         ▼                                               │
+│ 關閉對話框  執行刪除                                          │
+│              │                                               │
+│              ▼                                               │
+│        ┌─────────────┐                                       │
+│        │ 顯示載入中  │                                       │
+│        └──────┬──────┘                                       │
+│               │                                              │
+│               ▼                                              │
+│        ┌─────────────┐                                       │
+│        │ 刪除成功    │                                       │
+│        │ 返回首頁    │                                       │
+│        └─────────────┘                                       │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 9.4 組件設計
+
+#### 9.4.1 新增組件列表
+
+| 組件名稱 | 用途 | Props | 位置 |
+|---------|------|-------|------|
+| `MatchHistoryCard` | 單場比賽卡片 | `match: MatchHistorySummary, onPress: () => void` | `src/components/history/` |
+| `MatchHistoryList` | 歷史記錄列表 | `matches: MatchHistorySummary[], onItemPress: (id: string) => void` | `src/components/history/` |
+| `MatchDetailHeader` | 詳情頁標題 | `match: MatchHistoryDetail, onEdit: () => void, onDelete: () => void` | `src/components/history/` |
+| `MatchInfoCard` | 比賽資訊卡片 | `match: MatchHistoryDetail` | `src/components/history/` |
+| `FinalScoreCard` | 最終分數卡片 | `players: Player[]` | `src/components/history/` |
+| `RoundHistoryList` | 回合記錄列表 | `rounds: Round[], players: Player[]` | `src/components/history/` |
+| `RoundHistoryItem` | 單局記錄項目 | `round: Round, players: Player[], isExpanded: boolean` | `src/components/history/` |
+| `DeleteConfirmModal` | 刪除確認彈窗 | `visible: boolean, onConfirm: () => void, onCancel: () => void` | `src/components/common/` |
+| `EmptyState` | 空狀態顯示 | `icon: string, title: string, description: string` | `src/components/common/` |
+| `CurrentGameCard` | 進行中遊戲卡片 | `onContinue: () => void, onAbandon: () => void` | `src/components/history/` |
+
+#### 9.4.2 組件 Props 詳細定義
+
+```typescript
+// src/components/history/MatchHistoryCard.tsx
+interface MatchHistoryCardProps {
+  match: MatchHistorySummary;
+  onPress: () => void;
+  variant?: 'default' | 'compact';  // 顯示模式
+}
+
+// src/components/history/MatchHistoryList.tsx
+interface MatchHistoryListProps {
+  matches: MatchHistorySummary[];
+  onItemPress: (id: string) => void;
+  isLoading?: boolean;
+  emptyState?: {
+    icon: string;
+    title: string;
+    description: string;
+  };
+}
+
+// src/components/history/MatchDetailHeader.tsx
+interface MatchDetailHeaderProps {
+  match: MatchHistoryDetail;
+  onEdit: () => void;
+  onDelete: () => void;
+  showActions?: boolean;  // 是否顯示編輯/刪除按鈕
+}
+
+// src/components/history/RoundHistoryList.tsx
+interface RoundHistoryListProps {
+  rounds: Round[];
+  players: Player[];
+  defaultExpanded?: boolean;  // 預設是否展開
+  onRoundPress?: (round: Round) => void;
+}
+
+// src/components/common/DeleteConfirmModal.tsx
+interface DeleteConfirmModalProps {
+  visible: boolean;
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  isLoading?: boolean;
+}
+
+// src/components/common/EmptyState.tsx
+interface EmptyStateProps {
+  icon?: React.ReactNode;
+  title: string;
+  description?: string;
+  action?: {
+    label: string;
+    onPress: () => void;
+  };
+}
+
+// src/components/history/CurrentGameCard.tsx
+interface CurrentGameCardProps {
+  gameState: GameState;
+  onContinue: () => void;
+  onAbandon: () => void;
+}
+```
+
+#### 9.4.3 組件樹狀結構
+
+```
+首頁 (app/index.tsx)
+├── Header
+│   ├── Title
+│   └── SortButton
+├── NewGameButton
+├── CurrentGameCard (條件顯示)
+│   ├── GameInfo
+│   └── ActionButtons
+│       ├── ContinueButton
+│       └── AbandonButton
+└── MatchHistoryList
+    ├── EmptyState (無資料時)
+    │   ├── Icon
+    │   ├── Title
+    │   └── Description
+    └── MatchHistoryCard (多個)
+        ├── DateSection
+        │   ├── DateText
+        │   └── TimeText
+        └── InfoSection
+            ├── PlayerNames
+            ├── RoundCount
+            └── WinnerInfo
+
+比賽詳情頁 (app/history/[id].tsx)
+├── MatchDetailHeader
+│   ├── BackButton
+│   ├── Title
+│   └── ActionButtons
+│       ├── EditButton
+│       └── DeleteButton
+├── ScrollView
+│   ├── MatchInfoCard
+│   │   ├── DateRow
+│   │   ├── RoundCountRow
+│   │   ├── UnitAmountRow
+│   │   └── FinalWindRow
+│   ├── FinalScoreCard
+│   │   └── PlayerScoreItem (x4)
+│   ├── SettlementCard
+│   │   └── SettlementItem (多個)
+│   └── RoundHistoryList
+│       └── RoundHistoryItem (多個)
+│           ├── Header (可點擊展開)
+│           │   ├── RoundNumber
+│           │   ├── WinInfo
+│           │   └── ExpandIcon
+│           └── ExpandedContent
+│               ├── DealerInfo
+│               └── ScoreChanges
+└── DeleteConfirmModal (條件顯示)
+    ├── Title
+    ├── Message
+    └── Buttons
+        ├── CancelButton
+        └── ConfirmButton
+```
+
+### 9.5 API 設計
+
+#### 9.5.1 History Service API
+
+```typescript
+// src/services/historyService.ts
+
+export const historyService = {
+  // ============ 列表操作 ============
+  
+  /**
+   * 取得所有歷史記錄摘要列表
+   */
+  getHistoryList(): Promise<MatchHistorySummary[]>;
+  
+  /**
+   * 儲存歷史記錄列表
+   */
+  saveHistoryList(list: MatchHistorySummary[]): Promise<void>;
+  
+  // ============ 單場比賽操作 ============
+  
+  /**
+   * 取得單場比賽詳細資訊
+   */
+  getMatchDetail(id: string): Promise<MatchHistoryDetail | null>;
+  
+  /**
+   * 儲存單場比賽詳細資訊
+   */
+  saveMatchDetail(match: MatchHistoryDetail): Promise<void>;
+  
+  /**
+   * 刪除單場比賽
+   */
+  deleteMatch(id: string): Promise<void>;
+  
+  /**
+   * 從當前遊戲狀態建立歷史記錄
+   */
+  createFromCurrentGame(gameState: GameState): Promise<MatchHistoryDetail>;
+  
+  // ============ 更新操作 ============
+  
+  /**
+   * 更新比賽摘要資訊
+   */
+  updateMatchSummary(
+    id: string,
+    updates: Partial<MatchHistorySummary>
+  ): Promise<void>;
+  
+  /**
+   * 更新比賽詳細資訊
+   */
+  updateMatchDetail(
+    id: string,
+    updates: Partial<MatchHistoryDetail>
+  ): Promise<void>;
+  
+  // ============ 編輯功能 ============
+  
+  /**
+   * 編輯玩家資訊
+   */
+  editMatchPlayers(
+    id: string,
+    players: Player[]
+  ): Promise<void>;
+  
+  /**
+   * 編輯回合記錄
+   */
+  editMatchRounds(
+    id: string,
+    rounds: Round[]
+  ): Promise<void>;
+  
+  // ============ 工具方法 ============
+  
+  /**
+   * 檢查比賽是否存在
+   */
+  matchExists(id: string): Promise<boolean>;
+  
+  /**
+   * 取得比賽數量
+   */
+  getMatchCount(): Promise<number>;
+  
+  /**
+   * 清除所有歷史記錄
+   */
+  clearAllHistory(): Promise<void>;
+};
+```
+
+#### 9.5.2 History Store API
+
+```typescript
+// src/store/historyStore.ts
+
+interface HistoryStore {
+  // ============ 狀態 ============
+  matches: MatchHistorySummary[];
+  currentMatch: MatchHistoryDetail | null;
+  isLoading: boolean;
+  error: string | null;
+  sortBy: 'date' | 'rounds';
+  sortOrder: 'asc' | 'desc';
+  
+  // ============ 列表 Actions ============
+  
+  /**
+   * 載入歷史記錄列表
+   */
+  loadHistoryList: () => Promise<void>;
+  
+  /**
+   * 排序歷史記錄
+   */
+  sortMatches: (sortBy: 'date' | 'rounds', order: 'asc' | 'desc') => void;
+  
+  /**
+   * 刪除單場比賽
+   */
+  deleteMatch: (id: string) => Promise<void>;
+  
+  /**
+   * 刪除所有比賽
+   */
+  deleteAllMatches: () => Promise<void>;
+  
+  // ============ 詳情 Actions ============
+  
+  /**
+   * 載入單場比賽詳情
+   */
+  loadMatchDetail: (id: string) => Promise<void>;
+  
+  /**
+   * 清除當前比賽詳情
+   */
+  clearCurrentMatch: () => void;
+  
+  // ============ 儲存 Actions ============
+  
+  /**
+   * 儲存當前遊戲為歷史記錄
+   */
+  saveCurrentGame: () => Promise<void>;
+  
+  /**
+   * 更新比賽資訊
+   */
+  updateMatch: (id: string, updates: Partial<MatchHistoryDetail>) => Promise<void>;
+  
+  // ============ 編輯 Actions ============
+  
+  /**
+   * 編輯玩家名稱
+   */
+  editPlayerName: (matchId: string, playerId: string, newName: string) => Promise<void>;
+  
+  /**
+   * 刪除特定回合
+   */
+  deleteRound: (matchId: string, roundId: string) => Promise<void>;
+  
+  // ============ Selectors ============
+  
+  /**
+   * 根據 ID 取得比賽摘要
+   */
+  getMatchById: (id: string) => MatchHistorySummary | undefined;
+  
+  /**
+   * 取得排序後的列表
+   */
+  getSortedMatches: () => MatchHistorySummary[];
+  
+  /**
+   * 取得最近的比賽
+   */
+  getRecentMatches: (count: number) => MatchHistorySummary[];
+}
+```
+
+### 9.6 檔案結構更新
+
+```
+mahjong-scoring-app/
+├── app/
+│   ├── index.tsx                 # 首頁 (更新: 顯示歷史列表)
+│   ├── setup.tsx
+│   ├── game.tsx
+│   ├── settlement.tsx
+│   └── history/                  # 新增目錄
+│       ├── [id].tsx              # 比賽詳情頁
+│       └── [id]/
+│           └── edit.tsx          # 編輯頁面 (可選)
+│
+├── src/
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── DeleteConfirmModal.tsx  # 新增
+│   │   │   ├── EmptyState.tsx          # 新增
+│   │   │   └── index.ts                # 更新
+│   │   │
+│   │   ├── history/              # 新增目錄
+│   │   │   ├── MatchHistoryCard.tsx
+│   │   │   ├── MatchHistoryList.tsx
+│   │   │   ├── MatchDetailHeader.tsx
+│   │   │   ├── MatchInfoCard.tsx
+│   │   │   ├── FinalScoreCard.tsx
+│   │   │   ├── RoundHistoryList.tsx
+│   │   │   ├── RoundHistoryItem.tsx
+│   │   │   ├── CurrentGameCard.tsx
+│   │   │   └── index.ts
+│   │   │
+│   │   └── ...
+│   │
+│   ├── store/
+│   │   ├── gameStore.ts
+│   │   ├── historyStore.ts       # 新增
+│   │   └── index.ts
+│   │
+│   ├── services/                 # 新增目錄
+│   │   ├── historyService.ts
+│   │   └── index.ts
+│   │
+│   ├── types/
+│   │   ├── index.ts              # 更新: 新增 MatchHistory 類型
+│   │   └── history.ts            # 新增: 歷史記錄相關類型
+│   │
+│   └── ...
+│
+└── ...
+```
+
+### 9.7 實作優先順序建議
+
+1. **Phase 1: 基礎架構**
+   - 新增 `MatchHistorySummary` 和 `MatchHistoryDetail` 類型定義
+   - 建立 `historyService` 基礎 API
+   - 建立 `historyStore` 基礎結構
+
+2. **Phase 2: 首頁列表**
+   - 實作 `MatchHistoryCard` 組件
+   - 實作 `MatchHistoryList` 組件
+   - 更新首頁顯示歷史列表
+   - 實作儲存當前遊戲功能
+
+3. **Phase 3: 詳情頁面**
+   - 建立詳情頁路由
+   - 實作各詳情組件
+   - 實作回合記錄展開功能
+
+4. **Phase 4: 編輯與刪除**
+   - 實作刪除確認流程
+   - 實作編輯玩家名稱功能
+   - 實作編輯回合記錄功能 (可選)

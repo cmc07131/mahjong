@@ -1,0 +1,17 @@
+{
+  "buildCommand": "npx expo export --platform web && node scripts/fix-web-html.js",
+  "outputDirectory": "dist",
+  "framework": null,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/_expo/static/js/(.*)",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript" }
+      ]
+    }
+  ]
+}
