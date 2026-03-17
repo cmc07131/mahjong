@@ -24,8 +24,8 @@ export default function HistoryDetailScreen() {
       '確定要刪除這場比賽記錄嗎？此操作無法復原。',
       [
         { text: '取消', style: 'cancel' },
-        { 
-          text: '刪除', 
+        {
+          text: '刪除',
           style: 'destructive',
           onPress: async () => {
             await deleteHistory(id);

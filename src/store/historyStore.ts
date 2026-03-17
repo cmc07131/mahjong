@@ -71,10 +71,10 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
     try {
       await historyService.deleteMatchHistory(id);
       const histories = get().histories.filter(h => h.id !== id);
-      set({ 
-        histories, 
+      set({
+        histories,
         currentHistory: get().currentHistory?.id === id ? null : get().currentHistory,
-        isLoading: false 
+        isLoading: false
       });
     } catch (error) {
       set({ error: '無法刪除歷史記錄', isLoading: false });
