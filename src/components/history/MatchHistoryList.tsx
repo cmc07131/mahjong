@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { MatchHistorySummary } from '../../types';
 import { MatchHistoryCard } from './MatchHistoryCard';
 
@@ -34,18 +34,18 @@ export function MatchHistoryList({
   }
 
   return (
-    <FlatList
-      data={histories}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
+    <ScrollView 
+      showsVerticalScrollIndicator={false}
+      nestedScrollEnabled={true}
+    >
+      {histories.map((item) => (
         <MatchHistoryCard
+          key={item.id}
           history={item}
           onPress={() => onItemPress(item.id)}
           onDelete={() => onDelete(item.id)}
         />
-      )}
-      showsVerticalScrollIndicator={false}
-      contentContainerClassName="pb-4"
-    />
+      ))}
+    </ScrollView>
   );
 }
