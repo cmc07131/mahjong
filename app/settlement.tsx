@@ -104,7 +104,7 @@ export default function SettlementScreen() {
 
   // 返回主畫面
   const handleBackToGame = () => {
-    router.back();
+    router.replace('/');
   };
 
   // 開新牌局
