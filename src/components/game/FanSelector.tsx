@@ -11,41 +11,49 @@ const FAN_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
 export function FanSelector({ selectedFan, onSelectFan, disabled = false }: FanSelectorProps) {
   return (
-    <View className="mb-4">
-      <Text className="text-white text-lg font-bold mb-2">步驟一：選擇番數</Text>
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        className="flex-row"
-      >
-        <View className="flex-row gap-2">
-          {FAN_OPTIONS.map((fan) => (
+    <ScrollView 
+      horizontal 
+      showsHorizontalScrollIndicator={false}
+      className="flex-row"
+      contentContainerStyle={{ paddingHorizontal: 4 }}
+    >
+      <View className="flex-row">
+        {FAN_OPTIONS.map((fan) => {
+          const isSelected = selectedFan === fan;
+          return (
             <TouchableOpacity
               key={fan}
               onPress={() => !disabled && onSelectFan(fan)}
               disabled={disabled}
               className={`
-                px-4 py-3 rounded-lg min-w-[56px] items-center justify-center
-                ${selectedFan === fan 
-                  ? 'bg-yellow-500' 
-                  : disabled 
-                    ? 'bg-gray-600' 
-                    : 'bg-green-600 active:bg-green-500'
+                w-10 h-10 md:w-12 md:h-12 rounded-lg items-center justify-center mx-1
+                transition-select button-press
+                ${isSelected
+                  ? 'gold-gradient selected-glow'
+                  : disabled
+                    ? 'bg-emerald-900/50'
+                    : 'bg-emerald-600 active:bg-emerald-500'
                 }
               `}
+              activeOpacity={0.8}
             >
-              <Text 
+              <Text
                 className={`
-                  text-lg font-bold
-                  ${selectedFan === fan ? 'text-yellow-900' : 'text-white'}
+                  text-xs md:text-sm font-bold
+                  ${isSelected
+                    ? 'text-emerald-950'
+                    : disabled
+                      ? 'text-emerald-700'
+                      : 'text-white'
+                  }
                 `}
               >
                 {fan}番
               </Text>
             </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-    </View>
+          );
+        })}
+      </View>
+    </ScrollView>
   );
 }

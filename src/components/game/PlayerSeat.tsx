@@ -14,59 +14,93 @@ const WIND_LABELS: Record<Wind, string> = {
   NORTH: '北',
 };
 
+// Simple avatar emoji based on player name or index
+const getAvatarEmoji = (player: Player, index: number): string => {
+  // Use a simple alternating pattern for avatars
+  const avatars = ['👨', '👩', '👨', '👩'];
+  return avatars[index % 4];
+};
+
 export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSeatProps) {
   const formatScore = (score: number) => {
     if (score === 0) return '0';
     return score > 0 ? `+${score}` : `${score}`;
   };
 
-  const getScoreColor = (score: number) => {
-    if (score > 0) return 'text-green-400';
-    if (score < 0) return 'text-red-400';
-    return 'text-gray-300';
+  const getScoreColorClass = (score: number) => {
+    if (score > 0) return 'text-score-win';
+    if (score < 0) return 'text-score-lose';
+    return 'text-white';
   };
 
-  // 根據位置調整佈局
-  const isHorizontal = position === 'left' || position === 'right';
-  
+  // Get player index for avatar selection
+  const playerIndex = ['EAST', 'SOUTH', 'WEST', 'NORTH'].indexOf(player.position);
+
   return (
-    <View
-      className={`
-        bg-green-800/80 rounded-xl p-3 min-w-[100px] items-center justify-center
-        ${isHorizontal ? 'flex-row gap-2' : 'flex-col'}
-        border-2 ${player.isDealer ? 'border-yellow-400' : 'border-green-600'}
-      `}
-    >
-      {/* 莊家標記 */}
+    <View className="items-center">
+      {/* Dealer Crown - above avatar */}
       {player.isDealer && (
-        <View className="bg-yellow-400 px-2 py-0.5 rounded-full mb-1">
-          <Text className="text-yellow-900 text-xs font-bold">莊</Text>
+        <View className="mb-[-6] md:mb-[-8] z-10">
+          <Text className="text-lg md:text-xl">👑</Text>
         </View>
       )}
       
-      {/* 風位 */}
-      <View className="bg-green-900/50 px-2 py-0.5 rounded">
-        <Text className="text-green-200 text-sm font-medium">
-          {WIND_LABELS[player.position]}
+      {/* Circular Avatar with Gold Border */}
+      <View
+        className={`
+          w-12 h-12 md:w-14 md:h-14 rounded-full items-center justify-center
+          border-2 md:border-4 border-gold-500
+          ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
+        `}
+        style={{
+          shadowColor: '#D4AF37',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.5,
+          shadowRadius: 4,
+          elevation: 4,
+        }}
+      >
+        <Text className="text-xl md:text-2xl">
+          {getAvatarEmoji(player, playerIndex)}
         </Text>
       </View>
-      
-      {/* 玩家名字 */}
-      <Text className="text-white text-base font-bold mt-1" numberOfLines={1}>
-        {player.name}
-      </Text>
-      
-      {/* 本局輸贏 */}
-      {roundScoreChange !== 0 && (
-        <Text className={`text-sm font-medium ${getScoreColor(roundScoreChange)}`}>
-          {formatScore(roundScoreChange)}
+
+      {/* Info Box - Semi-transparent dark panel */}
+      <View
+        className="dark-panel rounded-lg md:rounded-xl px-2.5 md:px-3 py-1.5 md:py-2 mt-1 md:mt-1.5 min-w-[60px] md:min-w-[70px] items-center"
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 3,
+        }}
+      >
+        {/* Wind Position Label */}
+        <Text className="text-gold-400 text-xs font-medium">
+          {WIND_LABELS[player.position]}
         </Text>
-      )}
-      
-      {/* 總輸贏 */}
-      <Text className={`text-xs ${getScoreColor(player.score)}`}>
-        總: {formatScore(player.score)}
-      </Text>
+        
+        {/* Player Name */}
+        <Text
+          className="text-white text-xs md:text-sm font-bold mt-0.5"
+          numberOfLines={1}
+        >
+          {player.name}
+        </Text>
+        
+        {/* Round Score Change (if any) */}
+        {roundScoreChange !== 0 && (
+          <Text className={`text-xs md:text-sm font-bold mt-0.5 ${getScoreColorClass(roundScoreChange)}`}>
+            {formatScore(roundScoreChange)}
+          </Text>
+        )}
+        
+        {/* Total Score */}
+        <Text className={`text-xs font-medium mt-0.5 ${getScoreColorClass(player.score)}`}>
+          {formatScore(player.score)}
+        </Text>
+      </View>
     </View>
   );
 }

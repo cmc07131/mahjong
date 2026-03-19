@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform, ViewStyle, TextStyle } from 'react-native';
+import { View, Text, ScrollView, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Card, Button } from '../src/components/common';
-import { PlayerInput, UnitSelector } from '../src/components/setup';
 import { useGameStore } from '../src/store/gameStore';
 import { Wind } from '../src/types';
 
@@ -21,6 +19,21 @@ const WIND_LABELS: Record<Wind, string> = {
   SOUTH: '南家',
   WEST: '西家',
   NORTH: '北家',
+};
+
+// 風位顏色
+const WIND_COLORS: Record<Wind, string> = {
+  EAST: '#dc2626',   // 紅色 - 東
+  SOUTH: '#16a34a',  // 綠色 - 南
+  WEST: '#2563eb',   // 藍色 - 西
+  NORTH: '#1f2937',  // 黑色 - 北
+};
+
+const WIND_SYMBOLS: Record<Wind, string> = {
+  EAST: '東',
+  SOUTH: '南',
+  WEST: '西',
+  NORTH: '北',
 };
 
 export default function SetupScreen() {
@@ -72,99 +85,147 @@ export default function SetupScreen() {
   // 檢查是否可以開始遊戲
   const canStart = players.every((p) => p.name.trim().length > 0);
 
-  // 樣式定義
-  const containerStyle: ViewStyle = {
-    flex: 1,
-    backgroundColor: '#f0fdf4',
-  };
-
-  const scrollViewContentStyle: ViewStyle = {
-    flexGrow: 1,
-    padding: 20,
-  };
-
-  const headerContainerStyle: ViewStyle = {
-    alignItems: 'center',
-    marginBottom: 24,
-    marginTop: 8,
-  };
-
-  const titleStyle: TextStyle = {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#166534',
-    marginBottom: 8,
-  };
-
-  const subtitleStyle: TextStyle = {
-    fontSize: 14,
-    color: '#6b7280',
-  };
-
-  const cardStyle: ViewStyle = {
-    marginBottom: 16,
-  };
-
-  const sectionTitleStyle: TextStyle = {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 16,
-  };
-
-  const buttonContainerStyle: ViewStyle = {
-    marginTop: 24,
-    marginBottom: 32,
-  };
-
   return (
-    <SafeAreaView style={containerStyle}>
+    <SafeAreaView className="flex-1 emerald-gradient" edges={['top']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
         <ScrollView
-          contentContainerStyle={scrollViewContentStyle}
+          contentContainerStyle={{ flexGrow: 1, padding: 16 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           {/* 標題區 */}
-          <View style={headerContainerStyle}>
-            <Text style={titleStyle}>香港麻將計分</Text>
-            <Text style={subtitleStyle}>設定玩家與金額，開始牌局</Text>
+          <View className="items-center mb-6 mt-2">
+            <Text className="text-2xl font-bold text-gold-400 mb-2">
+              香港麻將計分
+            </Text>
+            <Text className="text-sm text-emerald-300">
+              設定玩家與金額，開始牌局
+            </Text>
           </View>
 
           {/* 玩家設定卡片 */}
-          <Card style={cardStyle}>
-            <Text style={sectionTitleStyle}>玩家設定</Text>
+          <View className="dark-panel rounded-2xl border border-gold-500/50 p-4 mb-4">
+            <Text className="text-white font-bold text-lg mb-4">玩家設定</Text>
             {players.map((player) => (
-              <PlayerInput
-                key={player.wind}
-                wind={player.wind}
-                label={WIND_LABELS[player.wind]}
-                value={player.name}
-                onChange={(name) => handlePlayerChange(player.wind, name)}
-                placeholder={`輸入${WIND_LABELS[player.wind]}名稱`}
-              />
+              <View key={player.wind} className="flex-row items-center mb-3">
+                {/* Wind Badge */}
+                <View 
+                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                  style={{
+                    backgroundColor: WIND_COLORS[player.wind],
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 2,
+                    elevation: 2,
+                  }}
+                >
+                  <Text className="text-white font-bold text-base">
+                    {WIND_SYMBOLS[player.wind]}
+                  </Text>
+                </View>
+                
+                {/* Input */}
+                <View className="flex-1">
+                  <View 
+                    className="bg-emerald-900/50 border border-gold-500/30 rounded-xl px-4 py-3"
+                    style={{
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 2,
+                      elevation: 1,
+                    }}
+                  >
+                    <TextInput
+                      value={player.name}
+                      onChangeText={(text) => handlePlayerChange(player.wind, text)}
+                      placeholder={`輸入${WIND_LABELS[player.wind]}名稱`}
+                      placeholderTextColor="#6b7280"
+                      className="text-white text-base"
+                      style={{ color: 'white', fontSize: 16 }}
+                    />
+                  </View>
+                </View>
+              </View>
             ))}
-          </Card>
+          </View>
 
           {/* 金額設定卡片 */}
-          <Card style={cardStyle}>
-            <Text style={sectionTitleStyle}>金額設定</Text>
-            <UnitSelector value={unitAmount} onChange={setUnitAmount} />
-          </Card>
+          <View className="dark-panel rounded-2xl border border-gold-500/50 p-4 mb-4">
+            <Text className="text-white font-bold text-lg mb-4">金額設定</Text>
+            <Text className="text-gold-300 text-sm mb-3">選擇每番金額（港幣）</Text>
+            
+            {/* Preset amounts */}
+            <View className="flex-row flex-wrap gap-2 mb-3">
+              {[1, 3, 5, 10].map((amount) => {
+                const isSelected = unitAmount === amount;
+                return (
+                  <TouchableOpacity
+                    key={amount}
+                    className={`
+                      px-4 py-2.5 rounded-xl items-center justify-center
+                      ${isSelected 
+                        ? 'gold-gradient' 
+                        : 'bg-emerald-800 border border-gold-500/30'
+                      }
+                    `}
+                    style={{ minWidth: 70 }}
+                    onPress={() => setUnitAmount(amount)}
+                    activeOpacity={0.8}
+                  >
+                    <Text 
+                      className={`
+                        font-bold text-base
+                        ${isSelected ? 'text-emerald-950' : 'text-white'}
+                      `}
+                    >
+                      ${amount}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            
+            {/* Custom amount hint */}
+            <Text className="text-emerald-400 text-xs">
+              目前設定：每番 ${unitAmount} 港幣
+            </Text>
+          </View>
 
           {/* 開始按鈕 */}
-          <View style={buttonContainerStyle}>
-            <Button
-              onPress={handleStartGame}
-              disabled={!canStart}
-              loading={isLoading}
-              size="lg"
+          <View className="mt-6 mb-8">
+            <TouchableOpacity
+              className={`
+                rounded-xl py-4 items-center justify-center
+                ${canStart 
+                  ? 'gold-gradient' 
+                  : 'bg-emerald-900/50 border border-gold-500/20'
+                }
+              `}
+              style={{
+                shadowColor: canStart ? '#D4AF37' : '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: canStart ? 0.5 : 0.2,
+                shadowRadius: 4,
+                elevation: canStart ? 4 : 1,
+              }}
+              onPress={canStart && !isLoading ? handleStartGame : undefined}
+              disabled={!canStart || isLoading}
+              activeOpacity={0.8}
             >
-              開始牌局
-            </Button>
+              <Text 
+                className={`
+                  font-bold text-lg
+                  ${canStart ? 'text-emerald-950' : 'text-emerald-700'}
+                `}
+              >
+                {isLoading ? '載入中...' : '開始牌局'}
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

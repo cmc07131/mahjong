@@ -3,7 +3,7 @@ import { View, ScrollView, Alert, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useGameStore } from '../src/store/gameStore';
-import { MahjongTable, ActionPanel } from '../src/components/game';
+import { MahjongTable, ActionPanel, BottomNavigation } from '../src/components/game';
 import { Button } from '../src/components/common';
 import { WinType, CurrentRound } from '../src/types';
 import { calculatePreviewChanges } from '../src/utils/scoring';
@@ -11,7 +11,7 @@ import { calculatePreviewChanges } from '../src/utils/scoring';
 export default function GameScreen() {
   const router = useRouter();
   
-  // 從 store 取得狀態
+  // Get state from store
   const {
     players,
     dealerIndex,
@@ -28,19 +28,19 @@ export default function GameScreen() {
     finishGame,
   } = useGameStore();
 
-  // 本地 UI 狀態
+  // Local UI state
   const [selectedFan, setSelectedFan] = useState<number | null>(null);
   const [selectedWinnerId, setSelectedWinnerId] = useState<string | null>(null);
   const [selectedWinType, setSelectedWinType] = useState<WinType | null>(null);
   const [selectedLoserId, setSelectedLoserId] = useState<string | null>(null);
 
-  // 計算預覽分數變動
+  // Calculate preview score changes
   const previewChanges = useMemo(() => {
     if (!selectedFan || !selectedWinnerId || !selectedWinType) {
       return {};
     }
     
-    // 出銃時需要選擇出銃者
+    // For RON, need to select loser
     if (selectedWinType === 'RON' && !selectedLoserId) {
       return {};
     }
@@ -55,7 +55,7 @@ export default function GameScreen() {
     );
   }, [selectedFan, selectedWinnerId, selectedWinType, selectedLoserId, unitAmount, players]);
 
-  // 重置操作區
+  // Reset action area
   const resetSelections = () => {
     setSelectedFan(null);
     setSelectedWinnerId(null);
@@ -63,35 +63,35 @@ export default function GameScreen() {
     setSelectedLoserId(null);
   };
 
-  // 處理番數選擇
+  // Handle fan selection
   const handleSelectFan = (fan: number) => {
     setSelectedFan(fan);
   };
 
-  // 處理贏家選擇
+  // Handle winner selection
   const handleSelectWinner = (playerId: string) => {
     setSelectedWinnerId(playerId);
-    // 如果選擇的贏家是原本的出銃者，清除出銃者選擇
+    // If selected winner was the loser, clear loser selection
     if (selectedLoserId === playerId) {
       setSelectedLoserId(null);
     }
   };
 
-  // 處理食糊方式選擇
+  // Handle win type selection
   const handleSelectWinType = (winType: WinType) => {
     setSelectedWinType(winType);
-    // 切換到自摸時清除出銃者
+    // Clear loser when switching to self-draw
     if (winType === 'SELF_DRAW') {
       setSelectedLoserId(null);
     }
   };
 
-  // 處理出銃者選擇
+  // Handle loser selection
   const handleSelectLoser = (playerId: string) => {
     setSelectedLoserId(playerId);
   };
 
-  // 確認本局
+  // Confirm round
   const handleConfirm = () => {
     if (!selectedFan || !selectedWinnerId || !selectedWinType) {
       return;
@@ -101,7 +101,7 @@ export default function GameScreen() {
       return;
     }
 
-    // 設定當前回合資料
+    // Set current round data
     const roundData: CurrentRound = {
       winnerId: selectedWinnerId,
       winType: selectedWinType,
@@ -111,16 +111,16 @@ export default function GameScreen() {
 
     setCurrentRound(roundData);
     
-    // 確認回合
+    // Confirm round
     confirmRound();
     
-    // 重置操作區
+    // Reset action area
     resetSelections();
   };
 
-  // 處理流局
+  // Handle draw
   const handleDraw = () => {
-    // Web 使用 confirm，原生使用 Alert
+    // Web uses confirm, native uses Alert
     if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
       if (window.confirm('確定要宣告流局嗎？')) {
         processDraw();
@@ -144,7 +144,7 @@ export default function GameScreen() {
     }
   };
 
-  // 處理 Undo
+  // Handle Undo
   const handleUndo = () => {
     if (canUndo()) {
       undo();
@@ -152,9 +152,9 @@ export default function GameScreen() {
     }
   };
 
-  // 處理結束牌局
+  // Handle finish game
   const handleFinish = () => {
-    // Web 使用 confirm，原生使用 Alert
+    // Web uses confirm, native uses Alert
     if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
       if (window.confirm('確定要結束牌局並進入結算嗎？')) {
         finishGame();
@@ -178,15 +178,26 @@ export default function GameScreen() {
     }
   };
 
-  // 檢查遊戲狀態
+  // Handle history button press
+  const handleHistoryPress = () => {
+    router.push('/history');
+  };
+
+  // Handle settings button press
+  const handleSettingsPress = () => {
+    // Future: Navigate to settings
+    Alert.alert('設定', '設定功能即將推出');
+  };
+
+  // Check game status
   if (status !== 'PLAYING' || players.length !== 4) {
     return (
-      <SafeAreaView className="flex-1 bg-green-800">
+      <SafeAreaView className="flex-1 emerald-gradient" edges={['top']}>
         <View className="flex-1 items-center justify-center p-4">
           <Text className="text-white text-xl font-bold mb-4">
             尚未開始遊戲
           </Text>
-          <Text className="text-green-200 text-base mb-6 text-center">
+          <Text className="text-emerald-200 text-base mb-6 text-center">
             請先設定玩家資料開始新牌局
           </Text>
           <Button
@@ -202,14 +213,13 @@ export default function GameScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-green-800" edges={['top']}>
-      <ScrollView 
-        className="flex-1" 
-        contentContainerStyle={{ flexGrow: 1 }}
-        bounces={false}
-      >
-        {/* 麻將桌區域 */}
-        <View className="flex-1 min-h-[400px]">
+    <SafeAreaView className="flex-1 emerald-gradient" edges={['top']}>
+      {/* Cloud pattern overlay */}
+      <View className="absolute inset-0 cloud-pattern opacity-30" />
+      
+      <View className="flex-1">
+        {/* Mahjong Table Area */}
+        <View className="flex-1 min-h-[380px]">
           <MahjongTable
             players={players}
             roundScoreChanges={previewChanges}
@@ -218,7 +228,7 @@ export default function GameScreen() {
           />
         </View>
 
-        {/* 核心操作區 */}
+        {/* Action Panel */}
         <ActionPanel
           players={players}
           selectedFan={selectedFan}
@@ -236,7 +246,13 @@ export default function GameScreen() {
           canUndo={canUndo()}
           previewChanges={previewChanges}
         />
-      </ScrollView>
+
+        {/* Bottom Navigation */}
+        <BottomNavigation
+          onHistoryPress={handleHistoryPress}
+          onSettingsPress={handleSettingsPress}
+        />
+      </View>
     </SafeAreaView>
   );
 }

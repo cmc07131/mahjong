@@ -33,29 +33,37 @@ export function WinTypeSelector({
   // 過濾掉贏家，只顯示可能的出銃者
   const potentialLosers = players.filter(p => p.id !== winnerId);
 
+  const isSelfDrawSelected = selectedWinType === 'SELF_DRAW';
+  const isRonSelected = selectedWinType === 'RON';
+
   return (
-    <View className="mb-4">
-      <Text className="text-white text-lg font-bold mb-2">步驟三：食糊方式</Text>
-      
+    <View>
       {/* 自摸 / 出銃 選擇 */}
-      <View className="flex-row gap-3 justify-center mb-2">
+      <View className="flex-row justify-center">
         <TouchableOpacity
           onPress={() => !disabled && onSelectWinType('SELF_DRAW')}
           disabled={disabled}
           className={`
-            px-6 py-3 rounded-lg min-w-[100px] items-center justify-center
-            ${selectedWinType === 'SELF_DRAW' 
-              ? 'bg-yellow-500' 
-              : disabled 
-                ? 'bg-gray-600' 
-                : 'bg-green-600 active:bg-green-500'
+            flex-1 py-3 md:py-4 rounded-xl mx-1.5 md:mx-2 items-center justify-center
+            transition-select button-press
+            ${isSelfDrawSelected
+              ? 'gold-gradient selected-glow'
+              : disabled
+                ? 'bg-emerald-900/50 border border-gold-500/20'
+                : 'bg-emerald-700 border border-gold-500/50 active:bg-emerald-600'
             }
           `}
+          activeOpacity={0.8}
         >
-          <Text 
+          <Text
             className={`
-              text-lg font-bold
-              ${selectedWinType === 'SELF_DRAW' ? 'text-yellow-900' : 'text-white'}
+              text-base md:text-lg font-bold
+              ${isSelfDrawSelected
+                ? 'text-emerald-950'
+                : disabled
+                  ? 'text-emerald-700'
+                  : 'text-white'
+              }
             `}
           >
             自摸
@@ -66,19 +74,26 @@ export function WinTypeSelector({
           onPress={() => !disabled && onSelectWinType('RON')}
           disabled={disabled}
           className={`
-            px-6 py-3 rounded-lg min-w-[100px] items-center justify-center
-            ${selectedWinType === 'RON' 
-              ? 'bg-yellow-500' 
-              : disabled 
-                ? 'bg-gray-600' 
-                : 'bg-green-600 active:bg-green-500'
+            flex-1 py-3 md:py-4 rounded-xl mx-1.5 md:mx-2 items-center justify-center
+            transition-select button-press
+            ${isRonSelected
+              ? 'gold-gradient selected-glow'
+              : disabled
+                ? 'bg-emerald-900/50 border border-gold-500/20'
+                : 'bg-emerald-700 border border-gold-500/50 active:bg-emerald-600'
             }
           `}
+          activeOpacity={0.8}
         >
-          <Text 
+          <Text
             className={`
-              text-lg font-bold
-              ${selectedWinType === 'RON' ? 'text-yellow-900' : 'text-white'}
+              text-base md:text-lg font-bold
+              ${isRonSelected
+                ? 'text-emerald-950'
+                : disabled
+                  ? 'text-emerald-700'
+                  : 'text-white'
+              }
             `}
           >
             出銃
@@ -88,36 +103,46 @@ export function WinTypeSelector({
 
       {/* 出銃者選擇 (只有選擇出銃時才顯示) */}
       {showLoserSelector && selectedWinType === 'RON' && (
-        <View className="mt-3">
-          <Text className="text-green-200 text-base font-medium mb-2 text-center">
+        <View className="mt-3 md:mt-4">
+          <Text className="text-gold-300 text-sm md:text-base font-medium mb-2 md:mb-3 text-center">
             誰出銃？
           </Text>
-          <View className="flex-row gap-2 justify-center">
-            {potentialLosers.map((player) => (
-              <TouchableOpacity
-                key={player.id}
-                onPress={() => !disabled && onSelectLoser(player.id)}
-                disabled={disabled}
-                className={`
-                  px-4 py-2 rounded-lg min-w-[60px] items-center justify-center
-                  ${selectedLoserId === player.id 
-                    ? 'bg-red-500' 
-                    : disabled 
-                      ? 'bg-gray-600' 
-                      : 'bg-green-700 active:bg-green-600'
-                  }
-                `}
-              >
-                <Text 
+          <View className="flex-row justify-center">
+            {potentialLosers.map((player) => {
+              const isSelected = selectedLoserId === player.id;
+              return (
+                <TouchableOpacity
+                  key={player.id}
+                  onPress={() => !disabled && onSelectLoser(player.id)}
+                  disabled={disabled}
                   className={`
-                    text-base font-bold
-                    ${selectedLoserId === player.id ? 'text-white' : 'text-green-100'}
+                    w-14 h-14 md:w-16 md:h-16 rounded-xl items-center justify-center mx-1.5 md:mx-2
+                    transition-select button-press
+                    ${isSelected
+                      ? 'gold-gradient border-2 border-gold-300 selected-glow'
+                      : disabled
+                        ? 'bg-emerald-900/50 border border-gold-500/20'
+                        : 'bg-emerald-800/80 border border-gold-500/30 active:bg-emerald-700/80'
+                    }
                   `}
+                  activeOpacity={0.8}
                 >
-                  {WIND_LABELS[player.position]}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    className={`
+                      font-bold text-lg md:text-xl
+                      ${isSelected
+                        ? 'text-emerald-950'
+                        : disabled
+                          ? 'text-emerald-700'
+                          : 'text-white'
+                      }
+                    `}
+                  >
+                    {WIND_LABELS[player.position]}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
       )}

@@ -56,88 +56,99 @@ export function ActionPanel({
   };
 
   return (
-    <View className="bg-green-900/90 rounded-t-3xl p-4 pt-6">
-      {/* 步驟一：選擇番數 */}
-      <FanSelector
-        selectedFan={selectedFan}
-        onSelectFan={onSelectFan}
-        disabled={false}
-      />
-
-      {/* 步驟二：選擇贏家 */}
-      <WinnerSelector
-        players={players}
-        selectedWinnerId={selectedWinnerId}
-        onSelectWinner={onSelectWinner}
-        disabled={!selectedFan}
-      />
-
-      {/* 步驟三：選擇食糊方式 */}
-      <WinTypeSelector
-        selectedWinType={selectedWinType}
-        onSelectWinType={onSelectWinType}
-        showLoserSelector={true}
-        players={players}
-        winnerId={selectedWinnerId}
-        selectedLoserId={selectedLoserId}
-        onSelectLoser={onSelectLoser}
-        disabled={!selectedWinnerId}
-      />
-
-      {/* 分數預覽 */}
+    <View className="dark-panel rounded-2xl border border-gold-500/50 p-3 md:p-4 mx-3 md:mx-4">
+      {/* Step 1: Fan Selection */}
+      <View className="mb-3 md:mb-4">
+        <Text className="text-white font-bold text-base md:text-lg mb-2 md:mb-3">步驟一：選擇番數</Text>
+        <FanSelector
+          selectedFan={selectedFan}
+          onSelectFan={onSelectFan}
+          disabled={false}
+        />
+      </View>
+      
+      {/* Step 2: Winner Selection */}
+      <View className="mb-3 md:mb-4 border-t border-gold-500/30 pt-3 md:pt-4">
+        <Text className="text-white font-bold text-base md:text-lg mb-2 md:mb-3">步驟二：選擇食糊者</Text>
+        <WinnerSelector
+          players={players}
+          selectedWinnerId={selectedWinnerId}
+          onSelectWinner={onSelectWinner}
+          disabled={!selectedFan}
+        />
+      </View>
+      
+      {/* Step 3: Win Type */}
+      <View className="mb-3 md:mb-4 border-t border-gold-500/30 pt-3 md:pt-4">
+        <Text className="text-white font-bold text-base md:text-lg mb-2 md:mb-3">步驟三：選擇食糊方式</Text>
+        <WinTypeSelector
+          selectedWinType={selectedWinType}
+          onSelectWinType={onSelectWinType}
+          showLoserSelector={true}
+          players={players}
+          winnerId={selectedWinnerId}
+          selectedLoserId={selectedLoserId}
+          onSelectLoser={onSelectLoser}
+          disabled={!selectedWinnerId}
+        />
+      </View>
+      
+      {/* Score Preview */}
       {previewChanges && Object.keys(previewChanges).length > 0 && (
-        <View className="mb-4 bg-green-800/50 rounded-lg p-3">
-          <Text className="text-green-200 text-sm font-medium mb-1">本局分數變動預覽：</Text>
-          <View className="flex-row flex-wrap gap-2">
+        <View className="bg-white/90 rounded-lg p-2.5 md:p-3 mb-3 md:mb-4">
+          <Text className="text-emerald-950 text-xs md:text-sm font-medium mb-1">
+            本局分數變動預覽：
+          </Text>
+          <View className="flex-row flex-wrap">
             {players.map((player) => {
               const change = previewChanges[player.id] || 0;
               if (change === 0) return null;
               return (
-                <View key={player.id} className="flex-row items-center">
-                  <Text className="text-white text-sm">{player.name}: </Text>
-                  <Text className={`text-sm font-bold ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {change > 0 ? `+${change}` : change}
-                  </Text>
-                </View>
+                <Text
+                  key={player.id}
+                  className={change > 0 ? 'text-score-win font-medium text-xs md:text-sm' : 'text-score-lose font-medium text-xs md:text-sm'}
+                >
+                  {player.name}: {change > 0 ? '+' : ''}{change}{'  '}
+                </Text>
               );
             })}
           </View>
         </View>
       )}
-
-      {/* 步驟四：完成本局 */}
-      <View className="mb-4">
-        <Text className="text-white text-lg font-bold mb-2">步驟四：完成</Text>
-        <TouchableOpacity
-          onPress={onConfirm}
-          disabled={!canConfirm()}
+      
+      {/* Confirm Button */}
+      <TouchableOpacity
+        onPress={onConfirm}
+        disabled={!canConfirm()}
+        className={`
+          rounded-xl py-3 md:py-4 items-center justify-center
+          transition-select button-press
+          ${canConfirm()
+            ? 'gold-gradient active:opacity-80'
+            : 'bg-emerald-900/50 border border-gold-500/20'
+          }
+        `}
+        activeOpacity={0.8}
+      >
+        <Text
           className={`
-            py-4 rounded-lg items-center justify-center
-            ${canConfirm() 
-              ? 'bg-yellow-500 active:bg-yellow-400' 
-              : 'bg-gray-600'
-            }
+            font-bold text-base md:text-lg
+            ${canConfirm() ? 'text-emerald-950' : 'text-emerald-700'}
           `}
         >
-          <Text 
-            className={`
-              text-xl font-bold
-              ${canConfirm() ? 'text-yellow-900' : 'text-gray-400'}
-            `}
-          >
-            完成本局
-          </Text>
-        </TouchableOpacity>
-      </View>
+          確認
+        </Text>
+      </TouchableOpacity>
 
-      {/* 特殊操作按鈕 */}
-      <View className="flex-row gap-2 justify-center">
+      {/* Action Buttons Row */}
+      <View className="flex-row gap-1.5 md:gap-2 justify-center mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gold-500/30">
         {/* 流局 */}
         <TouchableOpacity
           onPress={onDraw}
-          className="bg-orange-600 active:bg-orange-500 px-4 py-2 rounded-lg flex-1 items-center"
+          className="bg-orange-600 active:bg-orange-500 px-3 md:px-4 py-2.5 md:py-3 rounded-xl flex-1 items-center border border-orange-400/50 button-press"
+          activeOpacity={0.8}
         >
-          <Text className="text-white font-bold">流局</Text>
+          <Text className="text-white font-bold text-sm md:text-base">流局</Text>
         </TouchableOpacity>
 
         {/* Undo */}
@@ -145,24 +156,26 @@ export function ActionPanel({
           onPress={onUndo}
           disabled={!canUndo}
           className={`
-            px-4 py-2 rounded-lg flex-1 items-center
-            ${canUndo 
-              ? 'bg-blue-600 active:bg-blue-500' 
-              : 'bg-gray-600'
+            px-3 md:px-4 py-2.5 md:py-3 rounded-xl flex-1 items-center border button-press
+            ${canUndo
+              ? 'bg-blue-600 active:bg-blue-500 border-blue-400/50'
+              : 'bg-emerald-900/50 border-gold-500/20'
             }
           `}
+          activeOpacity={0.8}
         >
-          <Text className={`font-bold ${canUndo ? 'text-white' : 'text-gray-400'}`}>
-            Undo
+          <Text className={`font-bold text-sm md:text-base ${canUndo ? 'text-white' : 'text-emerald-700'}`}>
+            復原
           </Text>
         </TouchableOpacity>
 
         {/* 結束牌局 */}
         <TouchableOpacity
           onPress={onFinish}
-          className="bg-red-600 active:bg-red-500 px-4 py-2 rounded-lg flex-1 items-center"
+          className="bg-red-600 active:bg-red-500 px-3 md:px-4 py-2.5 md:py-3 rounded-xl flex-1 items-center border border-red-400/50 button-press"
+          activeOpacity={0.8}
         >
-          <Text className="text-white font-bold">結束牌局</Text>
+          <Text className="text-white font-bold text-sm md:text-base">結束牌局</Text>
         </TouchableOpacity>
       </View>
     </View>

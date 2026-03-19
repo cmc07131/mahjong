@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, Dimensions } from 'react-native';
 import { Player, Wind } from '../../types';
 import { PlayerSeat } from './PlayerSeat';
 
@@ -18,23 +18,28 @@ const WIND_LABELS: Record<Wind, string> = {
 
 const WIND_ORDER: Wind[] = ['EAST', 'SOUTH', 'WEST', 'NORTH'];
 
-export function MahjongTable({ 
-  players, 
+export function MahjongTable({
+  players,
   roundScoreChanges = {},
-  prevailingWind, 
-  roundNumber 
+  prevailingWind,
+  roundNumber
 }: MahjongTableProps) {
-  // 根據風位找到對應的玩家
+  // Get screen dimensions for responsive table size
+  const screenWidth = Dimensions.get('window').width;
+  // Ensure table doesn't exceed viewport and is responsive
+  const tableSize = Math.min(screenWidth * 0.7, 400);
+
+  // Find player by wind position
   const getPlayerByWind = (wind: Wind): Player | undefined => {
     return players.find(p => p.position === wind);
   };
 
-  // 取得玩家的本局分數變動
+  // Get round score change for a player
   const getRoundScoreChange = (playerId: string): number => {
     return roundScoreChanges[playerId] || 0;
   };
 
-  // 四個座位的玩家
+  // Four seat players
   const eastPlayer = getPlayerByWind('EAST');
   const southPlayer = getPlayerByWind('SOUTH');
   const westPlayer = getPlayerByWind('WEST');
@@ -42,20 +47,80 @@ export function MahjongTable({
 
   return (
     <View className="flex-1 items-center justify-center">
-      {/* 圈風資訊 */}
-      <View className="bg-green-900/70 px-4 py-2 rounded-full mb-4">
-        <Text className="text-green-100 text-lg font-bold">
-          {WIND_LABELS[prevailingWind]}風圈 / 第 {roundNumber} 局
-        </Text>
-      </View>
-
-      {/* 麻將桌佈局 */}
-      <View className="relative w-full max-w-md aspect-square items-center justify-center">
-        {/* 桌面背景 */}
-        <View className="absolute inset-8 bg-green-700/50 rounded-full" />
+      {/* Mahjong Table Layout */}
+      <View 
+        className="relative items-center justify-center"
+        style={{ width: tableSize, height: tableSize }}
+      >
+        {/* Outer gold ring with 3D depth */}
+        <View 
+          className="absolute rounded-full gold-ring-shadow"
+          style={{ 
+            width: tableSize, 
+            height: tableSize,
+            backgroundColor: '#D4AF37'
+          }}
+        />
         
-        {/* 北家 (上方) */}
-        <View className="absolute top-0">
+        {/* Inner gold border ring */}
+        <View 
+          className="absolute rounded-full"
+          style={{ 
+            width: tableSize - 12, 
+            height: tableSize - 12,
+            backgroundColor: '#8B6914'
+          }}
+        />
+        
+        {/* Velvet table surface */}
+        <View 
+          className="absolute rounded-full velvet-texture"
+          style={{ 
+            width: tableSize - 24, 
+            height: tableSize - 24,
+            backgroundColor: '#1a4a2e'
+          }}
+        >
+          {/* Inner gold border line */}
+          <View 
+            className="absolute rounded-full border-2 border-gold-500/60"
+            style={{ 
+              left: 16, 
+              top: 16, 
+              right: 16, 
+              bottom: 16 
+            }}
+          />
+          
+          {/* Cloud pattern overlay */}
+          <View 
+            className="absolute rounded-full cloud-pattern opacity-30"
+            style={{ 
+              left: 24, 
+              top: 24, 
+              right: 24, 
+              bottom: 24 
+            }}
+          />
+        </View>
+
+        {/* Center Round Title */}
+        <View className="absolute z-10 items-center justify-center">
+          <View className="bg-emerald-950/80 px-5 py-2.5 rounded-full border border-gold-500/40">
+            <Text 
+              className="text-white text-lg font-bold text-outline text-gold-glow"
+              style={{ letterSpacing: 2 }}
+            >
+              {WIND_LABELS[prevailingWind]}風圈 / 第{roundNumber}局
+            </Text>
+          </View>
+        </View>
+
+        {/* North Player (Top) */}
+        <View 
+          className="absolute"
+          style={{ top: 0, left: '50%', transform: [{ translateX: -50 }] }}
+        >
           {northPlayer && (
             <PlayerSeat
               player={northPlayer}
@@ -65,8 +130,11 @@ export function MahjongTable({
           )}
         </View>
 
-        {/* 西家 (左邊) */}
-        <View className="absolute left-0">
+        {/* West Player (Left) */}
+        <View 
+          className="absolute"
+          style={{ left: 0, top: '50%', transform: [{ translateY: -50 }] }}
+        >
           {westPlayer && (
             <PlayerSeat
               player={westPlayer}
@@ -76,8 +144,11 @@ export function MahjongTable({
           )}
         </View>
 
-        {/* 東家 (右邊) */}
-        <View className="absolute right-0">
+        {/* East Player (Right) */}
+        <View 
+          className="absolute"
+          style={{ right: 0, top: '50%', transform: [{ translateY: -50 }] }}
+        >
           {eastPlayer && (
             <PlayerSeat
               player={eastPlayer}
@@ -87,8 +158,11 @@ export function MahjongTable({
           )}
         </View>
 
-        {/* 南家 (下方) */}
-        <View className="absolute bottom-0">
+        {/* South Player (Bottom) */}
+        <View 
+          className="absolute"
+          style={{ bottom: 0, left: '50%', transform: [{ translateX: -50 }] }}
+        >
           {southPlayer && (
             <PlayerSeat
               player={southPlayer}
@@ -96,11 +170,6 @@ export function MahjongTable({
               roundScoreChange={getRoundScoreChange(southPlayer.id)}
             />
           )}
-        </View>
-
-        {/* 中央指示 */}
-        <View className="bg-green-900/80 px-3 py-1.5 rounded-lg">
-          <Text className="text-green-200 text-sm">麻將桌</Text>
         </View>
       </View>
     </View>

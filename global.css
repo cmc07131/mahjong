@@ -1,3 +1,97 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  /* Gold gradient for buttons and highlights */
+  .gold-gradient {
+    background: linear-gradient(135deg, #F7E7A8 0%, #D4AF37 50%, #B8860B 100%);
+  }
+
+  /* Emerald gradient for background */
+  .emerald-gradient {
+    background: linear-gradient(180deg, #0a1f1a 0%, #134d3a 50%, #1a6b4f 100%);
+  }
+
+  /* Velvet texture overlay pattern */
+  .velvet-texture {
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 50%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.05) 2px,
+        rgba(0,0,0,0.05) 4px
+      );
+  }
+
+  /* Gold ring shadow for 3D depth */
+  .gold-ring-shadow {
+    box-shadow: 
+      0 0 0 4px #D4AF37,
+      0 0 0 6px #8B6914,
+      0 4px 12px rgba(0,0,0,0.5),
+      inset 0 2px 4px rgba(255,255,255,0.2);
+  }
+
+  /* Selected element glow */
+  .selected-glow {
+    box-shadow: 
+      0 0 12px rgba(212, 175, 55, 0.6),
+      0 0 24px rgba(212, 175, 55, 0.3);
+    transform: scale(1.05);
+  }
+
+  /* Semi-transparent dark panel */
+  .dark-panel {
+    background: rgba(10, 31, 26, 0.85);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Cloud pattern overlay (subtle) */
+  .cloud-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 10c-5 0-9 4-9 9s4 9 9 9 9-4 9-9-4-9-9-9zm0 2c3.9 0 7 3.1 7 7s-3.1 7-7 7-7-3.1-7-7 3.1-7 7-7z' fill='rgba(255,255,255,0.02)' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+}
+
+@layer utilities {
+  /* Text outline for white text on light backgrounds */
+  .text-outline {
+    text-shadow:
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000;
+  }
+
+  /* Gold text glow */
+  .text-gold-glow {
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+  }
+
+  /* Transition for interactive elements */
+  .transition-select {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Scale effect for active/pressed state */
+  .scale-select:active {
+    transform: scale(0.95);
+  }
+
+  /* Smooth opacity transition */
+  .transition-opacity {
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  /* Button press effect */
+  .button-press {
+    transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
+  }
+
+  .button-press:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}

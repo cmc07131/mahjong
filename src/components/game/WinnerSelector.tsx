@@ -22,44 +22,56 @@ export function WinnerSelector({
   disabled = false 
 }: WinnerSelectorProps) {
   return (
-    <View className="mb-4">
-      <Text className="text-white text-lg font-bold mb-2">步驟二：誰食糊？</Text>
-      <View className="flex-row gap-2 justify-center">
-        {players.map((player) => (
+    <View className="flex-row justify-center">
+      {players.map((player) => {
+        const isSelected = selectedWinnerId === player.id;
+        return (
           <TouchableOpacity
             key={player.id}
             onPress={() => !disabled && onSelectWinner(player.id)}
             disabled={disabled}
             className={`
-              px-5 py-3 rounded-lg min-w-[70px] items-center justify-center
-              ${selectedWinnerId === player.id 
-                ? 'bg-yellow-500' 
-                : disabled 
-                  ? 'bg-gray-600' 
-                  : 'bg-green-600 active:bg-green-500'
+              w-16 h-16 md:w-20 md:h-20 rounded-xl items-center justify-center mx-1.5 md:mx-2
+              transition-select button-press
+              ${isSelected
+                ? 'gold-gradient border-2 border-gold-300 selected-glow'
+                : disabled
+                  ? 'bg-emerald-900/50 border border-gold-500/20'
+                  : 'bg-emerald-800/80 border border-gold-500/30 active:bg-emerald-700/80'
               }
             `}
+            activeOpacity={0.8}
           >
-            <Text 
+            <Text
               className={`
-                text-lg font-bold
-                ${selectedWinnerId === player.id ? 'text-yellow-900' : 'text-white'}
+                font-bold text-xl md:text-2xl
+                ${isSelected
+                  ? 'text-emerald-950'
+                  : disabled
+                    ? 'text-emerald-700'
+                    : 'text-white'
+                }
               `}
             >
               {WIND_LABELS[player.position]}
             </Text>
-            <Text 
+            <Text
               className={`
-                text-xs
-                ${selectedWinnerId === player.id ? 'text-yellow-800' : 'text-green-200'}
+                text-xs mt-0.5 md:mt-1
+                ${isSelected
+                  ? 'text-emerald-900'
+                  : disabled
+                    ? 'text-emerald-700'
+                    : 'text-gold-300'
+                }
               `}
               numberOfLines={1}
             >
               {player.name}
             </Text>
           </TouchableOpacity>
-        ))}
-      </View>
+        );
+      })}
     </View>
   );
 }
