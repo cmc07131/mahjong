@@ -57,10 +57,13 @@ export function MatchHistoryCard({ history, onPress, onDelete }: MatchHistoryCar
         )}
       </Pressable>
       
-      {/* 刪除按鈕 */}
+      {/* 刪除按鈕 - 放在 Pressable 外面 */}
       <View className="flex-row justify-end px-4 pb-3">
         <TouchableOpacity
-          onPress={onDelete}
+          onPress={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
           className="px-3 py-1 rounded-full bg-red-50"
         >
           <Text className="text-red-500 text-sm">刪除</Text>
