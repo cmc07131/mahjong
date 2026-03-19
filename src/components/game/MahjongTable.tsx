@@ -45,6 +45,10 @@ export function MahjongTable({
   const westPlayer = getPlayerByWind('WEST');
   const northPlayer = getPlayerByWind('NORTH');
 
+  // Calculate consistent offset from edge for all positions
+  // This ensures all player seats are equidistant from center
+  const edgeOffset = 4; // percentage from edge
+
   return (
     <View className="flex-1 items-center justify-center">
       {/* Mahjong Table Layout */}
@@ -104,12 +108,19 @@ export function MahjongTable({
           />
         </View>
 
-        {/* Center Round Title */}
-        <View className="absolute z-10 items-center justify-center">
-          <View className="bg-emerald-950/80 px-5 py-2.5 rounded-full border border-gold-500/40">
+        {/* Center Round Title - positioned at exact center, smaller to avoid overlap */}
+        <View 
+          className="absolute z-10 items-center justify-center"
+          style={{
+            left: '50%',
+            top: '50%',
+            transform: [{ translateX: -40 }, { translateY: -15 }]
+          }}
+        >
+          <View className="bg-emerald-950/80 px-3 py-1.5 rounded-full border border-gold-500/40">
             <Text 
-              className="text-white text-lg font-bold text-outline text-gold-glow"
-              style={{ letterSpacing: 2 }}
+              className="text-white text-sm font-bold text-gold-glow"
+              style={{ letterSpacing: 1 }}
             >
               {WIND_LABELS[prevailingWind]}風圈 / 第{roundNumber}局
             </Text>
@@ -117,9 +128,14 @@ export function MahjongTable({
         </View>
 
         {/* North Player (12 o'clock - Top Center) */}
+        {/* Avatar on outer edge (top), info box toward center (below avatar) */}
         <View
           className="absolute"
-          style={{ top: '2%', left: '50%', transform: [{ translateX: -50 }] }}
+          style={{ 
+            left: '50%', 
+            top: `${edgeOffset}%`,
+            transform: [{ translateX: -40 }]
+          }}
         >
           {northPlayer && (
             <PlayerSeat
@@ -131,9 +147,14 @@ export function MahjongTable({
         </View>
 
         {/* West Player (9 o'clock - Left Center) */}
+        {/* Avatar on outer edge (left), info box toward center (right of avatar) */}
         <View
           className="absolute"
-          style={{ left: '2%', top: '50%', transform: [{ translateY: -50 }] }}
+          style={{ 
+            left: `${edgeOffset}%`, 
+            top: '50%',
+            transform: [{ translateY: -35 }]
+          }}
         >
           {westPlayer && (
             <PlayerSeat
@@ -145,9 +166,14 @@ export function MahjongTable({
         </View>
 
         {/* East Player (3 o'clock - Right Center) */}
+        {/* Avatar on outer edge (right), info box toward center (left of avatar) */}
         <View
           className="absolute"
-          style={{ right: '2%', top: '50%', transform: [{ translateY: -50 }] }}
+          style={{ 
+            right: `${edgeOffset}%`, 
+            top: '50%',
+            transform: [{ translateY: -35 }]
+          }}
         >
           {eastPlayer && (
             <PlayerSeat
@@ -159,9 +185,14 @@ export function MahjongTable({
         </View>
 
         {/* South Player (6 o'clock - Bottom Center) */}
+        {/* Avatar on outer edge (bottom), info box toward center (above avatar) */}
         <View
           className="absolute"
-          style={{ bottom: '2%', left: '50%', transform: [{ translateX: -50 }] }}
+          style={{ 
+            left: '50%', 
+            bottom: `${edgeOffset}%`,
+            transform: [{ translateX: -40 }]
+          }}
         >
           {southPlayer && (
             <PlayerSeat
