@@ -19,21 +19,30 @@ export default function HistoryDetailScreen() {
   }, [id]);
 
   const handleDelete = () => {
-    Alert.alert(
-      '確認刪除',
-      '確定要刪除這場比賽記錄嗎？此操作無法復原。',
-      [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '刪除',
-          style: 'destructive',
-          onPress: async () => {
-            await deleteHistory(id);
-            router.replace('/');
+    // Use window.confirm for web, Alert.alert for native
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      if (window.confirm('確定要刪除這場比賽記錄嗎？此操作無法復原。')) {
+        deleteHistory(id).then(() => {
+          router.replace('/');
+        });
+      }
+    } else {
+      Alert.alert(
+        '確認刪除',
+        '確定要刪除這場比賽記錄嗎？此操作無法復原。',
+        [
+          { text: '取消', style: 'cancel' },
+          {
+            text: '刪除',
+            style: 'destructive',
+            onPress: async () => {
+              await deleteHistory(id);
+              router.replace('/');
+            }
           }
-        }
-      ]
-    );
+        ]
+      );
+    }
   };
 
   if (isLoading) {

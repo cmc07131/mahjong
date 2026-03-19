@@ -27,21 +27,30 @@ export default function HomeScreen() {
 
   const handleDeleteHistory = (id: string) => {
     console.log('Delete button pressed for history:', id);
-    Alert.alert(
-      '確認刪除',
-      '確定要刪除這場比賽記錄嗎？此操作無法復原。',
-      [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '刪除',
-          style: 'destructive',
-          onPress: () => {
-            console.log('Deleting history:', id);
-            deleteHistory(id);
+    
+    // Use window.confirm for web, Alert.alert for native
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      if (window.confirm('確定要刪除這場比賽記錄嗎？此操作無法復原。')) {
+        console.log('Deleting history:', id);
+        deleteHistory(id);
+      }
+    } else {
+      Alert.alert(
+        '確認刪除',
+        '確定要刪除這場比賽記錄嗎？此操作無法復原。',
+        [
+          { text: '取消', style: 'cancel' },
+          {
+            text: '刪除',
+            style: 'destructive',
+            onPress: () => {
+              console.log('Deleting history:', id);
+              deleteHistory(id);
+            }
           }
-        }
-      ]
-    );
+        ]
+      );
+    }
   };
 
   const hasCurrentGame = players.length > 0;
