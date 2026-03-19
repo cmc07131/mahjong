@@ -26,6 +26,7 @@ export default function HomeScreen() {
   };
 
   const handleDeleteHistory = (id: string) => {
+    console.log('Delete button pressed for history:', id);
     Alert.alert(
       '確認刪除',
       '確定要刪除這場比賽記錄嗎？此操作無法復原。',
@@ -34,7 +35,10 @@ export default function HomeScreen() {
         {
           text: '刪除',
           style: 'destructive',
-          onPress: () => deleteHistory(id)
+          onPress: () => {
+            console.log('Deleting history:', id);
+            deleteHistory(id);
+          }
         }
       ]
     );

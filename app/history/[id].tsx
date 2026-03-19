@@ -29,7 +29,7 @@ export default function HistoryDetailScreen() {
           style: 'destructive',
           onPress: async () => {
             await deleteHistory(id);
-            router.back();
+            router.replace('/');
           }
         }
       ]
