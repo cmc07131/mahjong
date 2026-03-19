@@ -42,7 +42,7 @@ export default function SetupScreen() {
   // 玩家名稱狀態
   const [players, setPlayers] = useState<{ wind: Wind; name: string }[]>(DEFAULT_PLAYERS);
   // 單位金額狀態
-  const [unitAmount, setUnitAmount] = useState(1);
+  const [unitAmount, setUnitAmount] = useState(128);
   // 載入狀態
   const [isLoading, setIsLoading] = useState(false);
 
@@ -157,11 +157,11 @@ export default function SetupScreen() {
           {/* 金額設定卡片 */}
           <View className="dark-panel rounded-2xl border border-gold-500/50 p-4 mb-4">
             <Text className="text-white font-bold text-lg mb-4">金額設定</Text>
-            <Text className="text-gold-300 text-sm mb-3">選擇每番金額（港幣）</Text>
+            <Text className="text-gold-300 text-sm mb-3">10番多少錢？</Text>
             
             {/* Preset amounts */}
             <View className="flex-row flex-wrap gap-2 mb-3">
-              {[1, 3, 5, 10].map((amount) => {
+              {[128, 256, 512].map((amount) => {
                 const isSelected = unitAmount === amount;
                 return (
                   <TouchableOpacity
@@ -192,7 +192,7 @@ export default function SetupScreen() {
             
             {/* Custom amount hint */}
             <Text className="text-emerald-400 text-xs">
-              目前設定：每番 ${unitAmount} 港幣
+              目前設定：10番 ${unitAmount}
             </Text>
           </View>
 
