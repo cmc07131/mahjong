@@ -27,7 +27,7 @@ export function MahjongTable({
   // Get screen dimensions for responsive table size
   const screenWidth = Dimensions.get('window').width;
   // Ensure table doesn't exceed viewport and is responsive
-  const tableSize = Math.min(screenWidth * 0.7, 400);
+  const tableSize = Math.min(screenWidth * 0.85, 360);
 
   // Find player by wind position
   const getPlayerByWind = (wind: Wind): Player | undefined => {
@@ -50,81 +50,109 @@ export function MahjongTable({
   const edgeOffset = 4; // percentage from edge
 
   return (
-    <View className="flex-1 items-center justify-center">
+    <View className="items-center justify-center">
+      {/* Center Round Title - positioned ABOVE the table */}
+      <View className="mb-3">
+        <View className="bg-emerald-950/90 px-4 py-2 rounded-full border border-gold-500/50 shadow-lg">
+          <Text
+            className="text-gold-400 text-base font-bold"
+            style={{ letterSpacing: 2 }}
+          >
+            {WIND_LABELS[prevailingWind]}風圈 / 第{roundNumber}局
+          </Text>
+        </View>
+      </View>
+      
       {/* Mahjong Table Layout */}
-      <View 
+      <View
         className="relative items-center justify-center"
         style={{ width: tableSize, height: tableSize }}
       >
-        {/* Outer gold ring with 3D depth */}
-        <View 
-          className="absolute rounded-full gold-ring-shadow"
-          style={{ 
-            width: tableSize, 
-            height: tableSize,
-            backgroundColor: '#D4AF37'
-          }}
-        />
-        
-        {/* Inner gold border ring */}
-        <View 
+        {/* Outer wooden frame with 3D depth */}
+        <View
           className="absolute rounded-full"
-          style={{ 
-            width: tableSize - 12, 
-            height: tableSize - 12,
-            backgroundColor: '#8B6914'
+          style={{
+            width: tableSize,
+            height: tableSize,
+            backgroundColor: '#5D4037',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.5,
+            shadowRadius: 8,
+            elevation: 8,
           }}
         />
         
-        {/* Velvet table surface */}
-        <View 
-          className="absolute rounded-full velvet-texture"
-          style={{ 
-            width: tableSize - 24, 
-            height: tableSize - 24,
-            backgroundColor: '#1a4a2e'
+        {/* Inner wooden border */}
+        <View
+          className="absolute rounded-full"
+          style={{
+            width: tableSize - 8,
+            height: tableSize - 8,
+            backgroundColor: '#6D4C41'
+          }}
+        />
+        
+        {/* Gold inlay ring */}
+        <View
+          className="absolute rounded-full"
+          style={{
+            width: tableSize - 16,
+            height: tableSize - 16,
+            backgroundColor: '#B8860B',
+            shadowColor: '#D4AF37',
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+          }}
+        />
+        
+        {/* Green felt table surface */}
+        <View
+          className="absolute rounded-full"
+          style={{
+            width: tableSize - 28,
+            height: tableSize - 28,
+            backgroundColor: '#1B5E20',
           }}
         >
-          {/* Inner gold border line */}
-          <View 
-            className="absolute rounded-full border-2 border-gold-500/60"
-            style={{ 
-              left: 16, 
-              top: 16, 
-              right: 16, 
-              bottom: 16 
+          {/* Felt texture overlay */}
+          <View
+            className="absolute rounded-full"
+            style={{
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              borderColor: 'rgba(255,255,255,0.05)',
             }}
           />
           
-          {/* Cloud pattern overlay */}
-          <View 
-            className="absolute rounded-full cloud-pattern opacity-30"
-            style={{ 
-              left: 24, 
-              top: 24, 
-              right: 24, 
-              bottom: 24 
+          {/* Inner decorative border */}
+          <View
+            className="absolute rounded-full border-2"
+            style={{
+              left: 12,
+              top: 12,
+              right: 12,
+              bottom: 12,
+              borderColor: 'rgba(184, 134, 11, 0.4)',
             }}
           />
-        </View>
-
-        {/* Center Round Title - positioned at exact center, smaller to avoid overlap */}
-        <View 
-          className="absolute z-10 items-center justify-center"
-          style={{
-            left: '50%',
-            top: '50%',
-            transform: [{ translateX: -40 }, { translateY: -15 }]
-          }}
-        >
-          <View className="bg-emerald-950/80 px-3 py-1.5 rounded-full border border-gold-500/40">
-            <Text 
-              className="text-white text-sm font-bold text-gold-glow"
-              style={{ letterSpacing: 1 }}
-            >
-              {WIND_LABELS[prevailingWind]}風圈 / 第{roundNumber}局
-            </Text>
-          </View>
+          
+          {/* Subtle radial gradient effect for depth */}
+          <View
+            className="absolute rounded-full"
+            style={{
+              left: '15%',
+              top: '15%',
+              right: '15%',
+              bottom: '15%',
+              backgroundColor: 'rgba(46, 125, 50, 0.3)',
+            }}
+          />
         </View>
 
         {/* North Player (12 o'clock - Top Center) */}

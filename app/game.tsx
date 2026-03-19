@@ -218,8 +218,8 @@ export default function GameScreen() {
       <View className="absolute inset-0 cloud-pattern opacity-30" />
       
       <View className="flex-1">
-        {/* Mahjong Table Area - Fixed height */}
-        <View className="h-[380px]">
+        {/* Mahjong Table Area - Properly sized to show full table */}
+        <View className="items-center justify-center pt-2 pb-4">
           <MahjongTable
             players={players}
             roundScoreChanges={previewChanges}
@@ -232,7 +232,7 @@ export default function GameScreen() {
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={true}
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
         >
           <ActionPanel
             players={players}

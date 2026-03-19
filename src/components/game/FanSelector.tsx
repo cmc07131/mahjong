@@ -6,8 +6,8 @@ interface FanSelectorProps {
   disabled?: boolean;
 }
 
-// 香港麻將番數選項 (1-13番)
-const FAN_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+// 香港麻將番數選項 (3-13番, minimum 3番 to eat woo/食糊)
+const FAN_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
 export function FanSelector({ selectedFan, onSelectFan, disabled = false }: FanSelectorProps) {
   return (

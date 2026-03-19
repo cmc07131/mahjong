@@ -14,11 +14,12 @@ const WIND_LABELS: Record<Wind, string> = {
   NORTH: '北',
 };
 
-// Simple avatar emoji based on player name or index
+// Animal avatar emojis for each player position
 const getAvatarEmoji = (player: Player, index: number): string => {
-  // Use a simple alternating pattern for avatars
-  const avatars = ['👨', '👩', '👨', '👩'];
-  return avatars[index % 4];
+  // Use different animal emojis for each player
+  // 🐯 Tiger (East), 🐉 Dragon (South), 🐔 Rooster (West), 🐍 Snake (North)
+  const animalAvatars = ['🐯', '🐉', '🐔', '🐍'];
+  return animalAvatars[index % 4];
 };
 
 export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSeatProps) {
