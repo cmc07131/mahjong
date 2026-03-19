@@ -116,10 +116,10 @@ export function MahjongTable({
           </View>
         </View>
 
-        {/* North Player (Top) */}
-        <View 
+        {/* North Player (12 o'clock - Top Center) */}
+        <View
           className="absolute"
-          style={{ top: 0, left: '50%', transform: [{ translateX: -50 }] }}
+          style={{ top: '2%', left: '50%', transform: [{ translateX: -50 }] }}
         >
           {northPlayer && (
             <PlayerSeat
@@ -130,10 +130,10 @@ export function MahjongTable({
           )}
         </View>
 
-        {/* West Player (Left) */}
-        <View 
+        {/* West Player (9 o'clock - Left Center) */}
+        <View
           className="absolute"
-          style={{ left: 0, top: '50%', transform: [{ translateY: -50 }] }}
+          style={{ left: '2%', top: '50%', transform: [{ translateY: -50 }] }}
         >
           {westPlayer && (
             <PlayerSeat
@@ -144,10 +144,10 @@ export function MahjongTable({
           )}
         </View>
 
-        {/* East Player (Right) */}
-        <View 
+        {/* East Player (3 o'clock - Right Center) */}
+        <View
           className="absolute"
-          style={{ right: 0, top: '50%', transform: [{ translateY: -50 }] }}
+          style={{ right: '2%', top: '50%', transform: [{ translateY: -50 }] }}
         >
           {eastPlayer && (
             <PlayerSeat
@@ -158,10 +158,10 @@ export function MahjongTable({
           )}
         </View>
 
-        {/* South Player (Bottom) */}
-        <View 
+        {/* South Player (6 o'clock - Bottom Center) */}
+        <View
           className="absolute"
-          style={{ bottom: 0, left: '50%', transform: [{ translateX: -50 }] }}
+          style={{ bottom: '2%', left: '50%', transform: [{ translateX: -50 }] }}
         >
           {southPlayer && (
             <PlayerSeat

@@ -218,8 +218,8 @@ export default function GameScreen() {
       <View className="absolute inset-0 cloud-pattern opacity-30" />
       
       <View className="flex-1">
-        {/* Mahjong Table Area */}
-        <View className="flex-1 min-h-[380px]">
+        {/* Mahjong Table Area - Fixed height */}
+        <View className="h-[380px]">
           <MahjongTable
             players={players}
             roundScoreChanges={previewChanges}
@@ -228,26 +228,32 @@ export default function GameScreen() {
           />
         </View>
 
-        {/* Action Panel */}
-        <ActionPanel
-          players={players}
-          selectedFan={selectedFan}
-          onSelectFan={handleSelectFan}
-          selectedWinnerId={selectedWinnerId}
-          onSelectWinner={handleSelectWinner}
-          selectedWinType={selectedWinType}
-          onSelectWinType={handleSelectWinType}
-          selectedLoserId={selectedLoserId}
-          onSelectLoser={handleSelectLoser}
-          onConfirm={handleConfirm}
-          onDraw={handleDraw}
-          onUndo={handleUndo}
-          onFinish={handleFinish}
-          canUndo={canUndo()}
-          previewChanges={previewChanges}
-        />
+        {/* Action Panel - Scrollable */}
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={true}
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
+          <ActionPanel
+            players={players}
+            selectedFan={selectedFan}
+            onSelectFan={handleSelectFan}
+            selectedWinnerId={selectedWinnerId}
+            onSelectWinner={handleSelectWinner}
+            selectedWinType={selectedWinType}
+            onSelectWinType={handleSelectWinType}
+            selectedLoserId={selectedLoserId}
+            onSelectLoser={handleSelectLoser}
+            onConfirm={handleConfirm}
+            onDraw={handleDraw}
+            onUndo={handleUndo}
+            onFinish={handleFinish}
+            canUndo={canUndo()}
+            previewChanges={previewChanges}
+          />
+        </ScrollView>
 
-        {/* Bottom Navigation */}
+        {/* Bottom Navigation - Fixed at bottom */}
         <BottomNavigation
           onHistoryPress={handleHistoryPress}
           onSettingsPress={handleSettingsPress}
