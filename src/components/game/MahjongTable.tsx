@@ -159,10 +159,10 @@ export function MahjongTable({
         {/* Avatar on outer edge (top), info box toward center (below avatar) */}
         <View
           className="absolute"
-          style={{ 
-            left: '50%', 
+          style={{
+            left: '50%',
             top: `${edgeOffset}%`,
-            transform: [{ translateX: -40 }]
+            transform: [{ translateX: -36 }]
           }}
         >
           {northPlayer && (
@@ -216,10 +216,10 @@ export function MahjongTable({
         {/* Avatar on outer edge (bottom), info box toward center (above avatar) */}
         <View
           className="absolute"
-          style={{ 
-            left: '50%', 
+          style={{
+            left: '50%',
             bottom: `${edgeOffset}%`,
-            transform: [{ translateX: -40 }]
+            transform: [{ translateX: -36 }]
           }}
         >
           {southPlayer && (
