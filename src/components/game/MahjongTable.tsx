@@ -158,11 +158,11 @@ export function MahjongTable({
         {/* North Player (12 o'clock - Top Center) */}
         {/* Avatar on outer edge (top), info box toward center (below avatar) */}
         <View
-          className="absolute"
+          className="absolute items-center"
           style={{
             left: '50%',
             top: `${edgeOffset}%`,
-            transform: [{ translateX: -36 }]
+            transform: [{ translateX: -28 }]
           }}
         >
           {northPlayer && (
@@ -215,11 +215,11 @@ export function MahjongTable({
         {/* South Player (6 o'clock - Bottom Center) */}
         {/* Avatar on outer edge (bottom), info box toward center (above avatar) */}
         <View
-          className="absolute"
+          className="absolute items-center"
           style={{
             left: '50%',
             bottom: `${edgeOffset}%`,
-            transform: [{ translateX: -36 }]
+            transform: [{ translateX: -28 }]
           }}
         >
           {southPlayer && (

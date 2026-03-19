@@ -52,30 +52,33 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
         {/* Left position: Avatar first, then info box */}
         {position === 'left' && (
           <>
-            {/* Dealer Crown */}
-            {player.isDealer && (
-              <View className="absolute -top-2 left-6 z-10">
-                <Text className="text-base">👑</Text>
+            {/* Avatar with Crown */}
+            <View className="relative items-center justify-center">
+              {/* Dealer Crown - positioned directly above the emoji */}
+              {player.isDealer && (
+                <View className="absolute -top-4 z-10">
+                  <Text className="text-base">👑</Text>
+                </View>
+              )}
+              {/* Avatar */}
+              <View
+                className={`
+                  w-10 h-10 rounded-full items-center justify-center
+                  border-2 border-gold-500
+                  ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
+                `}
+                style={{
+                  shadowColor: '#D4AF37',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 2,
+                  elevation: 3,
+                }}
+              >
+                <Text className="text-lg">
+                  {getAvatarEmoji(player, playerIndex)}
+                </Text>
               </View>
-            )}
-            {/* Avatar */}
-            <View
-              className={`
-                w-10 h-10 rounded-full items-center justify-center
-                border-2 border-gold-500
-                ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
-              `}
-              style={{
-                shadowColor: '#D4AF37',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.5,
-                shadowRadius: 2,
-                elevation: 3,
-              }}
-            >
-              <Text className="text-lg">
-                {getAvatarEmoji(player, playerIndex)}
-              </Text>
             </View>
             {/* Info Box */}
             <View
@@ -141,30 +144,33 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
                 {formatScore(player.score)}
               </Text>
             </View>
-            {/* Dealer Crown */}
-            {player.isDealer && (
-              <View className="absolute -top-2 right-6 z-10">
-                <Text className="text-base">👑</Text>
+            {/* Avatar with Crown */}
+            <View className="relative items-center justify-center">
+              {/* Dealer Crown - positioned directly above the emoji */}
+              {player.isDealer && (
+                <View className="absolute -top-4 z-10">
+                  <Text className="text-base">👑</Text>
+                </View>
+              )}
+              {/* Avatar */}
+              <View
+                className={`
+                  w-10 h-10 rounded-full items-center justify-center
+                  border-2 border-gold-500
+                  ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
+                `}
+                style={{
+                  shadowColor: '#D4AF37',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 2,
+                  elevation: 3,
+                }}
+              >
+                <Text className="text-lg">
+                  {getAvatarEmoji(player, playerIndex)}
+                </Text>
               </View>
-            )}
-            {/* Avatar */}
-            <View
-              className={`
-                w-10 h-10 rounded-full items-center justify-center
-                border-2 border-gold-500
-                ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
-              `}
-              style={{
-                shadowColor: '#D4AF37',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.5,
-                shadowRadius: 2,
-                elevation: 3,
-              }}
-            >
-              <Text className="text-lg">
-                {getAvatarEmoji(player, playerIndex)}
-              </Text>
             </View>
           </>
         )}
@@ -180,9 +186,9 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
       {/* Top position: Avatar first, then info box */}
       {position === 'top' && (
         <>
-          {/* Dealer Crown */}
+          {/* Dealer Crown - positioned directly above the emoji */}
           {player.isDealer && (
-            <View className="mb-[-4] z-10">
+            <View className="absolute -top-4 z-10">
               <Text className="text-base">👑</Text>
             </View>
           )}
@@ -269,30 +275,32 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
               {formatScore(player.score)}
             </Text>
           </View>
-          {/* Dealer Crown */}
-          {player.isDealer && (
-            <View className="absolute -bottom-2 z-10">
-              <Text className="text-base">👑</Text>
+          {/* Avatar with Crown */}
+          <View className="relative items-center justify-center">
+            {/* Dealer Crown - positioned directly above the emoji */}
+            {player.isDealer && (
+              <View className="absolute -top-4 z-10">
+                <Text className="text-base">👑</Text>
+              </View>
+            )}
+            <View
+              className={`
+                w-10 h-10 rounded-full items-center justify-center
+                border-2 border-gold-500
+                ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
+              `}
+              style={{
+                shadowColor: '#D4AF37',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.5,
+                shadowRadius: 2,
+                elevation: 3,
+              }}
+            >
+              <Text className="text-lg">
+                {getAvatarEmoji(player, playerIndex)}
+              </Text>
             </View>
-          )}
-          {/* Avatar */}
-          <View
-            className={`
-              w-10 h-10 rounded-full items-center justify-center
-              border-2 border-gold-500
-              ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
-            `}
-            style={{
-              shadowColor: '#D4AF37',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.5,
-              shadowRadius: 2,
-              elevation: 3,
-            }}
-          >
-            <Text className="text-lg">
-              {getAvatarEmoji(player, playerIndex)}
-            </Text>
           </View>
         </>
       )}
