@@ -3,7 +3,7 @@ import { View, ScrollView, Alert, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useGameStore } from '../src/store/gameStore';
-import { MahjongTable, ActionPanel, BottomNavigation } from '../src/components/game';
+import { MahjongTable, ActionPanel } from '../src/components/game';
 import { Button } from '../src/components/common';
 import { WinType, CurrentRound } from '../src/types';
 import { calculatePreviewChanges } from '../src/utils/scoring';
@@ -253,11 +253,6 @@ export default function GameScreen() {
           />
         </ScrollView>
 
-        {/* Bottom Navigation - Fixed at bottom */}
-        <BottomNavigation
-          onHistoryPress={handleHistoryPress}
-          onSettingsPress={handleSettingsPress}
-        />
       </View>
     </SafeAreaView>
   );
