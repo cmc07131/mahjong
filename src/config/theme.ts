@@ -67,7 +67,7 @@ export interface Theme {
   };
 }
 
-// Theme 1: Retro Luxury (Emerald/Gold) - Optimized for Readability
+  // Theme 1: Retro Luxury (Emerald/Gold) - Optimized for Readability
 export const retroLuxuryTheme: Theme = {
   name: 'retro-luxury',
   displayName: '翡翠金輝',
@@ -81,7 +81,7 @@ export const retroLuxuryTheme: Theme = {
     panel: {
       primary: 'rgba(10, 31, 26, 0.85)',
       secondary: 'rgba(13, 41, 32, 0.9)',
-      border: 'rgba(212, 175, 55, 0.3)',
+      border: 'rgba(212, 175, 55, 0.5)',  // Increased opacity
     },
     text: {
       primary: '#f8f8f2',           // Softer white (less eye strain)
@@ -111,7 +111,7 @@ export const retroLuxuryTheme: Theme = {
   classes: {
     background: 'emerald-gradient',
     panel: 'dark-panel',
-    panelBorder: 'border-gold-500/30',
+    panelBorder: 'border-gold-500/50',  // Increased opacity
     textPrimary: 'text-white',
     textSecondary: 'text-emerald-200',
     textAccent: 'text-gold-400',
@@ -253,9 +253,9 @@ export const retroPixelTheme: Theme = {
       overlay: 'rgba(45, 27, 105, 0.8)',
     },
     panel: {
-      primary: 'rgba(45, 27, 105, 0.85)',
-      secondary: 'rgba(26, 26, 46, 0.9)',
-      border: 'rgba(0, 255, 255, 0.5)',
+      primary: 'rgba(30, 30, 60, 0.95)',        // Different from background!
+      secondary: 'rgba(40, 40, 80, 0.9)',       // Different from background!
+      border: 'rgba(0, 255, 255, 0.8)',         // More visible!
     },
     text: {
       primary: '#67e8f9',           // Cyan-300 (softer)
@@ -284,8 +284,8 @@ export const retroPixelTheme: Theme = {
   },
   classes: {
     background: 'bg-purple-900',
-    panel: 'bg-purple-900/85',
-    panelBorder: 'border-cyan-400/50',
+    panel: 'bg-indigo-900/95',                // Different from background!
+    panelBorder: 'border-cyan-400',           // Full opacity, more visible!
     textPrimary: 'text-cyan-300',
     textSecondary: 'text-fuchsia-300',
     textAccent: 'text-yellow-300',

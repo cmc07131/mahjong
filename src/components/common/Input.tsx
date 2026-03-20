@@ -34,7 +34,7 @@ export function Input({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: currentTheme.colors.panel.secondary,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: error ? currentTheme.colors.score.negative : currentTheme.colors.panel.border,
     borderRadius: 12,
     paddingHorizontal: 14,

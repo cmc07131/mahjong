@@ -30,7 +30,7 @@ export function FanSelector({ selectedFan, onSelectFan, disabled = false }: FanS
               disabled={disabled}
               className={`
                 w-10 h-10 md:w-12 md:h-12 rounded-lg items-center justify-center mx-1
-                transition-select button-press border
+                transition-select button-press border-2
                 ${isSelected
                   ? `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder}`
                   : disabled

@@ -15,6 +15,8 @@ export function Card({ children, padding = 'md', style }: CardProps) {
   const baseStyle: ViewStyle = {
     backgroundColor: currentTheme.colors.panel.primary,
     borderRadius: 16,
+    borderWidth: 2,
+    borderColor: currentTheme.colors.panel.border,
     shadowColor: currentTheme.colors.shadow.color,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: currentTheme.colors.shadow.opacity,
