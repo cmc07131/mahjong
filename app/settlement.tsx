@@ -116,9 +116,9 @@ export default function SettlementScreen() {
   // 如果沒有玩家資料，顯示提示
   if (players.length === 0) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-100">
+      <SafeAreaView className="flex-1 emerald-gradient">
         <View className="flex-1 items-center justify-center p-4">
-          <Text className="text-xl text-gray-500">
+          <Text className="text-xl text-emerald-200">
             尚未開始遊戲
           </Text>
           <View className="mt-4">
@@ -132,10 +132,13 @@ export default function SettlementScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
+    <SafeAreaView className="flex-1 emerald-gradient">
+      {/* Cloud pattern overlay */}
+      <View className="absolute inset-0 cloud-pattern opacity-30" />
+      
       <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
         {/* 標題 */}
-        <Text className="text-2xl font-bold text-gray-800 text-center mb-6">
+        <Text className="text-2xl font-bold text-gold-400 text-center mb-6">
           🎉 遊戲結算
         </Text>
 
