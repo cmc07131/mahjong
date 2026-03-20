@@ -1,4 +1,4 @@
-B// Scoring utility functions for Hong Kong Mahjong
+// Scoring utility functions for Hong Kong Mahjong
 
 import { WinType, Player, ScoreChange } from '../types';
 
@@ -21,45 +21,17 @@ export const FAN_AMOUNTS: Record<number, number> = {
   13: 768,  // 12番 * 1.5 (奇數番)
 };
 
+export interface ScoreResult {
+  perPlayer: number;
+  total: number;
+  distribution: 'THREE_PLAYERS' | 'ONE_PLAYER';
+}
+
 /**
  * 取得番數對應的金額 (10番基準為256元)
  */
 export function getFanAmount(fan: number): number {
   return FAN_AMOUNTS[fan] || FAN_AMOUNTS[10]; // 超過範圍當10番計算
-}
-
-/**
- * 驗證香港麻將番數計算規則
- * 規則：偶數番 = (n-2)番 * 2，奇數番 = (n-1)番 * 1.5
- * 基準：3番 = 16元
- */
-export function validateFanCalculation(): boolean {
-  // 驗證計算規則
-  const tests = [
-    { fan: 3, expected: 16, desc: '3番基準' },
-    { fan: 4, expected: 32, desc: '4番 = 3番 * 2' },
-    { fan: 5, expected: 48, desc: '5番 = 4番 * 1.5' },
-    { fan: 6, expected: 64, desc: '6番 = 4番 * 2' },
-    { fan: 7, expected: 96, desc: '7番 = 6番 * 1.5' },
-    { fan: 8, expected: 128, desc: '8番 = 6番 * 2' },
-    { fan: 9, expected: 192, desc: '9番 = 8番 * 1.5' },
-    { fan: 10, expected: 256, desc: '10番 = 8番 * 2' },
-  ];
-
-  return tests.every(test => {
-    const actual = getFanAmount(test.fan);
-    const passed = actual === test.expected;
-    if (!passed) {
-      console.error(`❌ ${test.desc}: 預期 ${test.expected}, 實際 ${actual}`);
-    }
-    return passed;
-  });
-}
-
-export interface ScoreResult {
-  perPlayer: number;
-  total: number;
-  distribution: 'THREE_PLAYERS' | 'ONE_PLAYER';
 }
 
 /**
