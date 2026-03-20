@@ -12,7 +12,7 @@ import {
   MAX_SNAPSHOTS,
   ScoreChange,
 } from '../types';
-import { calculateScoreChanges, getFanUnits } from '../utils/scoring';
+import { calculateScoreChanges } from '../utils/scoring';
 
 // Store 狀態介面
 interface GameStore {

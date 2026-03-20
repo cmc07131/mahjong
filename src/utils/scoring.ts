@@ -3,23 +3,41 @@
 import { WinType, Player, ScoreChange } from '../types';
 
 /**
- * 香港麻將番數金額表 (以10番=256元出銃為基準)
- * 規則：偶數番 = (n-2)番 * 2，奇數番 = (n-1)番 * 1.5
- * 基準：3番 = 16元出銃
+ * 支援的基準金額類型
  */
-export const FAN_AMOUNTS: Record<number, number> = {
-  3: 16,    // 基準出銃金額
-  4: 32,    // 3番 * 2 (偶數番)
-  5: 48,    // 4番 * 1.5 (奇數番)
-  6: 64,    // 4番 * 2 (偶數番)
-  7: 96,    // 6番 * 1.5 (奇數番)
-  8: 128,   // 6番 * 2 (偶數番)
-  9: 192,   // 8番 * 1.5 (奇數番)
-  10: 256,  // 8番 * 2 (偶數番) - 基準單位
-  11: 384,  // 10番 * 1.5 (奇數番)
-  12: 512,  // 10番 * 2 (偶數番)
-  13: 768,  // 12番 * 1.5 (奇數番)
-};
+export type FanBaseType = 128 | 256 | 512;
+
+/**
+ * 生成番數金額表
+ * @param baseAmount 10番的出銃金額基準
+ * 規則：偶數番 = (n-2)番 * 2，奇數番 = (n-1)番 * 1.5
+ */
+export function generateFanAmounts(baseAmount: FanBaseType): Record<number, number> {
+  // 計算3番的基準金額 (10番 / 16)
+  const baseForThree = baseAmount / 16;
+  
+  const amounts: Record<number, number> = {};
+  
+  // 從3番開始遞推
+  amounts[3] = baseForThree;
+  amounts[4] = amounts[3] * 2;      // 偶數番 = (n-2)番 * 2
+  amounts[5] = Math.round(amounts[4] * 1.5);  // 奇數番 = (n-1)番 * 1.5
+  amounts[6] = amounts[4] * 2;      // 偶數番 = (n-2)番 * 2
+  amounts[7] = Math.round(amounts[6] * 1.5);  // 奇數番 = (n-1)番 * 1.5
+  amounts[8] = amounts[6] * 2;      // 偶數番 = (n-2)番 * 2
+  amounts[9] = Math.round(amounts[8] * 1.5);  // 奇數番 = (n-1)番 * 1.5
+  amounts[10] = amounts[8] * 2;     // 偶數番 = (n-2)番 * 2 (基準)
+  amounts[11] = Math.round(amounts[10] * 1.5);
+  amounts[12] = amounts[10] * 2;
+  amounts[13] = Math.round(amounts[12] * 1.5);
+  
+  return amounts;
+}
+
+/**
+ * 預設番數金額表 (以10番=256元出銃為基準)
+ */
+export const DEFAULT_FAN_AMOUNTS: Record<number, number> = generateFanAmounts(256);
 
 export interface ScoreResult {
   perPlayer: number;
@@ -28,25 +46,28 @@ export interface ScoreResult {
 }
 
 /**
- * 取得番數對應的金額 (10番基準為256元)
+ * 取得番數對應的金額
+ * @param fan 番數
+ * @param baseAmount 基準金額類型
  */
-export function getFanAmount(fan: number): number {
-  return FAN_AMOUNTS[fan] || FAN_AMOUNTS[10]; // 超過範圍當10番計算
+export function getFanAmount(fan: number, baseAmount: FanBaseType = 256): number {
+  const fanAmounts = generateFanAmounts(baseAmount);
+  return fanAmounts[fan] || fanAmounts[10]; // 超過範圍當10番計算
 }
 
 /**
  * 計算分數
  * @param fan 番數
  * @param winType 食糊類型
- * @param unitAmount 10番的金額（出銃總額）- 僅用於縮放基準表
+ * @param unitAmount 10番的金額（出銃總額）
  */
 export function calculateScore(
   fan: number,
   winType: WinType,
   unitAmount: number
 ): ScoreResult {
-  // 直接使用 FAN_AMOUNTS 表中的金額，unitAmount 參數僅用於未來擴展
-  const ronAmount = getFanAmount(fan);
+  // 使用動態計算的金額
+  const ronAmount = getFanAmount(fan, unitAmount as FanBaseType);
 
   if (winType === 'SELF_DRAW') {
     // 自摸：每家付出銃金額的一半
