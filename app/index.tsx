@@ -5,11 +5,13 @@ import { Button } from '../src/components/common/Button';
 import { MatchHistoryList } from '../src/components/history';
 import { useHistoryStore } from '../src/store/historyStore';
 import { useGameStore } from '../src/store/gameStore';
+import { useThemeStore } from '../src/store/themeStore';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { histories, isLoading, loadHistories, deleteHistory } = useHistoryStore();
   const { players, resetGame } = useGameStore();
+  const { currentTheme } = useThemeStore();
   const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
@@ -56,17 +58,17 @@ export default function HomeScreen() {
   const hasCurrentGame = players.length > 0;
 
   return (
-    <View className="flex-1 emerald-gradient">
+    <View className={`flex-1 ${currentTheme.classes.background}`}>
       {/* Cloud pattern overlay */}
       <View className="absolute inset-0 cloud-pattern opacity-30" />
       
       <ScrollView className="flex-1 px-4 pt-6">
         {/* 標題 */}
         <View className="mb-6">
-          <Text className="text-3xl font-bold text-gold-400 mb-2">
+          <Text className={`text-3xl font-bold ${currentTheme.classes.textAccent} mb-2`}>
             麻將計分
           </Text>
-          <Text className="text-emerald-200 text-base">
+          <Text className={`${currentTheme.classes.textSecondary} text-base`}>
             香港麻將計分系統
           </Text>
         </View>
@@ -85,19 +87,19 @@ export default function HomeScreen() {
         {hasCurrentGame && (
           <TouchableOpacity
             onPress={() => router.push('/game')}
-            className="dark-panel rounded-xl p-4 mb-4 border border-gold-500/30"
+            className={`${currentTheme.classes.panel} rounded-xl p-4 mb-4 ${currentTheme.classes.panelBorder}`}
             style={{
-              shadowColor: '#D4AF37',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 4,
-              elevation: 4,
+              shadowColor: currentTheme.colors.shadow.color,
+              shadowOffset: currentTheme.colors.shadow.offset,
+              shadowOpacity: currentTheme.colors.shadow.opacity,
+              shadowRadius: currentTheme.colors.shadow.radius,
+              elevation: currentTheme.colors.shadow.elevation,
             }}
           >
-            <Text className="text-gold-400 font-semibold text-lg">
+            <Text className={`${currentTheme.classes.textAccent} font-semibold text-lg`}>
               🎮 繼續遊戲
             </Text>
-            <Text className="text-emerald-200 text-sm mt-1">
+            <Text className={`${currentTheme.classes.textSecondary} text-sm mt-1`}>
               {players.length} 位玩家
             </Text>
           </TouchableOpacity>
@@ -105,14 +107,14 @@ export default function HomeScreen() {
 
         {/* 歷史記錄切換 */}
         <View className="flex-row justify-between items-center mt-6 mb-3">
-          <Text className="text-xl font-semibold text-gold-400">
+          <Text className={`text-xl font-semibold ${currentTheme.classes.textAccent}`}>
             📜 比賽記錄
           </Text>
           <TouchableOpacity 
             onPress={() => setShowHistory(!showHistory)}
-            className="px-3 py-1 rounded-full bg-emerald-800/50 border border-gold-500/30"
+            className={`px-3 py-1 rounded-full ${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`}
           >
-            <Text className="text-gold-400 text-sm">
+            <Text className={`${currentTheme.classes.textAccent} text-sm`}>
               {showHistory ? '收起' : '展開'}
             </Text>
           </TouchableOpacity>

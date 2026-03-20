@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
+import { useThemeStore } from '../../store/themeStore';
 
 interface ButtonProps {
   children: ReactNode;
@@ -22,6 +23,7 @@ export function Button({
   className = '',
   textClassName = '',
 }: ButtonProps) {
+  const { currentTheme } = useThemeStore();
   // 基礎樣式
   const baseButtonStyle: ViewStyle = {
     borderRadius: 12,
@@ -33,15 +35,15 @@ export function Button({
   // 變體樣式
   const variantStyles: Record<string, ViewStyle> = {
     primary: {
-      backgroundColor: '#16a34a',
+      backgroundColor: currentTheme.colors.button.primary,
     },
     secondary: {
-      backgroundColor: '#22c55e',
+      backgroundColor: currentTheme.colors.button.secondary,
     },
     outline: {
-      backgroundColor: 'transparent',
+      backgroundColor: currentTheme.colors.button.outline,
       borderWidth: 2,
-      borderColor: '#16a34a',
+      borderColor: currentTheme.colors.button.primary,
     },
   };
 
@@ -76,9 +78,9 @@ export function Button({
   };
 
   const textVariantStyles: Record<string, TextStyle> = {
-    primary: { color: '#ffffff' },
-    secondary: { color: '#ffffff' },
-    outline: { color: '#16a34a' },
+    primary: { color: currentTheme.colors.text.primary },
+    secondary: { color: currentTheme.colors.text.primary },
+    outline: { color: currentTheme.colors.button.primary },
   };
 
   const disabledStyle: ViewStyle = {
@@ -98,7 +100,7 @@ export function Button({
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' ? '#16a34a' : '#ffffff'} />
+        <ActivityIndicator color={variant === 'outline' ? currentTheme.colors.button.primary : currentTheme.colors.text.primary} />
       ) : (
         <Text
           style={[

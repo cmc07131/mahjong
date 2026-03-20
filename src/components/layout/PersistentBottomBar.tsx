@@ -11,7 +11,7 @@ interface PersistentBottomBarProps {
 export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) {
   const router = useRouter();
   const [showThemeSelector, setShowThemeSelector] = useState(false);
-  const { currentThemeName, setTheme } = useThemeStore();
+  const { currentThemeName, setTheme, currentTheme } = useThemeStore();
 
   const handleHomePress = () => {
     router.replace('/');
@@ -31,13 +31,13 @@ export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) 
 
   return (
     <View
-      className="flex-row justify-between items-center px-6 py-3 bg-emerald-950 border-t border-gold-700/30"
+      className={`flex-row justify-between items-center px-6 py-3 ${currentTheme.classes.background} ${currentTheme.classes.panelBorder}`}
       style={{
-        shadowColor: '#000',
+        shadowColor: currentTheme.colors.shadow.color,
         shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 8,
+        shadowOpacity: currentTheme.colors.shadow.opacity,
+        shadowRadius: currentTheme.colors.shadow.radius,
+        elevation: currentTheme.colors.shadow.elevation,
       }}
     >
       {/* Spacer for left side */}
@@ -45,18 +45,18 @@ export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) 
       
       {/* Home Button - Center */}
       <TouchableOpacity
-        className="w-12 h-12 rounded-full bg-emerald-800 items-center justify-center border border-gold-500/30 button-press"
+        className={`w-12 h-12 rounded-full ${currentTheme.classes.panel} items-center justify-center ${currentTheme.classes.panelBorder} button-press`}
         onPress={handleHomePress}
       >
-        <Text className="text-white text-lg">🏠</Text>
+        <Text className={`${currentTheme.classes.textPrimary} text-lg`}>🏠</Text>
       </TouchableOpacity>
       
       {/* Theme Button - Right side */}
       <TouchableOpacity
-        className="w-12 h-12 items-center justify-center button-press"
+        className={`w-12 h-12 items-center justify-center button-press`}
         onPress={handleThemePress}
       >
-        <Text className="text-white text-2xl">🎨</Text>
+        <Text className={`${currentTheme.classes.textPrimary} text-xl`}>⚙️</Text>
       </TouchableOpacity>
 
       {/* Theme Selector Modal */}

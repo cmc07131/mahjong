@@ -5,11 +5,6 @@ import { PersistentBottomBar } from '../src/components/layout/PersistentBottomBa
 import '../global.css';
 
 export default function RootLayout() {
-  const handleThemePress = () => {
-    // TODO: Implement theme switching modal
-    console.log('Theme button pressed');
-  };
-
   return (
     <View className="flex-1">
       <StatusBar style="auto" />
@@ -22,7 +17,7 @@ export default function RootLayout() {
           <Stack.Screen name="history/[id]" />
         </Stack>
       </View>
-      <PersistentBottomBar onThemePress={handleThemePress} />
+      <PersistentBottomBar />
     </View>
   );
 }
