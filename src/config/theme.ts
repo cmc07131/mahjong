@@ -248,34 +248,34 @@ export const retroPixelTheme: Theme = {
   description: '吃豆人風格，經典像素美學',
   colors: {
     background: {
-      primary: '#000000',                           // Pure black (Pac-Man background)
+      primary: '#000000',
       gradient: 'linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #111111 100%)',
       overlay: 'rgba(0, 0, 0, 0.95)',
     },
     panel: {
-      primary: 'rgba(20, 20, 20, 0.95)',          // Dark gray panels
-      secondary: 'rgba(30, 30, 30, 0.9)',         // Slightly lighter
-      border: '#ffff00',                             // Pac-Man yellow borders!
+      primary: 'rgba(20, 20, 20, 0.95)',
+      secondary: 'rgba(30, 30, 30, 0.9)',
+      border: '#FFD700',
     },
     text: {
-      primary: '#ffffff',                           // White (dots)
-      secondary: '#00ffff',                         // Cyan (ghosts)
-      accent: '#ffff00',                            // Yellow (Pac-Man!)
-      muted: '#ff00ff',                             // Magenta (ghosts)
+      primary: '#000000',
+      secondary: '#00FFFF',
+      accent: '#FFD700',
+      muted: '#FF69B4',
     },
     button: {
-      primary: '#ffff00',                           // Yellow (Pac-Man!)
-      secondary: '#00ffff',                         // Cyan (ghosts)
+      primary: '#FFD700',
+      secondary: '#00FFFF',
       outline: 'transparent',
-      danger: '#ff0000',                            // Red (ghosts)
+      danger: '#FF0000',
     },
     score: {
-      positive: '#00ff00',                          // Green (dots)
-      negative: '#ff0000',                          // Red (danger)
-      neutral: '#ffffff',                           // White
+      positive: '#00FF00',
+      negative: '#FF0000',
+      neutral: '#FFFFFF',
     },
     shadow: {
-      color: '#ffff00',
+      color: '#FFD700',
       offset: { width: 0, height: 0 },
       opacity: 0.8,
       radius: 0,
@@ -285,12 +285,12 @@ export const retroPixelTheme: Theme = {
   classes: {
     background: 'bg-black',
     panel: 'bg-gray-900/95',
-    panelBorder: 'border-yellow-400',             // Pac-Man yellow!
-    textPrimary: 'text-white',
-    textSecondary: 'text-cyan-400',               // Ghost cyan
-    textAccent: 'text-yellow-400',                // Pac-Man yellow!
-    buttonPrimary: 'bg-yellow-400 text-black',    // Pac-Man yellow!
-    buttonSecondary: 'bg-cyan-400 text-black',    // Ghost cyan
+    panelBorder: 'border-yellow-400',
+    textPrimary: 'text-black',
+    textSecondary: 'text-cyan-400',
+    textAccent: 'text-yellow-400',
+    buttonPrimary: 'bg-yellow-400 text-black',
+    buttonSecondary: 'bg-cyan-400 text-black',
     buttonOutline: 'border-yellow-400',
     buttonDanger: 'bg-red-500',
     scorePositive: 'text-green-400',
