@@ -48,12 +48,12 @@ export function WinTypeSelector({
           disabled={disabled}
           className={`
             flex-1 py-3 md:py-4 rounded-xl mx-1.5 md:mx-2 items-center justify-center
-            transition-select button-press
+            transition-select button-press border-2
             ${isSelfDrawSelected
-              ? 'gold-gradient selected-glow'
+              ? `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder}`
               : disabled
-                ? `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
-                : `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder} active:opacity-80`
+                ? `${currentTheme.classes.panel} opacity-50 ${currentTheme.classes.panelBorder}`
+                : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} active:opacity-80`
             }
           `}
           activeOpacity={0.8}
@@ -62,10 +62,10 @@ export function WinTypeSelector({
             className={`
               text-base md:text-lg font-bold
               ${isSelfDrawSelected
-                ? 'text-emerald-950'
+                ? currentTheme.classes.textPrimary
                 : disabled
-                  ? `${currentTheme.classes.textSecondary}`
-                  : `${currentTheme.classes.textPrimary}`
+                  ? currentTheme.classes.textSecondary
+                  : currentTheme.classes.textPrimary
               }
             `}
           >
@@ -78,12 +78,12 @@ export function WinTypeSelector({
           disabled={disabled}
           className={`
             flex-1 py-3 md:py-4 rounded-xl mx-1.5 md:mx-2 items-center justify-center
-            transition-select button-press
+            transition-select button-press border-2
             ${isRonSelected
-              ? 'gold-gradient selected-glow'
+              ? `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder}`
               : disabled
-                ? `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
-                : `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder} active:opacity-80`
+                ? `${currentTheme.classes.panel} opacity-50 ${currentTheme.classes.panelBorder}`
+                : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} active:opacity-80`
             }
           `}
           activeOpacity={0.8}
@@ -92,10 +92,10 @@ export function WinTypeSelector({
             className={`
               text-base md:text-lg font-bold
               ${isRonSelected
-                ? 'text-emerald-950'
+                ? currentTheme.classes.textPrimary
                 : disabled
-                  ? `${currentTheme.classes.textSecondary}`
-                  : `${currentTheme.classes.textPrimary}`
+                  ? currentTheme.classes.textSecondary
+                  : currentTheme.classes.textPrimary
               }
             `}
           >
@@ -107,7 +107,7 @@ export function WinTypeSelector({
       {/* 出銃者選擇 (只有選擇出銃時才顯示) */}
       {showLoserSelector && selectedWinType === 'RON' && (
         <View className="mt-3 md:mt-4">
-          <Text className="text-gold-300 text-sm md:text-base font-medium mb-2 md:mb-3 text-center">
+          <Text className={`${currentTheme.classes.textAccent} text-sm md:text-base font-medium mb-2 md:mb-3 text-center`}>
             誰出銃？
           </Text>
           <View className="flex-row justify-center">
@@ -120,12 +120,12 @@ export function WinTypeSelector({
                   disabled={disabled}
                   className={`
                     w-14 h-14 md:w-16 md:h-16 rounded-xl items-center justify-center mx-1.5 md:mx-2
-                    transition-select button-press
+                    transition-select button-press border-2
                     ${isSelected
-                      ? 'gold-gradient border-2 border-gold-300 selected-glow'
+                      ? `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder}`
                       : disabled
-                        ? 'bg-emerald-900/50 border border-gold-500/20'
-                        : 'bg-emerald-800/80 border border-gold-500/30 active:bg-emerald-700/80'
+                        ? `${currentTheme.classes.panel} opacity-50 ${currentTheme.classes.panelBorder}`
+                        : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} active:opacity-80`
                     }
                   `}
                   activeOpacity={0.8}
@@ -134,10 +134,10 @@ export function WinTypeSelector({
                     className={`
                       font-bold text-lg md:text-xl
                       ${isSelected
-                        ? 'text-emerald-950'
+                        ? currentTheme.classes.textPrimary
                         : disabled
-                          ? 'text-emerald-700'
-                          : 'text-white'
+                          ? currentTheme.classes.textSecondary
+                          : currentTheme.classes.textPrimary
                       }
                     `}
                   >

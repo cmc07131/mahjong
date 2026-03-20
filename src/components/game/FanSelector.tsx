@@ -30,12 +30,12 @@ export function FanSelector({ selectedFan, onSelectFan, disabled = false }: FanS
               disabled={disabled}
               className={`
                 w-10 h-10 md:w-12 md:h-12 rounded-lg items-center justify-center mx-1
-                transition-select button-press
+                transition-select button-press border
                 ${isSelected
-                  ? 'gold-gradient selected-glow'
+                  ? `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder}`
                   : disabled
-                    ? `${currentTheme.classes.panel}`
-                    : `${currentTheme.classes.buttonPrimary} active:opacity-80`
+                    ? `${currentTheme.classes.panel} opacity-50`
+                    : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} active:opacity-80`
                 }
               `}
               activeOpacity={0.8}
@@ -44,10 +44,10 @@ export function FanSelector({ selectedFan, onSelectFan, disabled = false }: FanS
                 className={`
                   text-xs md:text-sm font-bold
                   ${isSelected
-                    ? 'text-emerald-950'
+                    ? currentTheme.classes.textPrimary
                     : disabled
-                      ? `${currentTheme.classes.textSecondary}`
-                      : `${currentTheme.classes.textPrimary}`
+                      ? currentTheme.classes.textSecondary
+                      : currentTheme.classes.textPrimary
                   }
                 `}
               >

@@ -35,11 +35,11 @@ export function WinnerSelector({
             disabled={disabled}
             className={`
               w-16 h-16 md:w-20 md:h-20 rounded-xl items-center justify-center mx-1.5 md:mx-2
-              transition-select button-press
+              transition-select button-press border-2
               ${isSelected
-                ? 'gold-gradient border-2 border-gold-300 selected-glow'
+                ? `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder}`
                 : disabled
-                  ? `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                  ? `${currentTheme.classes.panel} opacity-50 ${currentTheme.classes.panelBorder}`
                   : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} active:opacity-80`
               }
             `}
@@ -49,10 +49,10 @@ export function WinnerSelector({
               className={`
                 font-bold text-xl md:text-2xl
                 ${isSelected
-                  ? 'text-emerald-950'
+                  ? currentTheme.classes.textPrimary
                   : disabled
-                    ? `${currentTheme.classes.textSecondary}`
-                    : `${currentTheme.classes.textPrimary}`
+                    ? currentTheme.classes.textSecondary
+                    : currentTheme.classes.textPrimary
                 }
               `}
             >
@@ -62,10 +62,10 @@ export function WinnerSelector({
               className={`
                 text-xs mt-0.5 md:mt-1
                 ${isSelected
-                  ? 'text-emerald-900'
+                  ? currentTheme.classes.textPrimary
                   : disabled
-                    ? `${currentTheme.classes.textSecondary}`
-                    : `${currentTheme.classes.textAccent}`
+                    ? currentTheme.classes.textSecondary
+                    : currentTheme.classes.textAccent
                 }
               `}
               numberOfLines={1}
