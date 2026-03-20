@@ -40,7 +40,7 @@ export interface ScoreResult {
  * 計算分數
  * @param fan 番數
  * @param winType 食糊類型
- * @param unitAmount 10番的金額
+ * @param unitAmount 10番的金額（出銃總額）
  */
 export function calculateScore(
   fan: number,
@@ -48,20 +48,22 @@ export function calculateScore(
   unitAmount: number
 ): ScoreResult {
   const multiplier = getFanUnits(fan);
-  const baseAmount = Math.round(multiplier * unitAmount);
+  const ronAmount = Math.round(multiplier * unitAmount); // 出銃金額
 
   if (winType === 'SELF_DRAW') {
-    // 自摸：三家各付基礎金額
+    // 自摸：總金額 = 出銃金額 * 3，三家各付總金額 / 3
+    const totalAmount = ronAmount * 3;
+    const perPlayer = Math.round(totalAmount / 3);
     return {
-      perPlayer: baseAmount,
-      total: baseAmount * 3,
+      perPlayer: perPlayer,
+      total: totalAmount,
       distribution: 'THREE_PLAYERS',
     };
   } else {
-    // 出銃：一人付三倍基礎金額
+    // 出銃：一人付出銃金額
     return {
-      perPlayer: baseAmount * 3,
-      total: baseAmount * 3,
+      perPlayer: ronAmount,
+      total: ronAmount,
       distribution: 'ONE_PLAYER',
     };
   }
