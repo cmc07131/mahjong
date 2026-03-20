@@ -1,5 +1,8 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { ThemeSelector } from '../common/ThemeSelector';
+import { useThemeStore } from '../../store/themeStore';
 
 interface PersistentBottomBarProps {
   onThemePress?: () => void;
@@ -7,9 +10,23 @@ interface PersistentBottomBarProps {
 
 export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) {
   const router = useRouter();
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const { currentThemeName, setTheme } = useThemeStore();
 
   const handleHomePress = () => {
     router.replace('/');
+  };
+
+  const handleThemePress = () => {
+    if (onThemePress) {
+      onThemePress();
+    } else {
+      setShowThemeSelector(true);
+    }
+  };
+
+  const handleSelectTheme = (themeName: string) => {
+    setTheme(themeName as any);
   };
 
   return (
@@ -37,10 +54,18 @@ export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) 
       {/* Theme Button - Right side */}
       <TouchableOpacity
         className="w-12 h-12 items-center justify-center button-press"
-        onPress={onThemePress}
+        onPress={handleThemePress}
       >
         <Text className="text-white text-2xl">🎨</Text>
       </TouchableOpacity>
+
+      {/* Theme Selector Modal */}
+      <ThemeSelector
+        visible={showThemeSelector}
+        onClose={() => setShowThemeSelector(false)}
+        currentTheme={currentThemeName}
+        onSelectTheme={handleSelectTheme}
+      />
     </View>
   );
 }
