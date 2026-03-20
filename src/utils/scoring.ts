@@ -1,33 +1,59 @@
-// Scoring utility functions for Hong Kong Mahjong
+B// Scoring utility functions for Hong Kong Mahjong
 
 import { WinType, Player, ScoreChange } from '../types';
 
 /**
- * 番數轉換表 (香港麻將)
- * 以10番為基準 (multiplier = 1)
- * 每番為前一番的2倍 (指數增長)
+ * 香港麻將番數金額表 (以10番=256元出銃為基準)
+ * 規則：偶數番 = (n-2)番 * 2，奇數番 = (n-1)番 * 1.5
+ * 基準：3番 = 16元出銃
  */
-export const FAN_MULTIPLIER: Record<number, number> = {
-  1: 1/512,
-  2: 1/256,
-  3: 1/128,
-  4: 1/64,
-  5: 1/32,
-  6: 1/16,
-  7: 1/8,
-  8: 1/4,
-  9: 1/2,
-  10: 1,
-  11: 2,
-  12: 4,
-  13: 8,
+export const FAN_AMOUNTS: Record<number, number> = {
+  3: 16,    // 基準出銃金額
+  4: 32,    // 3番 * 2 (偶數番)
+  5: 48,    // 4番 * 1.5 (奇數番)
+  6: 64,    // 4番 * 2 (偶數番)
+  7: 96,    // 6番 * 1.5 (奇數番)
+  8: 128,   // 6番 * 2 (偶數番)
+  9: 192,   // 8番 * 1.5 (奇數番)
+  10: 256,  // 8番 * 2 (偶數番) - 基準單位
+  11: 384,  // 10番 * 1.5 (奇數番)
+  12: 512,  // 10番 * 2 (偶數番)
+  13: 768,  // 12番 * 1.5 (奇數番)
 };
 
 /**
- * 取得番數對應的倍率
+ * 取得番數對應的金額 (10番基準為256元)
  */
-export function getFanUnits(fan: number): number {
-  return FAN_MULTIPLIER[fan] || FAN_MULTIPLIER[10]; // 超過範圍當10番計算
+export function getFanAmount(fan: number): number {
+  return FAN_AMOUNTS[fan] || FAN_AMOUNTS[10]; // 超過範圍當10番計算
+}
+
+/**
+ * 驗證香港麻將番數計算規則
+ * 規則：偶數番 = (n-2)番 * 2，奇數番 = (n-1)番 * 1.5
+ * 基準：3番 = 16元
+ */
+export function validateFanCalculation(): boolean {
+  // 驗證計算規則
+  const tests = [
+    { fan: 3, expected: 16, desc: '3番基準' },
+    { fan: 4, expected: 32, desc: '4番 = 3番 * 2' },
+    { fan: 5, expected: 48, desc: '5番 = 4番 * 1.5' },
+    { fan: 6, expected: 64, desc: '6番 = 4番 * 2' },
+    { fan: 7, expected: 96, desc: '7番 = 6番 * 1.5' },
+    { fan: 8, expected: 128, desc: '8番 = 6番 * 2' },
+    { fan: 9, expected: 192, desc: '9番 = 8番 * 1.5' },
+    { fan: 10, expected: 256, desc: '10番 = 8番 * 2' },
+  ];
+
+  return tests.every(test => {
+    const actual = getFanAmount(test.fan);
+    const passed = actual === test.expected;
+    if (!passed) {
+      console.error(`❌ ${test.desc}: 預期 ${test.expected}, 實際 ${actual}`);
+    }
+    return passed;
+  });
 }
 
 export interface ScoreResult {
@@ -40,15 +66,15 @@ export interface ScoreResult {
  * 計算分數
  * @param fan 番數
  * @param winType 食糊類型
- * @param unitAmount 10番的金額（出銃總額）
+ * @param unitAmount 10番的金額（出銃總額）- 僅用於縮放基準表
  */
 export function calculateScore(
   fan: number,
   winType: WinType,
   unitAmount: number
 ): ScoreResult {
-  const multiplier = getFanUnits(fan);
-  const ronAmount = Math.round(multiplier * unitAmount); // 出銃金額
+  // 直接使用 FAN_AMOUNTS 表中的金額，unitAmount 參數僅用於未來擴展
+  const ronAmount = getFanAmount(fan);
 
   if (winType === 'SELF_DRAW') {
     // 自摸：每家付出銃金額的一半
