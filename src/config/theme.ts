@@ -67,7 +67,7 @@ export interface Theme {
   };
 }
 
-// Theme 1: Retro Luxury (Emerald/Gold) - Current Theme
+// Theme 1: Retro Luxury (Emerald/Gold) - Optimized for Readability
 export const retroLuxuryTheme: Theme = {
   name: 'retro-luxury',
   displayName: '翡翠金輝',
@@ -84,21 +84,21 @@ export const retroLuxuryTheme: Theme = {
       border: 'rgba(212, 175, 55, 0.3)',
     },
     text: {
-      primary: '#ffffff',
-      secondary: '#a7f3d0',
-      accent: '#fbbf24',
-      muted: '#6ee7b7',
+      primary: '#f8f8f2',           // Softer white (less eye strain)
+      secondary: '#a7f3d0',         // Keep emerald but add more contrast
+      accent: '#f0c674',            // Softer gold (better readability)
+      muted: '#6ee7b7',             // Slightly darker muted
     },
     button: {
-      primary: '#16a34a',
-      secondary: '#22c55e',
+      primary: '#22c55e',           // Brighter green for better visibility
+      secondary: '#4ade80',         // Lighter green
       outline: 'transparent',
-      danger: 'rgba(127, 29, 29, 0.5)',
+      danger: '#ef4444',            // Standard red (more accessible)
     },
     score: {
       positive: '#4ade80',
       negative: '#f87171',
-      neutral: '#ffffff',
+      neutral: '#f8f8f2',
     },
     shadow: {
       color: '#D4AF37',
@@ -115,17 +115,17 @@ export const retroLuxuryTheme: Theme = {
     textPrimary: 'text-white',
     textSecondary: 'text-emerald-200',
     textAccent: 'text-gold-400',
-    buttonPrimary: 'bg-green-600',
-    buttonSecondary: 'bg-green-500',
+    buttonPrimary: 'bg-green-500',
+    buttonSecondary: 'bg-green-400',
     buttonOutline: 'border-green-600',
-    buttonDanger: 'bg-red-900/50 border border-red-500/30',
+    buttonDanger: 'bg-red-500',
     scorePositive: 'text-green-400',
     scoreNegative: 'text-red-400',
     scoreNeutral: 'text-white',
   },
 };
 
-// Theme 2: iOS Liquid Glass Light Mode
+// Theme 2: iOS Liquid Glass Light Mode - Optimized for Readability
 export const iosLiquidGlassTheme: Theme = {
   name: 'ios-liquid-glass',
   displayName: '液態玻璃',
@@ -142,21 +142,21 @@ export const iosLiquidGlassTheme: Theme = {
       border: 'rgba(0, 0, 0, 0.1)',
     },
     text: {
-      primary: '#1c1c1e',
-      secondary: '#3a3a3c',
-      accent: '#007aff',
-      muted: '#8e8e93',
+      primary: '#1f2937',           // Darker primary (better contrast)
+      secondary: '#6b7280',         // Medium gray (better hierarchy)
+      accent: '#2563eb',            // Royal blue (more professional)
+      muted: '#9ca3af',             // Standard muted gray
     },
     button: {
-      primary: '#007aff',
-      secondary: '#5ac8fa',
+      primary: '#2563eb',           // Royal blue
+      secondary: '#3b82f6',         // Lighter blue
       outline: 'transparent',
-      danger: 'rgba(255, 59, 48, 0.1)',
+      danger: '#dc2626',            // Standard red
     },
     score: {
-      positive: '#34c759',
-      negative: '#ff3b30',
-      neutral: '#1c1c1e',
+      positive: '#16a34a',          // Green-600 (better contrast)
+      negative: '#dc2626',          // Red-600 (standard)
+      neutral: '#1f2937',           // Dark gray
     },
     shadow: {
       color: '#000000',
@@ -171,19 +171,19 @@ export const iosLiquidGlassTheme: Theme = {
     panel: 'bg-white/70 backdrop-blur-lg',
     panelBorder: 'border-gray-200/50',
     textPrimary: 'text-gray-900',
-    textSecondary: 'text-gray-600',
-    textAccent: 'text-blue-500',
-    buttonPrimary: 'bg-blue-500',
-    buttonSecondary: 'bg-blue-400',
-    buttonOutline: 'border-blue-500',
-    buttonDanger: 'bg-red-50 border border-red-200',
-    scorePositive: 'text-green-500',
-    scoreNegative: 'text-red-500',
+    textSecondary: 'text-gray-500',
+    textAccent: 'text-blue-600',
+    buttonPrimary: 'bg-blue-600',
+    buttonSecondary: 'bg-blue-500',
+    buttonOutline: 'border-blue-600',
+    buttonDanger: 'bg-red-600',
+    scorePositive: 'text-green-600',
+    scoreNegative: 'text-red-600',
     scoreNeutral: 'text-gray-900',
   },
 };
 
-// Theme 3: Dark Mode with Gold Accent
+// Theme 3: Dark Mode with Gold Accent - Optimized for Readability
 export const darkGoldTheme: Theme = {
   name: 'dark-gold',
   displayName: '暗夜金輝',
@@ -200,21 +200,21 @@ export const darkGoldTheme: Theme = {
       border: 'rgba(212, 175, 55, 0.4)',
     },
     text: {
-      primary: '#ffffff',
-      secondary: '#d4d4d4',
-      accent: '#ffd700',
-      muted: '#888888',
+      primary: '#f5f5f5',           // Off-white (less harsh)
+      secondary: '#a1a1aa',         // Zinc-400 (better balance)
+      accent: '#d4a853',            // Warm gold (easier on eyes)
+      muted: '#71717a',             // Zinc-500 (subtle)
     },
     button: {
-      primary: '#ffd700',
-      secondary: '#ffed4a',
+      primary: '#d4a853',           // Warm gold
+      secondary: '#eab308',         // Yellow-500 (standard)
       outline: 'transparent',
-      danger: 'rgba(220, 38, 38, 0.8)',
+      danger: '#dc2626',            // Red-600 (accessible)
     },
     score: {
-      positive: '#22c55e',
-      negative: '#ef4444',
-      neutral: '#ffffff',
+      positive: '#22c55e',          // Green-500 (standard)
+      negative: '#ef4444',          // Red-500 (standard)
+      neutral: '#f5f5f5',           // Off-white
     },
     shadow: {
       color: '#ffd700',
@@ -229,8 +229,8 @@ export const darkGoldTheme: Theme = {
     panel: 'bg-zinc-900/90',
     panelBorder: 'border-yellow-500/40',
     textPrimary: 'text-white',
-    textSecondary: 'text-zinc-300',
-    textAccent: 'text-yellow-400',
+    textSecondary: 'text-zinc-400',
+    textAccent: 'text-yellow-500',
     buttonPrimary: 'bg-yellow-500 text-black',
     buttonSecondary: 'bg-yellow-400 text-black',
     buttonOutline: 'border-yellow-500',
@@ -241,7 +241,7 @@ export const darkGoldTheme: Theme = {
   },
 };
 
-// Theme 4: Colorful Retro Pixel Style
+// Theme 4: Colorful Retro Pixel Style - Optimized for Readability
 export const retroPixelTheme: Theme = {
   name: 'retro-pixel',
   displayName: '像素復古',
@@ -258,21 +258,21 @@ export const retroPixelTheme: Theme = {
       border: 'rgba(0, 255, 255, 0.5)',
     },
     text: {
-      primary: '#00ffff',
-      secondary: '#ff00ff',
-      accent: '#ffff00',
-      muted: '#888888',
+      primary: '#67e8f9',           // Cyan-300 (softer)
+      secondary: '#f0abfc',         // Fuchsia-300 (less harsh)
+      accent: '#fde047',            // Yellow-300 (readable)
+      muted: '#a5b4fc',             // Indigo-300 (complementary)
     },
     button: {
-      primary: '#ff00ff',
-      secondary: '#00ffff',
+      primary: '#e879f9',           // Fuchsia-400
+      secondary: '#22d3ee',         // Cyan-400
       outline: 'transparent',
-      danger: 'rgba(255, 0, 0, 0.8)',
+      danger: '#f87171',            // Red-400 (softer)
     },
     score: {
-      positive: '#00ff00',
-      negative: '#ff0000',
-      neutral: '#ffffff',
+      positive: '#4ade80',          // Green-400 (softer)
+      negative: '#f87171',          // Red-400 (softer)
+      neutral: '#ffffff',           // White
     },
     shadow: {
       color: '#ff00ff',
@@ -286,20 +286,20 @@ export const retroPixelTheme: Theme = {
     background: 'bg-purple-900',
     panel: 'bg-purple-900/85',
     panelBorder: 'border-cyan-400/50',
-    textPrimary: 'text-cyan-400',
-    textSecondary: 'text-fuchsia-400',
-    textAccent: 'text-yellow-400',
-    buttonPrimary: 'bg-fuchsia-500',
-    buttonSecondary: 'bg-cyan-500',
-    buttonOutline: 'border-fuchsia-500',
-    buttonDanger: 'bg-red-600',
+    textPrimary: 'text-cyan-300',
+    textSecondary: 'text-fuchsia-300',
+    textAccent: 'text-yellow-300',
+    buttonPrimary: 'bg-fuchsia-400',
+    buttonSecondary: 'bg-cyan-400',
+    buttonOutline: 'border-fuchsia-400',
+    buttonDanger: 'bg-red-400',
     scorePositive: 'text-green-400',
     scoreNegative: 'text-red-400',
     scoreNeutral: 'text-white',
   },
 };
 
-// Theme 5: Midnight Ocean (My choice - calming deep blue)
+// Theme 5: Midnight Ocean - Optimized for Readability
 export const midnightOceanTheme: Theme = {
   name: 'midnight-ocean',
   displayName: '深海夜光',
@@ -316,21 +316,21 @@ export const midnightOceanTheme: Theme = {
       border: 'rgba(255, 127, 80, 0.4)',
     },
     text: {
-      primary: '#e0f2fe',
-      secondary: '#7dd3fc',
-      accent: '#ff7f50',
-      muted: '#94a3b8',
+      primary: '#e0f2fe',           // Sky-100 (keep)
+      secondary: '#bae6fd',         // Sky-200 (slightly darker)
+      accent: '#fb923c',            // Orange-400 (softer coral)
+      muted: '#7dd3fc',             // Sky-300 (better hierarchy)
     },
     button: {
-      primary: '#ff7f50',
-      secondary: '#fb923c',
+      primary: '#f97316',           // Orange-500 (standard)
+      secondary: '#fb923c',         // Orange-400
       outline: 'transparent',
-      danger: 'rgba(239, 68, 68, 0.8)',
+      danger: '#ef4444',            // Red-500 (accessible)
     },
     score: {
-      positive: '#34d399',
-      negative: '#f87171',
-      neutral: '#e0f2fe',
+      positive: '#34d399',          // Emerald-400 (keep)
+      negative: '#f87171',          // Red-400 (keep)
+      neutral: '#e0f2fe',           // Sky-100 (keep)
     },
     shadow: {
       color: '#ff7f50',
@@ -345,12 +345,12 @@ export const midnightOceanTheme: Theme = {
     panel: 'bg-slate-900/85',
     panelBorder: 'border-orange-400/40',
     textPrimary: 'text-sky-100',
-    textSecondary: 'text-sky-300',
+    textSecondary: 'text-sky-200',
     textAccent: 'text-orange-400',
     buttonPrimary: 'bg-orange-500',
     buttonSecondary: 'bg-orange-400',
     buttonOutline: 'border-orange-500',
-    buttonDanger: 'bg-red-600',
+    buttonDanger: 'bg-red-500',
     scorePositive: 'text-emerald-400',
     scoreNegative: 'text-red-400',
     scoreNeutral: 'text-sky-100',
