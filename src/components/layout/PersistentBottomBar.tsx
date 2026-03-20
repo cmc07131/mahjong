@@ -53,10 +53,16 @@ export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) 
       
       {/* Theme Button - Right side */}
       <TouchableOpacity
-        className={`w-12 h-12 items-center justify-center button-press`}
+        className={`w-16 h-16 rounded-full ${currentTheme.classes.panel} items-center justify-center ${currentTheme.classes.panelBorder}`}
         onPress={handleThemePress}
+        activeOpacity={0.6}
+        style={{
+          borderWidth: 2,
+          minWidth: 64,
+          minHeight: 64,
+        }}
       >
-        <Text className={`${currentTheme.classes.textPrimary} text-xl`}>⚙️</Text>
+        <Text className={`${currentTheme.classes.textPrimary} text-sm font-bold`}>THEME</Text>
       </TouchableOpacity>
 
       {/* Theme Selector Modal */}
