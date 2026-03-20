@@ -241,58 +241,58 @@ export const darkGoldTheme: Theme = {
   },
 };
 
-// Theme 4: Colorful Retro Pixel Style - Optimized for Readability
+// Theme 4: Pac-Man Inspired Retro Pixel Style
 export const retroPixelTheme: Theme = {
   name: 'retro-pixel',
   displayName: '像素復古',
-  description: '8-bit像素風格，鮮豔色彩配復古感',
+  description: '吃豆人風格，經典像素美學',
   colors: {
     background: {
-      primary: '#2d1b69',
-      gradient: 'linear-gradient(180deg, #2d1b69 0%, #1a1a2e 50%, #16213e 100%)',
-      overlay: 'rgba(45, 27, 105, 0.8)',
+      primary: '#000000',                           // Pure black (Pac-Man background)
+      gradient: 'linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #111111 100%)',
+      overlay: 'rgba(0, 0, 0, 0.95)',
     },
     panel: {
-      primary: 'rgba(30, 30, 60, 0.95)',        // Different from background!
-      secondary: 'rgba(40, 40, 80, 0.9)',       // Different from background!
-      border: 'rgba(0, 255, 255, 0.8)',         // More visible!
+      primary: 'rgba(20, 20, 20, 0.95)',          // Dark gray panels
+      secondary: 'rgba(30, 30, 30, 0.9)',         // Slightly lighter
+      border: '#ffff00',                             // Pac-Man yellow borders!
     },
     text: {
-      primary: '#67e8f9',           // Cyan-300 (softer)
-      secondary: '#f0abfc',         // Fuchsia-300 (less harsh)
-      accent: '#fde047',            // Yellow-300 (readable)
-      muted: '#a5b4fc',             // Indigo-300 (complementary)
+      primary: '#ffffff',                           // White (dots)
+      secondary: '#00ffff',                         // Cyan (ghosts)
+      accent: '#ffff00',                            // Yellow (Pac-Man!)
+      muted: '#ff00ff',                             // Magenta (ghosts)
     },
     button: {
-      primary: '#e879f9',           // Fuchsia-400
-      secondary: '#22d3ee',         // Cyan-400
+      primary: '#ffff00',                           // Yellow (Pac-Man!)
+      secondary: '#00ffff',                         // Cyan (ghosts)
       outline: 'transparent',
-      danger: '#f87171',            // Red-400 (softer)
+      danger: '#ff0000',                            // Red (ghosts)
     },
     score: {
-      positive: '#4ade80',          // Green-400 (softer)
-      negative: '#f87171',          // Red-400 (softer)
-      neutral: '#ffffff',           // White
+      positive: '#00ff00',                          // Green (dots)
+      negative: '#ff0000',                          // Red (danger)
+      neutral: '#ffffff',                           // White
     },
     shadow: {
-      color: '#ff00ff',
-      offset: { width: 0, height: 2 },
-      opacity: 0.5,
+      color: '#ffff00',
+      offset: { width: 0, height: 0 },
+      opacity: 0.8,
       radius: 0,
       elevation: 4,
     },
   },
   classes: {
-    background: 'bg-purple-900',
-    panel: 'bg-indigo-900/95',                // Different from background!
-    panelBorder: 'border-cyan-400',           // Full opacity, more visible!
-    textPrimary: 'text-cyan-300',
-    textSecondary: 'text-fuchsia-300',
-    textAccent: 'text-yellow-300',
-    buttonPrimary: 'bg-fuchsia-400',
-    buttonSecondary: 'bg-cyan-400',
-    buttonOutline: 'border-fuchsia-400',
-    buttonDanger: 'bg-red-400',
+    background: 'bg-black',
+    panel: 'bg-gray-900/95',
+    panelBorder: 'border-yellow-400',             // Pac-Man yellow!
+    textPrimary: 'text-white',
+    textSecondary: 'text-cyan-400',               // Ghost cyan
+    textAccent: 'text-yellow-400',                // Pac-Man yellow!
+    buttonPrimary: 'bg-yellow-400 text-black',    // Pac-Man yellow!
+    buttonSecondary: 'bg-cyan-400 text-black',    // Ghost cyan
+    buttonOutline: 'border-yellow-400',
+    buttonDanger: 'bg-red-500',
     scorePositive: 'text-green-400',
     scoreNegative: 'text-red-400',
     scoreNeutral: 'text-white',
