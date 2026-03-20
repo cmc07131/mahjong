@@ -47,25 +47,28 @@ export default function HistoryDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#4F46E5" />
+      <View className="flex-1 justify-center items-center emerald-gradient">
+        <ActivityIndicator size="large" color="#D4AF37" />
       </View>
     );
   }
 
   if (!currentHistory) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <Text className="text-gray-500">找不到比賽記錄</Text>
+      <View className="flex-1 justify-center items-center emerald-gradient">
+        <Text className="text-emerald-200">找不到比賽記錄</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-indigo-600">返回首頁</Text>
+          <Text className="text-gold-400">返回首頁</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 emerald-gradient">
+      {/* Cloud pattern overlay */}
+      <View className="absolute inset-0 cloud-pattern opacity-30" />
+      
       <ScrollView className="flex-1">
         <MatchDetailHeader history={currentHistory} />
         <FinalScoreCard players={currentHistory.players} unit={currentHistory.unit} />
@@ -73,7 +76,7 @@ export default function HistoryDetailScreen() {
       </ScrollView>
       
       {/* 底部操作按鈕 */}
-      <View className="flex-row p-4 bg-white border-t border-gray-200 gap-3">
+      <View className="flex-row p-4 dark-panel border-t border-gold-500/30 gap-3">
         <Button
           onPress={handleDelete}
           variant="outline"

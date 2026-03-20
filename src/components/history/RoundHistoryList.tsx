@@ -25,57 +25,76 @@ export function RoundHistoryList({ rounds, players }: RoundHistoryListProps) {
 
   if (rounds.length === 0) {
     return (
-      <Card className="mx-4">
-        <Text className="text-gray-500 text-center py-4">
+      <View 
+        className="mx-4 dark-panel rounded-xl border border-gold-500/30 p-4"
+        style={{
+          shadowColor: '#D4AF37',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 4,
+        }}
+      >
+        <Text className="text-emerald-200 text-center py-4">
           無回合記錄
         </Text>
-      </Card>
+      </View>
     );
   }
 
   return (
     <View className="mx-4 mb-4">
-      <Text className="text-lg font-semibold text-gray-800 mb-3">
-        回合記錄
+      <Text className="text-lg font-semibold text-gold-400 mb-3">
+        📊 回合記錄
       </Text>
       {rounds.map((round) => (
-        <Card key={round.roundNumber} className="mb-2">
+        <View 
+          key={round.roundNumber} 
+          className="mb-2 dark-panel rounded-xl border border-gold-500/30 overflow-hidden"
+          style={{
+            shadowColor: '#D4AF37',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 4,
+          }}
+        >
           <TouchableOpacity 
             onPress={() => toggleExpand(round.roundNumber)}
             className="p-3"
           >
             <View className="flex-row justify-between items-center">
               <View className="flex-row items-center">
-                <Text className="text-gray-500 mr-3">第 {round.roundNumber} 局</Text>
-                <Text className="font-semibold text-gray-800">
+                <Text className="text-emerald-300 mr-3">第 {round.roundNumber} 局</Text>
+                <Text className="font-semibold text-gold-400">
                   {getPlayerName(round.winnerId)}
                 </Text>
-                <Text className="text-gray-500 ml-2">
+                <Text className="text-emerald-200 ml-2">
                   {getWinTypeText(round.winType)} {round.fan}番
                 </Text>
               </View>
-              <Text className="text-gray-400">
+              <Text className="text-gold-400">
                 {expandedRound === round.roundNumber ? '▼' : '▶'}
               </Text>
             </View>
           </TouchableOpacity>
           
           {expandedRound === round.roundNumber && (
-            <View className="px-3 pb-3 border-t border-gray-100 mt-2 pt-2">
-              <Text className="text-sm text-gray-500 mb-2">支付明細：</Text>
+            <View className="px-3 pb-3 border-t border-gold-500/30 mt-2 pt-2">
+              <Text className="text-sm text-emerald-300 mb-2">支付明細：</Text>
               {round.payments.map((payment, idx) => (
                 <View key={idx} className="flex-row justify-between py-1">
-                  <Text className="text-gray-600">
+                  <Text className="text-white">
                     {getPlayerName(payment.fromId)} → {getPlayerName(payment.toId)}
                   </Text>
-                  <Text className={payment.amount >= 0 ? 'text-green-500' : 'text-red-500'}>
+                  <Text className={payment.amount >= 0 ? 'text-green-400' : 'text-red-400'}>
                     {payment.amount >= 0 ? '+' : ''}{payment.amount}
                   </Text>
                 </View>
               ))}
             </View>
           )}
-        </Card>
+        </View>
       ))}
     </View>
   );

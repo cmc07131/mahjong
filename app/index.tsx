@@ -56,16 +56,26 @@ export default function HomeScreen() {
   const hasCurrentGame = players.length > 0;
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 emerald-gradient">
+      {/* Cloud pattern overlay */}
+      <View className="absolute inset-0 cloud-pattern opacity-30" />
+      
       <ScrollView className="flex-1 px-4 pt-6">
         {/* 標題 */}
-        <Text className="text-3xl font-bold text-gray-800 mb-6">
-          麻將計分
-        </Text>
+        <View className="mb-6">
+          <Text className="text-3xl font-bold text-gold-400 mb-2">
+            麻將計分
+          </Text>
+          <Text className="text-emerald-200 text-base">
+            香港麻將計分系統
+          </Text>
+        </View>
 
         {/* 新遊戲按鈕 */}
         <Button
           onPress={handleNewGame}
+          variant="primary"
+          size="lg"
           className="mb-4"
         >
           開始新遊戲
@@ -75,24 +85,34 @@ export default function HomeScreen() {
         {hasCurrentGame && (
           <TouchableOpacity
             onPress={() => router.push('/game')}
-            className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4"
+            className="dark-panel rounded-xl p-4 mb-4 border border-gold-500/30"
+            style={{
+              shadowColor: '#D4AF37',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 4,
+            }}
           >
-            <Text className="text-blue-700 font-semibold text-lg">
-              繼續遊戲
+            <Text className="text-gold-400 font-semibold text-lg">
+              🎮 繼續遊戲
             </Text>
-            <Text className="text-blue-500 text-sm mt-1">
+            <Text className="text-emerald-200 text-sm mt-1">
               {players.length} 位玩家
             </Text>
           </TouchableOpacity>
         )}
 
         {/* 歷史記錄切換 */}
-        <View className="flex-row justify-between items-center mt-4 mb-3">
-          <Text className="text-xl font-semibold text-gray-700">
-            比賽記錄
+        <View className="flex-row justify-between items-center mt-6 mb-3">
+          <Text className="text-xl font-semibold text-gold-400">
+            📜 比賽記錄
           </Text>
-          <TouchableOpacity onPress={() => setShowHistory(!showHistory)}>
-            <Text className="text-indigo-600">
+          <TouchableOpacity 
+            onPress={() => setShowHistory(!showHistory)}
+            className="px-3 py-1 rounded-full bg-emerald-800/50 border border-gold-500/30"
+          >
+            <Text className="text-gold-400 text-sm">
               {showHistory ? '收起' : '展開'}
             </Text>
           </TouchableOpacity>

@@ -19,19 +19,28 @@ export function MatchDetailHeader({ history }: MatchDetailHeaderProps) {
   };
 
   return (
-    <View className="bg-white p-4 border-b border-gray-200">
-      <Text className="text-2xl font-bold text-gray-800 mb-2">
-        比賽詳情
+    <View 
+      className="dark-panel p-4 border-b border-gold-500/30"
+      style={{
+        shadowColor: '#D4AF37',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 4,
+      }}
+    >
+      <Text className="text-2xl font-bold text-gold-400 mb-2">
+        📋 比賽詳情
       </Text>
       <View className="flex-row justify-between">
-        <Text className="text-gray-500">
+        <Text className="text-emerald-200">
           開始: {formatDate(history.createdAt)}
         </Text>
-        <Text className="text-gray-500">
+        <Text className="text-gold-400">
           {history.totalRounds} 局
         </Text>
       </View>
-      <Text className="text-gray-500 mt-1">
+      <Text className="text-emerald-200 mt-1">
         結束: {formatDate(history.completedAt)}
       </Text>
     </View>
