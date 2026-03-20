@@ -61,7 +61,8 @@ export function PaymentList({ settlements, players, unitAmount }: PaymentListPro
         {settlements.map((settlement, index) => {
           const fromName = getPlayerName(settlement.from);
           const toName = getPlayerName(settlement.to);
-          const amount = settlement.amount * unitAmount;
+          // settlement.amount 已經是金額，不需要再乘以 unitAmount
+          const amount = settlement.amount;
           
           return (
             <View
