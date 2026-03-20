@@ -46,9 +46,6 @@ export function FinalScoreCard({ players, unit }: FinalScoreCardProps) {
             }`}>
               {player.finalScore >= 0 ? '+' : ''}{player.finalScore}
             </Text>
-            <Text className={`${currentTheme.classes.textSecondary} text-sm ml-1`}>
-              ({player.finalScore >= 0 ? '+' : ''}{player.finalScore * unit}元)
-            </Text>
           </View>
         </View>
       ))}
