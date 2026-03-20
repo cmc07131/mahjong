@@ -1,4 +1,4 @@
-import { View, Text, TextStyle, ViewStyle } from 'react-native';
+import { View, Text } from 'react-native';
 import { Input } from '../common/Input';
 import { Wind } from '../../types';
 import { useThemeStore } from '../../store/themeStore';
@@ -10,13 +10,6 @@ interface PlayerInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
 }
-
-const WIND_COLORS: Record<Wind, string> = {
-  EAST: '#dc2626',   // 紅色 - 東
-  SOUTH: '#16a34a',  // 綠色 - 南
-  WEST: '#2563eb',   // 藍色 - 西
-  NORTH: '#1f2937',  // 黑色 - 北
-};
 
 const WIND_LABELS: Record<Wind, string> = {
   EAST: '東',
@@ -33,39 +26,18 @@ export function PlayerInput({
   placeholder,
 }: PlayerInputProps) {
   const { currentTheme } = useThemeStore();
-  
-  const containerStyle: ViewStyle = {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  };
-
-  const windBadgeStyle: ViewStyle = {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: WIND_COLORS[wind],
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  };
-
-  const windTextStyle: TextStyle = {
-    color: currentTheme.colors.text.primary,
-    fontSize: 16,
-    fontWeight: '700',
-  };
-
-  const inputContainerStyle: ViewStyle = {
-    flex: 1,
-  };
 
   return (
-    <View style={containerStyle}>
-      <View style={windBadgeStyle}>
-        <Text style={windTextStyle}>{WIND_LABELS[wind]}</Text>
+    <View className="flex-row items-center mb-2">
+      <View 
+        className={`w-9 h-9 rounded-full items-center justify-center mr-3 border-2 ${currentTheme.classes.panelBorder}`}
+        style={{ backgroundColor: currentTheme.colors.button.primary }}
+      >
+        <Text className={`${currentTheme.classes.textPrimary} text-base font-bold`}>
+          {WIND_LABELS[wind]}
+        </Text>
       </View>
-      <View style={inputContainerStyle}>
+      <View className="flex-1">
         <Input
           value={value}
           onChangeText={onChange}
