@@ -84,16 +84,16 @@ export const retroLuxuryTheme: Theme = {
       border: 'rgba(212, 175, 55, 0.5)',  // Increased opacity
     },
     text: {
-      primary: '#f8f8f2',           // Softer white (less eye strain)
-      secondary: '#a7f3d0',         // Keep emerald but add more contrast
-      accent: '#f0c674',            // Softer gold (better readability)
-      muted: '#6ee7b7',             // Slightly darker muted
+      primary: '#FFFFFF',
+      secondary: '#00FFFF',
+      accent: '#FFD700',
+      muted: '#FF69B4',
     },
     button: {
-      primary: '#22c55e',           // Brighter green for better visibility
-      secondary: '#4ade80',         // Lighter green
+      primary: '#B8860B',
+      secondary: '#00FFFF',
       outline: 'transparent',
-      danger: '#ef4444',            // Standard red (more accessible)
+      danger: '#FF0000',
     },
     score: {
       positive: '#4ade80',
@@ -245,34 +245,34 @@ export const darkGoldTheme: Theme = {
 export const retroPixelTheme: Theme = {
   name: 'retro-pixel',
   displayName: '像素復古',
-  description: '吃豆人風格，經典像素美學',
+  description: '經典街機風格，吃豆人靈感',
   colors: {
     background: {
-      primary: '#000000',
+      primary: '#000000',      // Pure black like arcade screens
       gradient: 'linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #111111 100%)',
       overlay: 'rgba(0, 0, 0, 0.95)',
     },
     panel: {
-      primary: 'rgba(20, 20, 20, 0.95)',
-      secondary: 'rgba(30, 30, 30, 0.9)',
-      border: '#FFD700',
+      primary: '#1a1a2e',      // Dark navy blue panels
+      secondary: '#16213e',    // Slightly lighter navy
+      border: '#FFD700',       // Classic Pac-Man yellow
     },
     text: {
-      primary: '#000000',
-      secondary: '#00FFFF',
-      accent: '#FFD700',
-      muted: '#FF69B4',
+      primary: '#FFFFFF',      // White text for readability
+      secondary: '#00FFFF',    // Cyan like Pac-Man ghosts
+      accent: '#FFD700',       // Yellow like Pac-Man
+      muted: '#9CA3AF',        // Gray for muted text
     },
     button: {
-      primary: '#FFD700',
-      secondary: '#00FFFF',
+      primary: '#FFD700',      // Pac-Man yellow
+      secondary: '#00FFFF',    // Cyan ghost
       outline: 'transparent',
-      danger: '#FF0000',
+      danger: '#FF0000',       // Red ghost
     },
     score: {
-      positive: '#00FF00',
-      negative: '#FF0000',
-      neutral: '#FFFFFF',
+      positive: '#00FF00',     // Green dots
+      negative: '#FF0000',     // Red danger
+      neutral: '#FFFFFF',      // White
     },
     shadow: {
       color: '#FFD700',
@@ -284,9 +284,9 @@ export const retroPixelTheme: Theme = {
   },
   classes: {
     background: 'bg-black',
-    panel: 'bg-gray-900/95',
+    panel: 'bg-[#1a1a2e]',
     panelBorder: 'border-yellow-400',
-    textPrimary: 'text-black',
+    textPrimary: 'text-white',
     textSecondary: 'text-cyan-400',
     textAccent: 'text-yellow-400',
     buttonPrimary: 'bg-yellow-400 text-black',

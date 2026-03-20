@@ -53,6 +53,116 @@
   .cloud-pattern {
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 10c-5 0-9 4-9 9s4 9 9 9 9-4 9-9-4-9-9-9zm0 2c3.9 0 7 3.1 7 7s-3.1 7-7 7-7-3.1-7-7 3.1-7 7-7z' fill='rgba(255,255,255,0.02)' fill-rule='evenodd'/%3E%3C/svg%3E");
   }
+
+  /* Retro Pixel Theme - Pac-Man Inspired Pixel Elements */
+  .pixel-border {
+    border: 3px solid #FFD700;
+    box-shadow: 
+      3px 3px 0px #B8860B,
+      -1px -1px 0px #FFED4A;
+  }
+
+  .pixel-text {
+    font-family: 'Courier New', 'Lucida Console', monospace;
+    text-shadow: 2px 2px 0px #000000;
+    letter-spacing: 1px;
+  }
+
+  .pixel-button {
+    background: linear-gradient(180deg, #FFED4A 0%, #FFD700 50%, #B8860B 100%);
+    color: #000000;
+    border: 3px solid #FFD700;
+    box-shadow: 
+      4px 4px 0px #8B6914,
+      -2px -2px 0px #FFED4A;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+  }
+
+  .pixel-button:active {
+    transform: translate(3px, 3px);
+    box-shadow: 
+      1px 1px 0px #8B6914,
+      -1px -1px 0px #FFED4A;
+  }
+
+  .pixel-panel {
+    background: linear-gradient(180deg, #1a1a2e 0%, #000021 100%);
+    border: 3px solid #FFD700;
+    box-shadow: 
+      inset 0 0 20px rgba(255, 215, 0, 0.15),
+      0 0 10px rgba(255, 215, 0, 0.4),
+      4px 4px 0px #000000;
+  }
+
+  .pixel-score-positive {
+    color: #00FF00;
+    text-shadow: 0 0 8px #00FF00, 2px 2px 0px #000000;
+    font-family: 'Courier New', monospace;
+  }
+
+  .pixel-score-negative {
+    color: #FF0000;
+    text-shadow: 0 0 8px #FF0000, 2px 2px 0px #000000;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Pac-Man specific pixel elements */
+  .pac-man-yellow {
+    color: #FFD700;
+    text-shadow: 0 0 10px #FFD700, 2px 2px 0px #8B6914;
+  }
+
+  .ghost-cyan {
+    color: #00FFFF;
+    text-shadow: 0 0 8px #00FFFF, 1px 1px 0px #008B8B;
+  }
+
+  .ghost-pink {
+    color: #FF69B4;
+    text-shadow: 0 0 8px #FF69B4, 1px 1px 0px #8B008B;
+  }
+
+  .dot-green {
+    color: #00FF00;
+    text-shadow: 0 0 6px #00FF00;
+  }
+
+  .pixel-divider {
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      #FFD700 10%, 
+      #FFD700 90%, 
+      transparent 100%
+    );
+    margin: 8px 0;
+  }
+
+  .pixel-corner-decoration {
+    position: relative;
+  }
+
+  .pixel-corner-decoration::before {
+    content: '◆';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    color: #FFD700;
+    font-size: 12px;
+    text-shadow: 1px 1px 0px #000000;
+  }
+
+  .pixel-corner-decoration::after {
+    content: '◆';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    color: #FFD700;
+    font-size: 12px;
+    text-shadow: 1px 1px 0px #000000;
+  }
 }
 
 @layer utilities {
