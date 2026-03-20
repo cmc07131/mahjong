@@ -141,7 +141,7 @@ export const useGameStore = create<GameStore>()(
           winType: currentRound.winType,
           fan: currentRound.fan,
           loserIds: currentRound.loserIds,
-          baseAmount: getFanUnits(currentRound.fan) * unitAmount,
+          baseAmount: unitAmount,  // unitAmount 是 10 番的金額，不需要再乘以倍率
           totalAmount: scoreChanges.find(c => c.playerId === currentRound.winnerId)?.change || 0,
           dealerId: players[dealerIndex].id,
           isDealerWin: currentRound.winnerId === players[dealerIndex].id,
