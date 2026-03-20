@@ -12,7 +12,8 @@ export function ScoreSummary({ players, unitAmount }: ScoreSummaryProps) {
 
   // 格式化金額顯示
   const formatAmount = (score: number) => {
-    const amount = score * unitAmount;
+    // score 已經是金額，不需要再乘以 unitAmount
+    const amount = score;
     if (amount > 0) {
       return `+$${amount}`;
     } else if (amount < 0) {
@@ -38,7 +39,8 @@ export function ScoreSummary({ players, unitAmount }: ScoreSummaryProps) {
       
       <View className="space-y-3">
         {sortedPlayers.map((player, index) => {
-          const amount = player.score * unitAmount;
+          // player.score 已經是金額，不需要再乘以 unitAmount
+          const amount = player.score;
           const isWinner = amount > 0;
           const isLoser = amount < 0;
           
