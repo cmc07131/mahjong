@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import { Player, Wind } from '../../types';
+import { useThemeStore } from '../../store/themeStore';
 
 interface PlayerSeatProps {
   player: Player;
@@ -23,15 +24,17 @@ const getAvatarEmoji = (player: Player, index: number): string => {
 };
 
 export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSeatProps) {
+  const { currentTheme } = useThemeStore();
+  
   const formatScore = (score: number) => {
     if (score === 0) return '0';
     return score > 0 ? `+${score}` : `${score}`;
   };
 
   const getScoreColorClass = (score: number) => {
-    if (score > 0) return 'text-score-win';
-    if (score < 0) return 'text-score-lose';
-    return 'text-white';
+    if (score > 0) return currentTheme.classes.scorePositive;
+    if (score < 0) return currentTheme.classes.scoreNegative;
+    return currentTheme.classes.textPrimary;
   };
 
   // Get player index for avatar selection
@@ -64,15 +67,15 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
               <View
                 className={`
                   w-10 h-10 rounded-full items-center justify-center
-                  border-2 border-gold-500
-                  ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
+                  ${currentTheme.classes.panelBorder}
+                  ${player.isDealer ? 'bg-gold-500/20' : currentTheme.classes.panel}
                 `}
                 style={{
-                  shadowColor: '#D4AF37',
+                  shadowColor: currentTheme.colors.shadow.color,
                   shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.5,
-                  shadowRadius: 2,
-                  elevation: 3,
+                  shadowOpacity: currentTheme.colors.shadow.opacity,
+                  shadowRadius: currentTheme.colors.shadow.radius,
+                  elevation: currentTheme.colors.shadow.elevation,
                 }}
               >
                 <Text className="text-lg">
@@ -82,7 +85,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
             </View>
             {/* Info Box */}
             <View
-              className="dark-panel rounded-lg px-2 py-1.5 ml-1.5 min-w-[56px] items-center justify-center"
+              className={`${currentTheme.classes.panel} rounded-lg px-2 py-1.5 ml-1.5 min-w-[56px] items-center justify-center`}
               style={{
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
@@ -91,11 +94,11 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
                 elevation: 2,
               }}
             >
-              <Text className="text-gold-400 text-[10px] font-medium text-center">
+              <Text className={`${currentTheme.classes.textAccent} text-[10px] font-medium text-center`}>
                 {WIND_LABELS[player.position]}
               </Text>
               <Text
-                className="text-white text-xs font-bold text-center mt-0.5"
+                className={`${currentTheme.classes.textPrimary} text-xs font-bold text-center mt-0.5`}
                 numberOfLines={1}
               >
                 {player.name}
@@ -117,7 +120,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
           <>
             {/* Info Box */}
             <View
-              className="dark-panel rounded-lg px-2 py-1.5 mr-1.5 min-w-[56px] items-center justify-center"
+              className={`${currentTheme.classes.panel} rounded-lg px-2 py-1.5 mr-1.5 min-w-[56px] items-center justify-center`}
               style={{
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
@@ -126,11 +129,11 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
                 elevation: 2,
               }}
             >
-              <Text className="text-gold-400 text-[10px] font-medium text-center">
+              <Text className={`${currentTheme.classes.textAccent} text-[10px] font-medium text-center`}>
                 {WIND_LABELS[player.position]}
               </Text>
               <Text
-                className="text-white text-xs font-bold text-center mt-0.5"
+                className={`${currentTheme.classes.textPrimary} text-xs font-bold text-center mt-0.5`}
                 numberOfLines={1}
               >
                 {player.name}
@@ -196,15 +199,15 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
           <View
             className={`
               w-10 h-10 rounded-full items-center justify-center
-              border-2 border-gold-500
-              ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
+              ${currentTheme.classes.panelBorder}
+              ${player.isDealer ? 'bg-gold-500/20' : currentTheme.classes.panel}
             `}
             style={{
-              shadowColor: '#D4AF37',
+              shadowColor: currentTheme.colors.shadow.color,
               shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.5,
-              shadowRadius: 2,
-              elevation: 3,
+              shadowOpacity: currentTheme.colors.shadow.opacity,
+              shadowRadius: currentTheme.colors.shadow.radius,
+              elevation: currentTheme.colors.shadow.elevation,
             }}
           >
             <Text className="text-lg">
@@ -213,7 +216,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
           </View>
           {/* Info Box */}
           <View
-            className="dark-panel rounded-lg px-2 py-1.5 mt-1 min-w-[56px] items-center justify-center"
+            className={`${currentTheme.classes.panel} rounded-lg px-2 py-1.5 mt-1 min-w-[56px] items-center justify-center`}
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 1 },
@@ -222,11 +225,11 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
               elevation: 2,
             }}
           >
-            <Text className="text-gold-400 text-[10px] font-medium text-center">
+            <Text className={`${currentTheme.classes.textAccent} text-[10px] font-medium text-center`}>
               {WIND_LABELS[player.position]}
             </Text>
             <Text
-              className="text-white text-xs font-bold text-center mt-0.5"
+              className={`${currentTheme.classes.textPrimary} text-xs font-bold text-center mt-0.5`}
               numberOfLines={1}
             >
               {player.name}
@@ -248,7 +251,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
         <>
           {/* Info Box */}
           <View
-            className="dark-panel rounded-lg px-2 py-1.5 mb-1 min-w-[56px] items-center justify-center"
+            className={`${currentTheme.classes.panel} rounded-lg px-2 py-1.5 mb-1 min-w-[56px] items-center justify-center`}
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 1 },
@@ -257,11 +260,11 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
               elevation: 2,
             }}
           >
-            <Text className="text-gold-400 text-[10px] font-medium text-center">
+            <Text className={`${currentTheme.classes.textAccent} text-[10px] font-medium text-center`}>
               {WIND_LABELS[player.position]}
             </Text>
             <Text
-              className="text-white text-xs font-bold text-center mt-0.5"
+              className={`${currentTheme.classes.textPrimary} text-xs font-bold text-center mt-0.5`}
               numberOfLines={1}
             >
               {player.name}

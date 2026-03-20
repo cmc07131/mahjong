@@ -3,6 +3,7 @@ import { View, Text, ScrollView, KeyboardAvoidingView, Platform, TextInput, Touc
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useGameStore } from '../src/store/gameStore';
+import { useThemeStore } from '../src/store/themeStore';
 import { Wind } from '../src/types';
 
 // 預設玩家名稱
@@ -38,6 +39,7 @@ const WIND_SYMBOLS: Record<Wind, string> = {
 
 export default function SetupScreen() {
   const startGame = useGameStore((state) => state.startGame);
+  const { currentTheme } = useThemeStore();
   
   // 玩家名稱狀態
   const [players, setPlayers] = useState<{ wind: Wind; name: string }[]>(DEFAULT_PLAYERS);
@@ -86,7 +88,7 @@ export default function SetupScreen() {
   const canStart = players.every((p) => p.name.trim().length > 0);
 
   return (
-    <SafeAreaView className="flex-1 emerald-gradient" edges={['top']}>
+    <SafeAreaView className={`flex-1 ${currentTheme.classes.background}`} edges={['top']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -98,17 +100,17 @@ export default function SetupScreen() {
         >
           {/* 標題區 */}
           <View className="items-center mb-6 mt-2">
-            <Text className="text-2xl font-bold text-gold-400 mb-2">
+            <Text className={`text-2xl font-bold ${currentTheme.classes.textAccent} mb-2`}>
               香港麻將計分
             </Text>
-            <Text className="text-sm text-emerald-300">
+            <Text className={`text-sm ${currentTheme.classes.textSecondary}`}>
               設定玩家與金額，開始牌局
             </Text>
           </View>
 
           {/* 玩家設定卡片 */}
-          <View className="dark-panel rounded-2xl border border-gold-500/50 p-4 mb-4">
-            <Text className="text-white font-bold text-lg mb-4">玩家設定</Text>
+          <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
+            <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-4`}>玩家設定</Text>
             {players.map((player) => (
               <View key={player.wind} className="flex-row items-center mb-3">
                 {/* Wind Badge */}
@@ -131,7 +133,7 @@ export default function SetupScreen() {
                 {/* Input */}
                 <View className="flex-1">
                   <View 
-                    className="bg-emerald-900/50 border border-gold-500/30 rounded-xl px-4 py-3"
+                    className={`${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} rounded-xl px-4 py-3`}
                     style={{
                       shadowColor: '#000',
                       shadowOffset: { width: 0, height: 1 },
@@ -144,9 +146,9 @@ export default function SetupScreen() {
                       value={player.name}
                       onChangeText={(text) => handlePlayerChange(player.wind, text)}
                       placeholder={`輸入${WIND_LABELS[player.wind]}名稱`}
-                      placeholderTextColor="#6b7280"
-                      className="text-white text-base"
-                      style={{ color: 'white', fontSize: 16 }}
+                      placeholderTextColor={currentTheme.colors.text.muted}
+                      className={`${currentTheme.classes.textPrimary} text-base`}
+                      style={{ color: currentTheme.colors.text.primary, fontSize: 16 }}
                     />
                   </View>
                 </View>
@@ -155,9 +157,9 @@ export default function SetupScreen() {
           </View>
 
           {/* 金額設定卡片 */}
-          <View className="dark-panel rounded-2xl border border-gold-500/50 p-4 mb-4">
-            <Text className="text-white font-bold text-lg mb-4">金額設定</Text>
-            <Text className="text-gold-300 text-sm mb-3">10番多少錢？</Text>
+          <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
+            <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-4`}>金額設定</Text>
+            <Text className={`${currentTheme.classes.textSecondary} text-sm mb-3`}>10番多少錢？</Text>
             
             {/* Preset amounts */}
             <View className="flex-row flex-wrap gap-2 mb-3">
@@ -170,7 +172,7 @@ export default function SetupScreen() {
                       px-4 py-2.5 rounded-xl items-center justify-center
                       ${isSelected 
                         ? 'gold-gradient' 
-                        : 'bg-emerald-800 border border-gold-500/30'
+                        : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
                       }
                     `}
                     style={{ minWidth: 70 }}
@@ -180,7 +182,7 @@ export default function SetupScreen() {
                     <Text 
                       className={`
                         font-bold text-base
-                        ${isSelected ? 'text-emerald-950' : 'text-white'}
+                        ${isSelected ? 'text-emerald-950' : currentTheme.classes.textPrimary}
                       `}
                     >
                       ${amount}
@@ -191,7 +193,7 @@ export default function SetupScreen() {
             </View>
             
             {/* Custom amount hint */}
-            <Text className="text-emerald-400 text-xs">
+            <Text className={`${currentTheme.classes.textSecondary} text-xs`}>
               目前設定：10番 ${unitAmount}
             </Text>
           </View>
@@ -203,7 +205,7 @@ export default function SetupScreen() {
                 rounded-xl py-4 items-center justify-center
                 ${canStart 
                   ? 'gold-gradient' 
-                  : 'bg-emerald-900/50 border border-gold-500/20'
+                  : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
                 }
               `}
               style={{
@@ -220,7 +222,7 @@ export default function SetupScreen() {
               <Text 
                 className={`
                   font-bold text-lg
-                  ${canStart ? 'text-emerald-950' : 'text-emerald-700'}
+                  ${canStart ? 'text-emerald-950' : currentTheme.classes.textSecondary}
                 `}
               >
                 {isLoading ? '載入中...' : '開始牌局'}

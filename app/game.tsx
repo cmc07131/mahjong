@@ -3,6 +3,7 @@ import { View, ScrollView, Alert, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useGameStore } from '../src/store/gameStore';
+import { useThemeStore } from '../src/store/themeStore';
 import { MahjongTable, ActionPanel } from '../src/components/game';
 import { Button } from '../src/components/common';
 import { WinType, CurrentRound } from '../src/types';
@@ -10,6 +11,7 @@ import { calculatePreviewChanges } from '../src/utils/scoring';
 
 export default function GameScreen() {
   const router = useRouter();
+  const { currentTheme } = useThemeStore();
   
   // Get state from store
   const {
@@ -192,12 +194,12 @@ export default function GameScreen() {
   // Check game status
   if (status !== 'PLAYING' || players.length !== 4) {
     return (
-      <SafeAreaView className="flex-1 emerald-gradient" edges={['top']}>
+      <SafeAreaView className={`flex-1 ${currentTheme.classes.background}`} edges={['top']}>
         <View className="flex-1 items-center justify-center p-4">
-          <Text className="text-white text-xl font-bold mb-4">
+          <Text className={`${currentTheme.classes.textPrimary} text-xl font-bold mb-4`}>
             尚未開始遊戲
           </Text>
-          <Text className="text-emerald-200 text-base mb-6 text-center">
+          <Text className={`${currentTheme.classes.textSecondary} text-base mb-6 text-center`}>
             請先設定玩家資料開始新牌局
           </Text>
           <Button
@@ -213,7 +215,7 @@ export default function GameScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 emerald-gradient" edges={['top']}>
+    <SafeAreaView className={`flex-1 ${currentTheme.classes.background}`} edges={['top']}>
       {/* Cloud pattern overlay */}
       <View className="absolute inset-0 cloud-pattern opacity-30" />
       

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useHistoryStore } from '../../src/store/historyStore';
+import { useThemeStore } from '../../src/store/themeStore';
 import { MatchDetailHeader } from '../../src/components/history/MatchDetailHeader';
 import { FinalScoreCard } from '../../src/components/history/FinalScoreCard';
 import { RoundHistoryList } from '../../src/components/history/RoundHistoryList';
@@ -11,6 +12,7 @@ export default function HistoryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { currentHistory, isLoading, loadHistoryDetail, deleteHistory } = useHistoryStore();
+  const { currentTheme } = useThemeStore();
 
   useEffect(() => {
     if (id) {
@@ -47,25 +49,25 @@ export default function HistoryDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center emerald-gradient">
-        <ActivityIndicator size="large" color="#D4AF37" />
+      <View className={`flex-1 justify-center items-center ${currentTheme.classes.background}`}>
+        <ActivityIndicator size="large" color={currentTheme.colors.text.accent} />
       </View>
     );
   }
 
   if (!currentHistory) {
     return (
-      <View className="flex-1 justify-center items-center emerald-gradient">
-        <Text className="text-emerald-200">找不到比賽記錄</Text>
+      <View className={`flex-1 justify-center items-center ${currentTheme.classes.background}`}>
+        <Text className={currentTheme.classes.textSecondary}>找不到比賽記錄</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-gold-400">返回首頁</Text>
+          <Text className={currentTheme.classes.textAccent}>返回首頁</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 emerald-gradient">
+    <View className={`flex-1 ${currentTheme.classes.background}`}>
       {/* Cloud pattern overlay */}
       <View className="absolute inset-0 cloud-pattern opacity-30" />
       
@@ -76,7 +78,7 @@ export default function HistoryDetailScreen() {
       </ScrollView>
       
       {/* 底部操作按鈕 */}
-      <View className="flex-row p-4 dark-panel border-t border-gold-500/30 gap-3">
+      <View className={`flex-row p-4 ${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} gap-3`}>
         <Button
           onPress={handleDelete}
           variant="outline"

@@ -3,6 +3,7 @@ import { Player, WinType } from '../../types';
 import { FanSelector } from './FanSelector';
 import { WinnerSelector } from './WinnerSelector';
 import { WinTypeSelector } from './WinTypeSelector';
+import { useThemeStore } from '../../store/themeStore';
 
 interface ActionPanelProps {
   players: Player[];
@@ -45,6 +46,8 @@ export function ActionPanel({
   canUndo,
   previewChanges,
 }: ActionPanelProps) {
+  const { currentTheme } = useThemeStore();
+  
   // 檢查是否可以確認本局
   const canConfirm = () => {
     if (!selectedFan) return false;
@@ -56,10 +59,10 @@ export function ActionPanel({
   };
 
   return (
-    <View className="dark-panel rounded-2xl border border-gold-500/50 p-3 md:p-4 mx-3 md:mx-4">
+    <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-3 md:p-4 mx-3 md:mx-4`}>
       {/* Step 1: Fan Selection */}
       <View className="mb-3 md:mb-4">
-        <Text className="text-white font-bold text-base md:text-lg mb-2 md:mb-3">步驟一：選擇番數</Text>
+        <Text className={`${currentTheme.classes.textPrimary} font-bold text-base md:text-lg mb-2 md:mb-3`}>步驟一：選擇番數</Text>
         <FanSelector
           selectedFan={selectedFan}
           onSelectFan={onSelectFan}
@@ -68,8 +71,8 @@ export function ActionPanel({
       </View>
       
       {/* Step 2: Winner Selection */}
-      <View className="mb-3 md:mb-4 border-t border-gold-500/30 pt-3 md:pt-4">
-        <Text className="text-white font-bold text-base md:text-lg mb-2 md:mb-3">步驟二：選擇食糊者</Text>
+      <View className={`mb-3 md:mb-4 ${currentTheme.classes.panelBorder} pt-3 md:pt-4`}>
+        <Text className={`${currentTheme.classes.textPrimary} font-bold text-base md:text-lg mb-2 md:mb-3`}>步驟二：選擇食糊者</Text>
         <WinnerSelector
           players={players}
           selectedWinnerId={selectedWinnerId}
@@ -79,8 +82,8 @@ export function ActionPanel({
       </View>
       
       {/* Step 3: Win Type */}
-      <View className="mb-3 md:mb-4 border-t border-gold-500/30 pt-3 md:pt-4">
-        <Text className="text-white font-bold text-base md:text-lg mb-2 md:mb-3">步驟三：選擇食糊方式</Text>
+      <View className={`mb-3 md:mb-4 ${currentTheme.classes.panelBorder} pt-3 md:pt-4`}>
+        <Text className={`${currentTheme.classes.textPrimary} font-bold text-base md:text-lg mb-2 md:mb-3`}>步驟三：選擇食糊方式</Text>
         <WinTypeSelector
           selectedWinType={selectedWinType}
           onSelectWinType={onSelectWinType}
@@ -95,8 +98,8 @@ export function ActionPanel({
       
       {/* Score Preview */}
       {previewChanges && Object.keys(previewChanges).length > 0 && (
-        <View className="bg-white/90 rounded-lg p-2.5 md:p-3 mb-3 md:mb-4">
-          <Text className="text-emerald-950 text-xs md:text-sm font-medium mb-1">
+        <View className={`${currentTheme.classes.panel} rounded-lg p-2.5 md:p-3 mb-3 md:mb-4`}>
+          <Text className={`${currentTheme.classes.textPrimary} text-xs md:text-sm font-medium mb-1`}>
             本局分數變動預覽：
           </Text>
           <View className="flex-row flex-wrap">
@@ -106,7 +109,7 @@ export function ActionPanel({
               return (
                 <Text
                   key={player.id}
-                  className={change > 0 ? 'text-score-win font-medium text-xs md:text-sm' : 'text-score-lose font-medium text-xs md:text-sm'}
+                  className={change > 0 ? `${currentTheme.classes.scorePositive} font-medium text-xs md:text-sm` : `${currentTheme.classes.scoreNegative} font-medium text-xs md:text-sm`}
                 >
                   {player.name}: {change > 0 ? '+' : ''}{change}{'  '}
                 </Text>
@@ -125,7 +128,7 @@ export function ActionPanel({
           transition-select button-press
           ${canConfirm()
             ? 'gold-gradient active:opacity-80'
-            : 'bg-emerald-900/50 border border-gold-500/20'
+            : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
           }
         `}
         activeOpacity={0.8}
@@ -133,7 +136,7 @@ export function ActionPanel({
         <Text
           className={`
             font-bold text-base md:text-lg
-            ${canConfirm() ? 'text-emerald-950' : 'text-emerald-700'}
+            ${canConfirm() ? 'text-emerald-950' : currentTheme.classes.textSecondary}
           `}
         >
           確認
@@ -141,7 +144,7 @@ export function ActionPanel({
       </TouchableOpacity>
 
       {/* Action Buttons Row */}
-      <View className="flex-row gap-1.5 md:gap-2 justify-center mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gold-500/30">
+      <View className={`flex-row gap-1.5 md:gap-2 justify-center mt-3 md:mt-4 pt-3 md:pt-4 ${currentTheme.classes.panelBorder}`}>
         {/* 流局 */}
         <TouchableOpacity
           onPress={onDraw}
@@ -159,12 +162,12 @@ export function ActionPanel({
             px-3 md:px-4 py-2.5 md:py-3 rounded-xl flex-1 items-center border button-press
             ${canUndo
               ? 'bg-blue-600 active:bg-blue-500 border-blue-400/50'
-              : 'bg-emerald-900/50 border-gold-500/20'
+              : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
             }
           `}
           activeOpacity={0.8}
         >
-          <Text className={`font-bold text-sm md:text-base ${canUndo ? 'text-white' : 'text-emerald-700'}`}>
+          <Text className={`font-bold text-sm md:text-base ${canUndo ? 'text-white' : currentTheme.classes.textSecondary}`}>
             復原
           </Text>
         </TouchableOpacity>

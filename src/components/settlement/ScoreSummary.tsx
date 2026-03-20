@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import { Player } from '../../types';
+import { useThemeStore } from '../../store/themeStore';
 
 interface ScoreSummaryProps {
   players: Player[];
@@ -7,6 +8,8 @@ interface ScoreSummaryProps {
 }
 
 export function ScoreSummary({ players, unitAmount }: ScoreSummaryProps) {
+  const { currentTheme } = useThemeStore();
+  
   // 依分數排序（由高到低）
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
 
@@ -24,16 +27,16 @@ export function ScoreSummary({ players, unitAmount }: ScoreSummaryProps) {
 
   return (
     <View 
-      className="dark-panel rounded-xl p-4 border border-gold-500/30"
+      className={`${currentTheme.classes.panel} rounded-xl p-4 ${currentTheme.classes.panelBorder}`}
       style={{
-        shadowColor: '#D4AF37',
+        shadowColor: currentTheme.colors.shadow.color,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 4,
+        shadowOpacity: currentTheme.colors.shadow.opacity,
+        shadowRadius: currentTheme.colors.shadow.radius,
+        elevation: currentTheme.colors.shadow.elevation,
       }}
     >
-      <Text className="text-xl font-bold text-gold-400 mb-4 text-center">
+      <Text className={`text-xl font-bold ${currentTheme.classes.textAccent} mb-4 text-center`}>
         🏆 總成績單
       </Text>
       
@@ -48,22 +51,22 @@ export function ScoreSummary({ players, unitAmount }: ScoreSummaryProps) {
             <View
               key={player.id}
               className={`flex-row justify-between items-center py-3 px-4 rounded-xl ${
-                index === 0 ? 'bg-emerald-800/50 border border-gold-500/30' : 'bg-emerald-900/30'
+                index === 0 ? `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}` : currentTheme.classes.panel
               }`}
             >
               <View className="flex-row items-center">
                 {index === 0 && <Text className="mr-2">👑</Text>}
-                <Text className={`text-lg font-medium ${index === 0 ? 'text-gold-400 font-bold' : 'text-white'}`}>
+                <Text className={`text-lg font-medium ${index === 0 ? `font-bold ${currentTheme.classes.textAccent}` : currentTheme.classes.textPrimary}`}>
                   {player.name}
                 </Text>
               </View>
               <Text
                 className={`text-lg font-bold ${
                   isWinner
-                    ? 'text-green-400'
+                    ? currentTheme.classes.scorePositive
                     : isLoser
-                    ? 'text-red-400'
-                    : 'text-emerald-200'
+                    ? currentTheme.classes.scoreNegative
+                    : currentTheme.classes.textSecondary
                 }`}
               >
                 {formatAmount(player.score)}

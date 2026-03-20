@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { Settlement } from '../../utils/settlement';
 import { Player } from '../../types';
+import { useThemeStore } from '../../store/themeStore';
 
 interface PaymentListProps {
   settlements: Settlement[];
@@ -9,6 +10,8 @@ interface PaymentListProps {
 }
 
 export function PaymentList({ settlements, players, unitAmount }: PaymentListProps) {
+  const { currentTheme } = useThemeStore();
+  
   // 根據玩家 ID 取得玩家名稱
   const getPlayerName = (playerId: string) => {
     const player = players.find((p) => p.id === playerId);
@@ -23,19 +26,19 @@ export function PaymentList({ settlements, players, unitAmount }: PaymentListPro
   if (settlements.length === 0) {
     return (
       <View 
-        className="dark-panel rounded-xl p-4 border border-gold-500/30"
+        className={`${currentTheme.classes.panel} rounded-xl p-4 ${currentTheme.classes.panelBorder}`}
         style={{
-          shadowColor: '#D4AF37',
+          shadowColor: currentTheme.colors.shadow.color,
           shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-          elevation: 4,
+          shadowOpacity: currentTheme.colors.shadow.opacity,
+          shadowRadius: currentTheme.colors.shadow.radius,
+          elevation: currentTheme.colors.shadow.elevation,
         }}
       >
-        <Text className="text-xl font-bold text-gold-400 mb-4 text-center">
+        <Text className={`text-xl font-bold ${currentTheme.classes.textAccent} mb-4 text-center`}>
           💰 最簡化找數
         </Text>
-        <Text className="text-center text-emerald-200 py-4">
+        <Text className={`text-center ${currentTheme.classes.textSecondary} py-4`}>
           沒有需要結算的金額
         </Text>
       </View>
@@ -44,16 +47,16 @@ export function PaymentList({ settlements, players, unitAmount }: PaymentListPro
 
   return (
     <View 
-      className="dark-panel rounded-xl p-4 border border-gold-500/30"
+      className={`${currentTheme.classes.panel} rounded-xl p-4 ${currentTheme.classes.panelBorder}`}
       style={{
-        shadowColor: '#D4AF37',
+        shadowColor: currentTheme.colors.shadow.color,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 4,
+        shadowOpacity: currentTheme.colors.shadow.opacity,
+        shadowRadius: currentTheme.colors.shadow.radius,
+        elevation: currentTheme.colors.shadow.elevation,
       }}
     >
-      <Text className="text-xl font-bold text-gold-400 mb-4 text-center">
+      <Text className={`text-xl font-bold ${currentTheme.classes.textAccent} mb-4 text-center`}>
         💰 最簡化找數
       </Text>
       
@@ -67,28 +70,28 @@ export function PaymentList({ settlements, players, unitAmount }: PaymentListPro
           return (
             <View
               key={`${settlement.from}-${settlement.to}-${index}`}
-              className="flex-row items-center justify-between py-3 px-4 rounded-xl bg-emerald-900/30"
+              className={`flex-row items-center justify-between py-3 px-4 rounded-xl ${currentTheme.classes.panel}`}
             >
               <View className="flex-row items-center flex-1">
-                <View className="bg-red-900/50 rounded-lg px-3 py-1.5 border border-red-500/30">
-                  <Text className="text-red-400 font-medium">
+                <View className={`${currentTheme.classes.buttonDanger} rounded-lg px-3 py-1.5`}>
+                  <Text className={`${currentTheme.classes.scoreNegative} font-medium`}>
                     {fromName}
                   </Text>
                 </View>
                 
                 <View className="flex-row items-center mx-2">
-                  <Text className="text-gold-400 text-sm">➔</Text>
-                  <Text className="text-emerald-300 text-xs mx-1">轉給</Text>
+                  <Text className={`${currentTheme.classes.textAccent} text-sm`}>➔</Text>
+                  <Text className={`${currentTheme.classes.textSecondary} text-xs mx-1`}>轉給</Text>
                 </View>
                 
-                <View className="bg-green-900/50 rounded-lg px-3 py-1.5 border border-green-500/30">
-                  <Text className="text-green-400 font-medium">
+                <View className={`${currentTheme.classes.buttonPrimary} rounded-lg px-3 py-1.5`}>
+                  <Text className={`${currentTheme.classes.scorePositive} font-medium`}>
                     {toName}
                   </Text>
                 </View>
               </View>
               
-              <Text className="text-lg font-bold text-gold-400 ml-2">
+              <Text className={`text-lg font-bold ${currentTheme.classes.textAccent} ml-2`}>
                 {formatAmount(amount)}
               </Text>
             </View>

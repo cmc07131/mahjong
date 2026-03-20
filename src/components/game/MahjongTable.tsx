@@ -1,6 +1,7 @@
 import { View, Text, Dimensions } from 'react-native';
 import { Player, Wind } from '../../types';
 import { PlayerSeat } from './PlayerSeat';
+import { useThemeStore } from '../../store/themeStore';
 
 interface MahjongTableProps {
   players: Player[];
@@ -24,6 +25,8 @@ export function MahjongTable({
   prevailingWind,
   roundNumber
 }: MahjongTableProps) {
+  const { currentTheme } = useThemeStore();
+  
   // Get screen dimensions for responsive table size
   const screenWidth = Dimensions.get('window').width;
   // Ensure table doesn't exceed viewport and is responsive
@@ -53,9 +56,9 @@ export function MahjongTable({
     <View className="items-center justify-center">
       {/* Center Round Title - positioned ABOVE the table */}
       <View className="mb-3">
-        <View className="bg-emerald-950/90 px-4 py-2 rounded-full border border-gold-500/50 shadow-lg">
+        <View className={`${currentTheme.classes.panel} px-4 py-2 rounded-full ${currentTheme.classes.panelBorder} shadow-lg`}>
           <Text
-            className="text-gold-400 text-base font-bold"
+            className={`${currentTheme.classes.textAccent} text-base font-bold`}
             style={{ letterSpacing: 2 }}
           >
             {WIND_LABELS[prevailingWind]}風圈 / 第{roundNumber}局

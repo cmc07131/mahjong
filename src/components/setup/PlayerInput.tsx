@@ -1,6 +1,7 @@
 import { View, Text, TextStyle, ViewStyle } from 'react-native';
 import { Input } from '../common/Input';
 import { Wind } from '../../types';
+import { useThemeStore } from '../../store/themeStore';
 
 interface PlayerInputProps {
   wind: Wind;
@@ -31,6 +32,8 @@ export function PlayerInput({
   onChange,
   placeholder,
 }: PlayerInputProps) {
+  const { currentTheme } = useThemeStore();
+  
   const containerStyle: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
@@ -48,7 +51,7 @@ export function PlayerInput({
   };
 
   const windTextStyle: TextStyle = {
-    color: '#ffffff',
+    color: currentTheme.colors.text.primary,
     fontSize: 16,
     fontWeight: '700',
   };
@@ -67,6 +70,7 @@ export function PlayerInput({
           value={value}
           onChangeText={onChange}
           placeholder={placeholder || `輸入${label}名稱`}
+          placeholderTextColor={currentTheme.colors.text.muted}
           autoCapitalize="none"
           autoCorrect={false}
         />

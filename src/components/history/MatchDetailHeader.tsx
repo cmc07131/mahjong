@@ -1,12 +1,15 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { MatchHistoryDetail } from '../../types';
+import { useThemeStore } from '../../store/themeStore';
 
 interface MatchDetailHeaderProps {
   history: MatchHistoryDetail;
 }
 
 export function MatchDetailHeader({ history }: MatchDetailHeaderProps) {
+  const { currentTheme } = useThemeStore();
+  
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('zh-TW', {
@@ -20,27 +23,27 @@ export function MatchDetailHeader({ history }: MatchDetailHeaderProps) {
 
   return (
     <View 
-      className="dark-panel p-4 border-b border-gold-500/30"
+      className={`${currentTheme.classes.panel} p-4 ${currentTheme.classes.panelBorder}`}
       style={{
-        shadowColor: '#D4AF37',
+        shadowColor: currentTheme.colors.shadow.color,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 4,
+        shadowOpacity: currentTheme.colors.shadow.opacity,
+        shadowRadius: currentTheme.colors.shadow.radius,
+        elevation: currentTheme.colors.shadow.elevation,
       }}
     >
-      <Text className="text-2xl font-bold text-gold-400 mb-2">
+      <Text className={`text-2xl font-bold ${currentTheme.classes.textAccent} mb-2`}>
         📋 比賽詳情
       </Text>
       <View className="flex-row justify-between">
-        <Text className="text-emerald-200">
+        <Text className={currentTheme.classes.textSecondary}>
           開始: {formatDate(history.createdAt)}
         </Text>
-        <Text className="text-gold-400">
+        <Text className={currentTheme.classes.textAccent}>
           {history.totalRounds} 局
         </Text>
       </View>
-      <Text className="text-emerald-200 mt-1">
+      <Text className={`${currentTheme.classes.textSecondary} mt-1`}>
         結束: {formatDate(history.completedAt)}
       </Text>
     </View>

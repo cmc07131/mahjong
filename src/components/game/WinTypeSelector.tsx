@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Player, Wind, WinType } from '../../types';
+import { useThemeStore } from '../../store/themeStore';
 
 interface WinTypeSelectorProps {
   selectedWinType: WinType | null;
@@ -30,6 +31,8 @@ export function WinTypeSelector({
   onSelectLoser,
   disabled = false,
 }: WinTypeSelectorProps) {
+  const { currentTheme } = useThemeStore();
+  
   // 過濾掉贏家，只顯示可能的出銃者
   const potentialLosers = players.filter(p => p.id !== winnerId);
 
@@ -49,8 +52,8 @@ export function WinTypeSelector({
             ${isSelfDrawSelected
               ? 'gold-gradient selected-glow'
               : disabled
-                ? 'bg-emerald-900/50 border border-gold-500/20'
-                : 'bg-emerald-700 border border-gold-500/50 active:bg-emerald-600'
+                ? `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                : `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder} active:opacity-80`
             }
           `}
           activeOpacity={0.8}
@@ -61,8 +64,8 @@ export function WinTypeSelector({
               ${isSelfDrawSelected
                 ? 'text-emerald-950'
                 : disabled
-                  ? 'text-emerald-700'
-                  : 'text-white'
+                  ? `${currentTheme.classes.textSecondary}`
+                  : `${currentTheme.classes.textPrimary}`
               }
             `}
           >
@@ -79,8 +82,8 @@ export function WinTypeSelector({
             ${isRonSelected
               ? 'gold-gradient selected-glow'
               : disabled
-                ? 'bg-emerald-900/50 border border-gold-500/20'
-                : 'bg-emerald-700 border border-gold-500/50 active:bg-emerald-600'
+                ? `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                : `${currentTheme.classes.buttonPrimary} ${currentTheme.classes.panelBorder} active:opacity-80`
             }
           `}
           activeOpacity={0.8}
@@ -91,8 +94,8 @@ export function WinTypeSelector({
               ${isRonSelected
                 ? 'text-emerald-950'
                 : disabled
-                  ? 'text-emerald-700'
-                  : 'text-white'
+                  ? `${currentTheme.classes.textSecondary}`
+                  : `${currentTheme.classes.textPrimary}`
               }
             `}
           >

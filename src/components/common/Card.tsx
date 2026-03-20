@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { View, ViewStyle } from 'react-native';
+import { useThemeStore } from '../../store/themeStore';
 
 interface CardProps {
   children: ReactNode;
@@ -9,14 +10,16 @@ interface CardProps {
 }
 
 export function Card({ children, padding = 'md', style }: CardProps) {
+  const { currentTheme } = useThemeStore();
+  
   const baseStyle: ViewStyle = {
-    backgroundColor: '#ffffff',
+    backgroundColor: currentTheme.colors.panel.primary,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: currentTheme.colors.shadow.color,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: currentTheme.colors.shadow.opacity,
+    shadowRadius: currentTheme.colors.shadow.radius,
+    elevation: currentTheme.colors.shadow.elevation,
   };
 
   const paddingStyles: Record<string, ViewStyle> = {

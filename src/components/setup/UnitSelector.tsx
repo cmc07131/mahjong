@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ViewStyle, TextStyle } from 'react-native';
+import { useThemeStore } from '../../store/themeStore';
 
 interface UnitSelectorProps {
   value: number;
@@ -9,6 +10,7 @@ interface UnitSelectorProps {
 const PRESET_AMOUNTS = [128, 256, 512];
 
 export function UnitSelector({ value, onChange }: UnitSelectorProps) {
+  const { currentTheme } = useThemeStore();
   const [isCustom, setIsCustom] = useState(!PRESET_AMOUNTS.includes(value));
   const [customValue, setCustomValue] = useState(value.toString());
 
@@ -19,7 +21,7 @@ export function UnitSelector({ value, onChange }: UnitSelectorProps) {
   const labelStyle: TextStyle = {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: currentTheme.colors.text.primary,
     marginBottom: 12,
   };
 
@@ -33,15 +35,15 @@ export function UnitSelector({ value, onChange }: UnitSelectorProps) {
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 10,
-    backgroundColor: isSelected ? '#16a34a' : '#f3f4f6',
+    backgroundColor: isSelected ? currentTheme.colors.button.primary : currentTheme.colors.panel.secondary,
     borderWidth: 1,
-    borderColor: isSelected ? '#16a34a' : '#e5e7eb',
+    borderColor: isSelected ? currentTheme.colors.button.primary : currentTheme.colors.panel.border,
   });
 
   const optionTextStyle = (isSelected: boolean): TextStyle => ({
     fontSize: 15,
     fontWeight: '600',
-    color: isSelected ? '#ffffff' : '#374151',
+    color: isSelected ? currentTheme.colors.text.primary : currentTheme.colors.text.secondary,
   });
 
   const customContainerStyle: ViewStyle = {
@@ -52,9 +54,9 @@ export function UnitSelector({ value, onChange }: UnitSelectorProps) {
 
   const customInputContainerStyle: ViewStyle = {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: currentTheme.colors.panel.secondary,
     borderWidth: 1,
-    borderColor: isCustom ? '#16a34a' : '#e5e7eb',
+    borderColor: isCustom ? currentTheme.colors.button.primary : currentTheme.colors.panel.border,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -62,7 +64,7 @@ export function UnitSelector({ value, onChange }: UnitSelectorProps) {
 
   const customInputTextStyle: TextStyle = {
     fontSize: 16,
-    color: '#1f2937',
+    color: currentTheme.colors.text.primary,
   };
 
   const handlePresetSelect = (amount: number) => {
@@ -103,14 +105,14 @@ export function UnitSelector({ value, onChange }: UnitSelectorProps) {
       </View>
 
       <View style={customContainerStyle}>
-        <Text style={{ fontSize: 14, color: '#6b7280', marginRight: 8 }}>或自訂：</Text>
+        <Text style={{ fontSize: 14, color: currentTheme.colors.text.secondary, marginRight: 8 }}>或自訂：</Text>
         <TextInput
           style={[customInputContainerStyle, customInputTextStyle]}
           value={isCustom ? customValue : ''}
           onChangeText={handleCustomChange}
           onFocus={handleCustomFocus}
           placeholder="輸入金額"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={currentTheme.colors.text.muted}
           keyboardType="numeric"
         />
       </View>

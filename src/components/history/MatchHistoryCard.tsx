@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Pressable } from 'react-native';
 import { MatchHistorySummary } from '../../types';
 import { Card } from '../common/Card';
+import { useThemeStore } from '../../store/themeStore';
 
 interface MatchHistoryCardProps {
   history: MatchHistorySummary;
@@ -10,6 +11,8 @@ interface MatchHistoryCardProps {
 }
 
 export function MatchHistoryCard({ history, onPress, onDelete }: MatchHistoryCardProps) {
+  const { currentTheme } = useThemeStore();
+  
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('zh-TW', {
@@ -24,21 +27,21 @@ export function MatchHistoryCard({ history, onPress, onDelete }: MatchHistoryCar
 
   return (
     <View 
-      className="mb-3 dark-panel rounded-xl border border-gold-500/30 overflow-hidden"
+      className={`mb-3 ${currentTheme.classes.panel} rounded-xl ${currentTheme.classes.panelBorder} overflow-hidden`}
       style={{
-        shadowColor: '#D4AF37',
+        shadowColor: currentTheme.colors.shadow.color,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 4,
+        shadowOpacity: currentTheme.colors.shadow.opacity,
+        shadowRadius: currentTheme.colors.shadow.radius,
+        elevation: currentTheme.colors.shadow.elevation,
       }}
     >
       <Pressable onPress={onPress} className="p-4">
         <View className="flex-row justify-between items-start mb-2">
-          <Text className="text-sm text-emerald-200">
+          <Text className={`text-sm ${currentTheme.classes.textSecondary}`}>
             {formatDate(history.completedAt)}
           </Text>
-          <Text className="text-xs text-gold-400">
+          <Text className={`text-xs ${currentTheme.classes.textAccent}`}>
             {history.totalRounds} 局
           </Text>
         </View>
@@ -46,21 +49,21 @@ export function MatchHistoryCard({ history, onPress, onDelete }: MatchHistoryCar
         <View className="flex-row flex-wrap gap-2 mb-2">
           {history.players.map((player, index) => (
             <View key={player.id} className="flex-row items-center">
-              <Text className={`text-base ${player.isWinner ? 'font-bold text-gold-400' : 'text-white'}`}>
+              <Text className={`text-base ${player.isWinner ? `font-bold ${currentTheme.classes.textAccent}` : currentTheme.classes.textPrimary}`}>
                 {player.name}
               </Text>
-              <Text className={`ml-1 ${player.finalScore >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <Text className={`ml-1 ${player.finalScore >= 0 ? currentTheme.classes.scorePositive : currentTheme.classes.scoreNegative}`}>
                 ({player.finalScore >= 0 ? '+' : ''}{player.finalScore})
               </Text>
               {index < history.players.length - 1 && (
-                <Text className="text-emerald-500 mx-1">|</Text>
+                <Text className={`${currentTheme.classes.textSecondary} mx-1`}>|</Text>
               )}
             </View>
           ))}
         </View>
 
         {winner && (
-          <Text className="text-sm text-gold-400">
+          <Text className={`text-sm ${currentTheme.classes.textAccent}`}>
             🏆 贏家: {winner.name}
           </Text>
         )}
@@ -73,9 +76,9 @@ export function MatchHistoryCard({ history, onPress, onDelete }: MatchHistoryCar
             console.log('TouchableOpacity onPress called');
             onDelete();
           }}
-          className="px-3 py-1 rounded-full bg-red-900/50 border border-red-500/30"
+          className={`px-3 py-1 rounded-full ${currentTheme.classes.buttonDanger}`}
         >
-          <Text className="text-red-400 text-sm">刪除</Text>
+          <Text className={`${currentTheme.classes.scoreNegative} text-sm`}>刪除</Text>
         </TouchableOpacity>
       </View>
     </View>

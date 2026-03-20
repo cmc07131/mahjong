@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useThemeStore } from '../../store/themeStore';
 
 interface FanSelectorProps {
   selectedFan: number | null;
@@ -10,6 +11,8 @@ interface FanSelectorProps {
 const FAN_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
 export function FanSelector({ selectedFan, onSelectFan, disabled = false }: FanSelectorProps) {
+  const { currentTheme } = useThemeStore();
+  
   return (
     <ScrollView 
       horizontal 
@@ -31,8 +34,8 @@ export function FanSelector({ selectedFan, onSelectFan, disabled = false }: FanS
                 ${isSelected
                   ? 'gold-gradient selected-glow'
                   : disabled
-                    ? 'bg-emerald-900/50'
-                    : 'bg-emerald-600 active:bg-emerald-500'
+                    ? `${currentTheme.classes.panel}`
+                    : `${currentTheme.classes.buttonPrimary} active:opacity-80`
                 }
               `}
               activeOpacity={0.8}
@@ -43,8 +46,8 @@ export function FanSelector({ selectedFan, onSelectFan, disabled = false }: FanS
                   ${isSelected
                     ? 'text-emerald-950'
                     : disabled
-                      ? 'text-emerald-700'
-                      : 'text-white'
+                      ? `${currentTheme.classes.textSecondary}`
+                      : `${currentTheme.classes.textPrimary}`
                   }
                 `}
               >

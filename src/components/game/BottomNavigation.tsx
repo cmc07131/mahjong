@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useThemeStore } from '../../store/themeStore';
 
 interface BottomNavigationProps {
   onHistoryPress?: () => void;
@@ -11,15 +12,17 @@ export function BottomNavigation({
   onSettingsPress, 
   onFaPress 
 }: BottomNavigationProps) {
+  const { currentTheme } = useThemeStore();
+  
   return (
     <View
-      className="flex-row justify-between items-center px-4 md:px-6 py-2.5 md:py-3 bg-emerald-950 border-t border-gold-700/30"
+      className={`flex-row justify-between items-center px-4 md:px-6 py-2.5 md:py-3 ${currentTheme.classes.background} ${currentTheme.classes.panelBorder}`}
       style={{
-        shadowColor: '#000',
+        shadowColor: currentTheme.colors.shadow.color,
         shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 8,
+        shadowOpacity: currentTheme.colors.shadow.opacity,
+        shadowRadius: currentTheme.colors.shadow.radius,
+        elevation: currentTheme.colors.shadow.elevation,
       }}
     >
       {/* 發 Button - Gold square button */}

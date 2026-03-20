@@ -1,4 +1,5 @@
 import { TextInput, View, Text, TextInputProps, ViewStyle, TextStyle } from 'react-native';
+import { useThemeStore } from '../../store/themeStore';
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   label?: string;
@@ -16,6 +17,8 @@ export function Input({
   containerClassName = '',
   ...props
 }: InputProps) {
+  const { currentTheme } = useThemeStore();
+  
   const containerStyle: ViewStyle = {
     marginBottom: 12,
   };
@@ -23,16 +26,16 @@ export function Input({
   const labelStyle: TextStyle = {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: currentTheme.colors.text.primary,
     marginBottom: 6,
   };
 
   const inputContainerStyle: ViewStyle = {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: currentTheme.colors.panel.secondary,
     borderWidth: 1,
-    borderColor: error ? '#ef4444' : '#e5e7eb',
+    borderColor: error ? currentTheme.colors.score.negative : currentTheme.colors.panel.border,
     borderRadius: 12,
     paddingHorizontal: 14,
     minHeight: 48,
@@ -41,13 +44,13 @@ export function Input({
   const inputStyle: TextStyle = {
     flex: 1,
     fontSize: 16,
-    color: '#1f2937',
+    color: currentTheme.colors.text.primary,
     paddingVertical: 12,
   };
 
   const errorStyle: TextStyle = {
     fontSize: 12,
-    color: '#ef4444',
+    color: currentTheme.colors.score.negative,
     marginTop: 4,
   };
 
@@ -58,7 +61,7 @@ export function Input({
         {leftIcon && <View style={{ marginRight: 8 }}>{leftIcon}</View>}
         <TextInput
           style={inputStyle}
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={currentTheme.colors.text.muted}
           {...props}
         />
         {rightIcon && <View style={{ marginLeft: 8 }}>{rightIcon}</View>}

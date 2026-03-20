@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Player, Wind } from '../../types';
+import { useThemeStore } from '../../store/themeStore';
 
 interface WinnerSelectorProps {
   players: Player[];
@@ -21,6 +22,8 @@ export function WinnerSelector({
   onSelectWinner, 
   disabled = false 
 }: WinnerSelectorProps) {
+  const { currentTheme } = useThemeStore();
+  
   return (
     <View className="flex-row justify-center">
       {players.map((player) => {
@@ -36,8 +39,8 @@ export function WinnerSelector({
               ${isSelected
                 ? 'gold-gradient border-2 border-gold-300 selected-glow'
                 : disabled
-                  ? 'bg-emerald-900/50 border border-gold-500/20'
-                  : 'bg-emerald-800/80 border border-gold-500/30 active:bg-emerald-700/80'
+                  ? `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                  : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} active:opacity-80`
               }
             `}
             activeOpacity={0.8}
@@ -48,8 +51,8 @@ export function WinnerSelector({
                 ${isSelected
                   ? 'text-emerald-950'
                   : disabled
-                    ? 'text-emerald-700'
-                    : 'text-white'
+                    ? `${currentTheme.classes.textSecondary}`
+                    : `${currentTheme.classes.textPrimary}`
                 }
               `}
             >
@@ -61,8 +64,8 @@ export function WinnerSelector({
                 ${isSelected
                   ? 'text-emerald-900'
                   : disabled
-                    ? 'text-emerald-700'
-                    : 'text-gold-300'
+                    ? `${currentTheme.classes.textSecondary}`
+                    : `${currentTheme.classes.textAccent}`
                 }
               `}
               numberOfLines={1}

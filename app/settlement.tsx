@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useGameStore } from '../src/store/gameStore';
 import { useHistoryStore } from '../src/store/historyStore';
+import { useThemeStore } from '../src/store/themeStore';
 import { calculateSettlement } from '../src/utils/settlement';
 import { ScoreSummary, PaymentList } from '../src/components/settlement';
 import { Button } from '../src/components/common';
@@ -11,6 +12,7 @@ import { MatchHistoryDetail, PlayerHistoryDetail, RoundRecord } from '../src/typ
 
 export default function SettlementScreen() {
   const router = useRouter();
+  const { currentTheme } = useThemeStore();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   
@@ -116,9 +118,9 @@ export default function SettlementScreen() {
   // 如果沒有玩家資料，顯示提示
   if (players.length === 0) {
     return (
-      <SafeAreaView className="flex-1 emerald-gradient">
+      <SafeAreaView className={`flex-1 ${currentTheme.classes.background}`}>
         <View className="flex-1 items-center justify-center p-4">
-          <Text className="text-xl text-emerald-200">
+          <Text className={`text-xl ${currentTheme.classes.textSecondary}`}>
             尚未開始遊戲
           </Text>
           <View className="mt-4">
@@ -132,13 +134,13 @@ export default function SettlementScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 emerald-gradient">
+    <SafeAreaView className={`flex-1 ${currentTheme.classes.background}`}>
       {/* Cloud pattern overlay */}
       <View className="absolute inset-0 cloud-pattern opacity-30" />
       
       <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
         {/* 標題 */}
-        <Text className="text-2xl font-bold text-gold-400 text-center mb-6">
+        <Text className={`text-2xl font-bold ${currentTheme.classes.textAccent} text-center mb-6`}>
           🎉 遊戲結算
         </Text>
 
