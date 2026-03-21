@@ -1,51 +1,29 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, ScrollView, TextInput, Alert } from 'react-native';
 import { useTableStore, TableShape } from '../../store/tableStore';
 import { useThemeStore } from '../../store/themeStore';
+import { TABLE_SHAPES, PRESET_TABLE_COLORS, isValidHexColor } from '../../config/table';
 
 interface TableStyleSelectorProps {
   visible: boolean;
   onClose: () => void;
 }
 
-const TABLE_SHAPES: { shape: TableShape; name: string; description: string; icon: string }[] = [
-  {
-    shape: 'round',
-    name: '經典圓桌',
-    description: '傳統圓形麻將桌',
-    icon: '⭕',
-  },
-  {
-    shape: 'square',
-    name: '方形實桌',
-    description: '模擬真實方形麻將桌',
-    icon: '⬜',
-  },
-];
-
-const PRESET_COLORS = [
-  { name: '經典綠', surface: '#1B5E20', frame: '#5D4037' },
-  { name: '深藍', surface: '#0d47a1', frame: '#37474f' },
-  { name: '墨綠', surface: '#004d40', frame: '#1a237e' },
-  { name: '酒紅', surface: '#4a148c', frame: '#311b92' },
-  { name: '深灰', surface: '#263238', frame: '#1a1a1a' },
-];
-
 export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps) {
   const { currentTheme } = useThemeStore();
   const { 
     shape, 
     customColors, 
-    useCustomColors,
     setShape, 
     setCustomColors, 
-    setUseCustomColors,
     resetToThemeDefaults 
   } = useTableStore();
   
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [tempSurface, setTempSurface] = useState(customColors?.surface || currentTheme.colors.mahjongTable.surface);
   const [tempFrame, setTempFrame] = useState(customColors?.frame || currentTheme.colors.mahjongTable.frame);
+  const [surfaceError, setSurfaceError] = useState('');
+  const [frameError, setFrameError] = useState('');
 
   const handleShapeSelect = (newShape: TableShape) => {
     setShape(newShape);
@@ -53,21 +31,49 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
 
   const handlePresetColor = (surface: string, frame: string) => {
     setCustomColors({ surface, frame });
-    setUseCustomColors(true);
     setTempSurface(surface);
     setTempFrame(frame);
+    setSurfaceError('');
+    setFrameError('');
   };
 
   const handleApplyCustomColors = () => {
+    let hasError = false;
+    
+    if (!isValidHexColor(tempSurface)) {
+      setSurfaceError('請輸入有效的色碼 (例如 #1B5E20)');
+      hasError = true;
+    } else {
+      setSurfaceError('');
+    }
+    
+    if (!isValidHexColor(tempFrame)) {
+      setFrameError('請輸入有效的色碼 (例如 #5D4037)');
+      hasError = true;
+    } else {
+      setFrameError('');
+    }
+    
+    if (hasError) return;
+    
     setCustomColors({ surface: tempSurface, frame: tempFrame });
-    setUseCustomColors(true);
     setShowColorPicker(false);
   };
 
   const handleResetToTheme = () => {
     resetToThemeDefaults();
     setShowColorPicker(false);
+    setSurfaceError('');
+    setFrameError('');
   };
+
+  const isUsingThemeDefault = !customColors;
+
+  // Get preview colors
+  const previewSurface = customColors?.surface || currentTheme.colors.mahjongTable.surface;
+  const previewFrame = customColors?.frame || currentTheme.colors.mahjongTable.frame;
+  const previewAccent = currentTheme.colors.mahjongTable.accent;
+  const previewBorder = currentTheme.colors.mahjongTable.border;
 
   return (
     <Modal
@@ -89,6 +95,74 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
         </View>
 
         <ScrollView className="flex-1 px-4 py-4">
+          {/* Table Preview */}
+          <View className="mb-6 items-center">
+            <Text className={`${currentTheme.classes.textAccent} text-lg font-bold mb-3`}>
+              預覽
+            </Text>
+            <View
+              style={{
+                width: 120,
+                height: 120,
+                position: 'relative',
+              }}
+            >
+              {/* Outer frame */}
+              <View
+                style={{
+                  position: 'absolute',
+                  width: 120,
+                  height: 120,
+                  backgroundColor: previewFrame,
+                  borderRadius: shape === 'round' ? 60 : 0,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 4,
+                  elevation: 4,
+                }}
+              />
+              {/* Accent ring */}
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 6,
+                  left: 6,
+                  width: 108,
+                  height: 108,
+                  backgroundColor: previewAccent,
+                  borderRadius: shape === 'round' ? 54 : 0,
+                }}
+              />
+              {/* Surface */}
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 12,
+                  left: 12,
+                  width: 96,
+                  height: 96,
+                  backgroundColor: previewSurface,
+                  borderRadius: shape === 'round' ? 48 : 0,
+                }}
+              >
+                {/* Inner border */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 6,
+                    left: 6,
+                    right: 6,
+                    bottom: 6,
+                    borderWidth: 1,
+                    borderColor: previewBorder,
+                    borderRadius: shape === 'round' ? 42 : 0,
+                  }}
+                />
+              </View>
+            </View>
+          </View>
+
           {/* Table Shape Section */}
           <View className="mb-6">
             <Text className={`${currentTheme.classes.textAccent} text-lg font-bold mb-3`}>
@@ -141,7 +215,7 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
             <TouchableOpacity
               onPress={handleResetToTheme}
               className={`p-4 rounded-xl mb-3 ${
-                !useCustomColors 
+                isUsingThemeDefault 
                   ? `${currentTheme.classes.buttonPrimary}` 
                   : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
               }`}
@@ -156,17 +230,17 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
                 />
                 <View className="flex-1">
                   <Text className={`font-bold ${
-                    !useCustomColors ? 'text-emerald-950' : currentTheme.classes.textPrimary
+                    isUsingThemeDefault ? 'text-emerald-950' : currentTheme.classes.textPrimary
                   }`}>
                     主題預設
                   </Text>
                   <Text className={`text-xs ${
-                    !useCustomColors ? 'text-emerald-800' : currentTheme.classes.textSecondary
+                    isUsingThemeDefault ? 'text-emerald-800' : currentTheme.classes.textSecondary
                   }`}>
                     跟隨主題配色
                   </Text>
                 </View>
-                {!useCustomColors && (
+                {isUsingThemeDefault && (
                   <View className="w-6 h-6 rounded-full bg-emerald-950 items-center justify-center">
                     <Text className="text-white text-xs font-bold">✓</Text>
                   </View>
@@ -177,8 +251,8 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
             {/* Preset Colors */}
             <Text className={`${currentTheme.classes.textSecondary} text-sm mb-2`}>預設配色</Text>
             <View className="flex-row flex-wrap gap-2 mb-4">
-              {PRESET_COLORS.map((preset) => {
-                const isSelected = useCustomColors && 
+              {PRESET_TABLE_COLORS.map((preset) => {
+                const isSelected = !isUsingThemeDefault && 
                   customColors?.surface === preset.surface && 
                   customColors?.frame === preset.frame;
                 
@@ -230,17 +304,26 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
                   <View className="flex-row items-center">
                     <View 
                       className="w-10 h-10 rounded-lg mr-3 border border-gray-500"
-                      style={{ backgroundColor: tempSurface }}
+                      style={{ backgroundColor: isValidHexColor(tempSurface) ? tempSurface : '#000000' }}
                     />
                     <TextInput
                       value={tempSurface}
-                      onChangeText={setTempSurface}
+                      onChangeText={(text) => {
+                        setTempSurface(text);
+                        if (surfaceError && isValidHexColor(text)) {
+                          setSurfaceError('');
+                        }
+                      }}
                       placeholder="#1B5E20"
                       placeholderTextColor={currentTheme.colors.text.muted}
                       className={`flex-1 ${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} rounded-lg px-3 py-2`}
                       style={{ color: currentTheme.colors.text.primary }}
+                      autoCapitalize="none"
                     />
                   </View>
+                  {surfaceError ? (
+                    <Text className="text-red-400 text-xs mt-1">{surfaceError}</Text>
+                  ) : null}
                 </View>
 
                 {/* Frame Color */}
@@ -249,17 +332,26 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
                   <View className="flex-row items-center">
                     <View 
                       className="w-10 h-10 rounded-lg mr-3 border border-gray-500"
-                      style={{ backgroundColor: tempFrame }}
+                      style={{ backgroundColor: isValidHexColor(tempFrame) ? tempFrame : '#000000' }}
                     />
                     <TextInput
                       value={tempFrame}
-                      onChangeText={setTempFrame}
+                      onChangeText={(text) => {
+                        setTempFrame(text);
+                        if (frameError && isValidHexColor(text)) {
+                          setFrameError('');
+                        }
+                      }}
                       placeholder="#5D4037"
                       placeholderTextColor={currentTheme.colors.text.muted}
                       className={`flex-1 ${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} rounded-lg px-3 py-2`}
                       style={{ color: currentTheme.colors.text.primary }}
+                      autoCapitalize="none"
                     />
                   </View>
+                  {frameError ? (
+                    <Text className="text-red-400 text-xs mt-1">{frameError}</Text>
+                  ) : null}
                 </View>
 
                 {/* Apply Button */}

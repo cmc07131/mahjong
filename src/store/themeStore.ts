@@ -35,6 +35,7 @@ export const useThemeStore = create<ThemeStore>()(
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         currentThemeName: state.currentThemeName,
+        currentTheme: state.currentTheme,
       }),
     }
   )

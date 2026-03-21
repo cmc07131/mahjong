@@ -27,10 +27,10 @@ export function MahjongTable({
   roundNumber
 }: MahjongTableProps) {
   const { currentTheme } = useThemeStore();
-  const { shape, customColors, useCustomColors } = useTableStore();
+  const { shape, customColors } = useTableStore();
   
-  // Get table colors (use custom if enabled, otherwise use theme)
-  const tableColors = useCustomColors && customColors
+  // Get table colors (use custom if set, otherwise use theme)
+  const tableColors = customColors
     ? {
         surface: customColors.surface || currentTheme.colors.mahjongTable.surface,
         frame: customColors.frame || currentTheme.colors.mahjongTable.frame,
@@ -45,7 +45,7 @@ export function MahjongTable({
   const tableSize = Math.min(screenWidth * 0.85, 360);
   
   // Determine border radius based on shape
-  const borderRadius = shape === 'round' ? tableSize / 2 : 16;
+  const borderRadius = shape === 'round' ? tableSize / 2 : 0;
 
   // Find player by wind position
   const getPlayerByWind = (wind: Wind): Player | undefined => {

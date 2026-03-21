@@ -15,15 +15,12 @@ export interface CustomTableColors {
 interface TableStore {
   // 桌面形狀
   shape: TableShape;
-  // 自訂顏色（可選，覆蓋主題預設）
+  // 自訂顏色（可選，覆蓋主題預設，null 表示使用主題預設）
   customColors: CustomTableColors | null;
-  // 是否使用自訂顏色
-  useCustomColors: boolean;
   
   // Actions
   setShape: (shape: TableShape) => void;
   setCustomColors: (colors: CustomTableColors | null) => void;
-  setUseCustomColors: (use: boolean) => void;
   resetToThemeDefaults: () => void;
 }
 
@@ -32,17 +29,13 @@ export const useTableStore = create<TableStore>()(
     (set) => ({
       shape: 'round',
       customColors: null,
-      useCustomColors: false,
       
       setShape: (shape) => set({ shape }),
       
       setCustomColors: (colors) => set({ customColors: colors }),
       
-      setUseCustomColors: (use) => set({ useCustomColors: use }),
-      
       resetToThemeDefaults: () => set({ 
-        customColors: null, 
-        useCustomColors: false 
+        customColors: null,
       }),
     }),
     {
