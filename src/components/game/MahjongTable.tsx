@@ -2,6 +2,7 @@ import { View, Text, Dimensions } from 'react-native';
 import { Player, Wind } from '../../types';
 import { PlayerSeat } from './PlayerSeat';
 import { useThemeStore } from '../../store/themeStore';
+import { useTableStore } from '../../store/tableStore';
 
 interface MahjongTableProps {
   players: Player[];
@@ -26,11 +27,25 @@ export function MahjongTable({
   roundNumber
 }: MahjongTableProps) {
   const { currentTheme } = useThemeStore();
+  const { shape, customColors, useCustomColors } = useTableStore();
+  
+  // Get table colors (use custom if enabled, otherwise use theme)
+  const tableColors = useCustomColors && customColors
+    ? {
+        surface: customColors.surface || currentTheme.colors.mahjongTable.surface,
+        frame: customColors.frame || currentTheme.colors.mahjongTable.frame,
+        accent: currentTheme.colors.mahjongTable.accent,
+        border: currentTheme.colors.mahjongTable.border,
+      }
+    : currentTheme.colors.mahjongTable;
   
   // Get screen dimensions for responsive table size
   const screenWidth = Dimensions.get('window').width;
   // Ensure table doesn't exceed viewport and is responsive
   const tableSize = Math.min(screenWidth * 0.85, 360);
+  
+  // Determine border radius based on shape
+  const borderRadius = shape === 'round' ? tableSize / 2 : 16;
 
   // Find player by wind position
   const getPlayerByWind = (wind: Wind): Player | undefined => {
@@ -73,11 +88,12 @@ export function MahjongTable({
       >
         {/* Outer wooden frame with 3D depth */}
         <View
-          className="absolute rounded-full"
+          className="absolute"
           style={{
             width: tableSize,
             height: tableSize,
-            backgroundColor: '#5D4037',
+            backgroundColor: tableColors.frame,
+            borderRadius: borderRadius,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.5,
@@ -88,40 +104,44 @@ export function MahjongTable({
         
         {/* Inner wooden border */}
         <View
-          className="absolute rounded-full"
+          className="absolute"
           style={{
             width: tableSize - 8,
             height: tableSize - 8,
-            backgroundColor: '#6D4C41'
+            backgroundColor: tableColors.frame,
+            borderRadius: borderRadius,
+            opacity: 0.9,
           }}
         />
         
-        {/* Gold inlay ring */}
+        {/* Accent ring */}
         <View
-          className="absolute rounded-full"
+          className="absolute"
           style={{
             width: tableSize - 16,
             height: tableSize - 16,
-            backgroundColor: '#B8860B',
-            shadowColor: '#D4AF37',
+            backgroundColor: tableColors.accent,
+            borderRadius: borderRadius,
+            shadowColor: tableColors.accent,
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.3,
             shadowRadius: 4,
           }}
         />
         
-        {/* Green felt table surface */}
+        {/* Table surface */}
         <View
-          className="absolute rounded-full"
+          className="absolute"
           style={{
             width: tableSize - 28,
             height: tableSize - 28,
-            backgroundColor: '#1B5E20',
+            backgroundColor: tableColors.surface,
+            borderRadius: borderRadius,
           }}
         >
           {/* Felt texture overlay */}
           <View
-            className="absolute rounded-full"
+            className="absolute"
             style={{
               left: 0,
               top: 0,
@@ -130,30 +150,34 @@ export function MahjongTable({
               backgroundColor: 'transparent',
               borderWidth: 2,
               borderColor: 'rgba(255,255,255,0.05)',
+              borderRadius: borderRadius,
             }}
           />
           
           {/* Inner decorative border */}
           <View
-            className="absolute rounded-full border-2"
+            className="absolute border-2"
             style={{
               left: 12,
               top: 12,
               right: 12,
               bottom: 12,
-              borderColor: 'rgba(184, 134, 11, 0.4)',
+              borderColor: tableColors.border,
+              borderRadius: borderRadius,
             }}
           />
           
           {/* Subtle radial gradient effect for depth */}
           <View
-            className="absolute rounded-full"
+            className="absolute"
             style={{
               left: '15%',
               top: '15%',
               right: '15%',
               bottom: '15%',
-              backgroundColor: 'rgba(46, 125, 50, 0.3)',
+              backgroundColor: tableColors.surface,
+              opacity: 0.7,
+              borderRadius: borderRadius,
             }}
           />
         </View>

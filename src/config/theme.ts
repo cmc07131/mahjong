@@ -48,6 +48,13 @@ export interface Theme {
       radius: number;
       elevation: number;
     };
+    // Mahjong table colors
+    mahjongTable: {
+      surface: string;      // 桌面顏色
+      frame: string;        // 木框顏色
+      accent: string;       // 裝飾/金邊顏色
+      border: string;       // 內框邊線
+    };
   };
   // Tailwind class mappings
   classes: {
@@ -107,6 +114,12 @@ export const retroLuxuryTheme: Theme = {
       radius: 4,
       elevation: 4,
     },
+    mahjongTable: {
+      surface: '#1B5E20',
+      frame: '#5D4037',
+      accent: '#B8860B',
+      border: 'rgba(184, 134, 11, 0.4)',
+    },
   },
   classes: {
     background: 'emerald-gradient',
@@ -164,6 +177,12 @@ export const iosLiquidGlassTheme: Theme = {
       opacity: 0.1,
       radius: 8,
       elevation: 4,
+    },
+    mahjongTable: {
+      surface: '#81C784',
+      frame: '#E0E0E0',
+      accent: '#2563EB',
+      border: 'rgba(37, 99, 235, 0.3)',
     },
   },
   classes: {
@@ -223,6 +242,12 @@ export const darkGoldTheme: Theme = {
       radius: 8,
       elevation: 8,
     },
+    mahjongTable: {
+      surface: '#1B5E20',
+      frame: '#1a1a1a',
+      accent: '#d4a853',
+      border: 'rgba(212, 168, 83, 0.4)',
+    },
   },
   classes: {
     background: 'bg-black',
@@ -281,6 +306,12 @@ export const retroPixelTheme: Theme = {
       radius: 0,
       elevation: 4,
     },
+    mahjongTable: {
+      surface: '#0d47a1',
+      frame: '#1a1a2e',
+      accent: '#FFD700',
+      border: 'rgba(255, 215, 0, 0.5)',
+    },
   },
   classes: {
     background: 'bg-black',
@@ -338,6 +369,12 @@ export const midnightOceanTheme: Theme = {
       opacity: 0.35,
       radius: 6,
       elevation: 6,
+    },
+    mahjongTable: {
+      surface: '#0c4a3e',
+      frame: '#1e3a5f',
+      accent: '#ff7f50',
+      border: 'rgba(255, 127, 80, 0.3)',
     },
   },
   classes: {

@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ThemeSelector } from '../common/ThemeSelector';
+import { TableStyleSelector } from '../common/TableStyleSelector';
 import { useThemeStore } from '../../store/themeStore';
 
 interface PersistentBottomBarProps {
@@ -11,6 +12,7 @@ interface PersistentBottomBarProps {
 export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) {
   const router = useRouter();
   const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [showTableSelector, setShowTableSelector] = useState(false);
   const { currentThemeName, setTheme, currentTheme } = useThemeStore();
 
   const handleHomePress = () => {
@@ -40,8 +42,17 @@ export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) 
         elevation: currentTheme.colors.shadow.elevation,
       }}
     >
-      {/* Spacer for left side */}
-      <View className="w-12" />
+      {/* Table Button - Left side */}
+      <TouchableOpacity
+        className={`w-12 h-12 rounded-full ${currentTheme.classes.panel} items-center justify-center ${currentTheme.classes.panelBorder}`}
+        onPress={() => setShowTableSelector(true)}
+        activeOpacity={0.7}
+        style={{
+          borderWidth: 2,
+        }}
+      >
+        <Text className={`${currentTheme.classes.textPrimary} text-lg`}>🀄</Text>
+      </TouchableOpacity>
       
       {/* Home Button - Center */}
       <TouchableOpacity
@@ -69,6 +80,12 @@ export function PersistentBottomBar({ onThemePress }: PersistentBottomBarProps) 
         onClose={() => setShowThemeSelector(false)}
         currentTheme={currentThemeName}
         onSelectTheme={handleSelectTheme}
+      />
+
+      {/* Table Style Selector Modal */}
+      <TableStyleSelector
+        visible={showTableSelector}
+        onClose={() => setShowTableSelector(false)}
       />
     </View>
   );
