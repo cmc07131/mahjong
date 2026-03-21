@@ -80,6 +80,7 @@ export interface GameSnapshot {
     prevailingWind: Wind;
     rounds: Round[];
     roundCount: number;
+    currentRound: CurrentRound | null;
   };
 
   // 操作描述

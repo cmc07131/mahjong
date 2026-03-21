@@ -71,8 +71,8 @@ const initialState = {
   history: [] as GameSnapshot[],
 };
 
-// 生成唯一 ID
-const generateId = () => Math.random().toString(36).substring(2, 15);
+// 生成唯一 ID（加入時間戳防止重複）
+const generateId = () => `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
 // 建立 Zustand Store
 export const useGameStore = create<GameStore>()(
@@ -195,6 +195,7 @@ export const useGameStore = create<GameStore>()(
             prevailingWind,
             rounds: [...rounds],
             roundCount,
+            currentRound: currentRound ? { ...currentRound } : null,
           },
           action: { type: 'WIN', roundId: newRound.id },
         };
@@ -259,6 +260,7 @@ export const useGameStore = create<GameStore>()(
             prevailingWind,
             rounds: [...rounds],
             roundCount,
+            currentRound: null,
           },
           action: { type: 'DRAW', roundId: newRound.id },
         };
@@ -288,6 +290,7 @@ export const useGameStore = create<GameStore>()(
           prevailingWind: lastSnapshot.state.prevailingWind,
           rounds: lastSnapshot.state.rounds,
           roundCount: lastSnapshot.state.roundCount,
+          currentRound: lastSnapshot.state.currentRound,
           history: history.slice(0, -1),
         });
       },
