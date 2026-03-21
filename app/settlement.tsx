@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -15,6 +15,7 @@ export default function SettlementScreen() {
   const { currentTheme } = useThemeStore();
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const hasAutoSaved = useRef(false);
   
   // 從 Zustand store 取得遊戲狀態
   const players = useGameStore((state) => state.players);
@@ -36,6 +37,14 @@ export default function SettlementScreen() {
       finishGame();
     }
   }, [status, finishGame]);
+
+  // 自動儲存歷史記錄
+  useEffect(() => {
+    if (!hasAutoSaved.current && !isSaving && !isSaved && players.length > 0) {
+      hasAutoSaved.current = true;
+      handleSaveHistory();
+    }
+  }, [players, isSaving, isSaved]);
 
   // 計算最簡化找數方案
   const settlements = useMemo(() => {
@@ -95,7 +104,6 @@ export default function SettlementScreen() {
 
       await saveHistory(history);
       setIsSaved(true);
-      Alert.alert('成功', '比賽記錄已儲存');
     } catch (error) {
       console.error('儲存歷史記錄失敗:', error);
       Alert.alert('錯誤', '無法儲存比賽記錄');
@@ -158,16 +166,18 @@ export default function SettlementScreen() {
           />
         </View>
 
-        {/* 儲存記錄按鈕 */}
-        <View className="mb-4">
-          <Button
-            onPress={handleSaveHistory}
-            variant="secondary"
-            disabled={isSaving || isSaved}
-            loading={isSaving}
-          >
-            {isSaved ? '已儲存記錄' : '儲存比賽記錄'}
-          </Button>
+        {/* 自動儲存狀態 */}
+        <View className="mb-4 flex-row items-center justify-center">
+          {isSaving ? (
+            <>
+              <View className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin mr-2" style={{ borderColor: currentTheme.colors.text.accent, borderTopColor: 'transparent' }} />
+              <Text className={`${currentTheme.classes.textSecondary} text-sm`}>儲存中...</Text>
+            </>
+          ) : isSaved ? (
+            <>
+              <Text className={`${currentTheme.classes.scorePositive} text-sm font-medium`}>✓ 已自動儲存</Text>
+            </>
+          ) : null}
         </View>
 
         {/* 操作按鈕 */}
