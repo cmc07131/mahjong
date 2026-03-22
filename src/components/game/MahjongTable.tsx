@@ -21,10 +21,10 @@ const WIND_LABELS: Record<Wind, string> = {
 
 const WIND_ORDER: Wind[] = ['EAST', 'SOUTH', 'WEST', 'NORTH'];
 
-// 根據座位和莊家計算門風
-// 莊家 = 東, 下家(右手邊) = 南, 對家 = 西, 上家(左手邊) = 北
+// 根據座位和莊家計算門風（逆時針）
+// 莊家 = 東, 上家(左手邊) = 南, 對家 = 西, 下家(右手邊) = 北
 const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
-  const offset = (seatIndex - dealerIndex + 4) % 4;
+  const offset = (dealerIndex - seatIndex + 4) % 4;
   return WIND_ORDER[offset];
 };
 
@@ -206,6 +206,7 @@ export function MahjongTable({
               position="top"
               windLabel={WIND_LABELS[getWindForSeat(0, dealerIndex)]}
               roundScoreChange={getRoundScoreChange(topPlayer.id)}
+              isDealer={topPlayer.seatIndex === dealerIndex}
             />
           )}
         </View>
@@ -225,6 +226,7 @@ export function MahjongTable({
               position="left"
               windLabel={WIND_LABELS[getWindForSeat(3, dealerIndex)]}
               roundScoreChange={getRoundScoreChange(leftPlayer.id)}
+              isDealer={leftPlayer.seatIndex === dealerIndex}
             />
           )}
         </View>
@@ -244,6 +246,7 @@ export function MahjongTable({
               position="right"
               windLabel={WIND_LABELS[getWindForSeat(1, dealerIndex)]}
               roundScoreChange={getRoundScoreChange(rightPlayer.id)}
+              isDealer={rightPlayer.seatIndex === dealerIndex}
             />
           )}
         </View>
@@ -263,6 +266,7 @@ export function MahjongTable({
               position="bottom"
               windLabel={WIND_LABELS[getWindForSeat(2, dealerIndex)]}
               roundScoreChange={getRoundScoreChange(bottomPlayer.id)}
+              isDealer={bottomPlayer.seatIndex === dealerIndex}
             />
           )}
         </View>

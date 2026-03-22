@@ -74,10 +74,10 @@ const initialState = {
 // 生成唯一 ID（加入時間戳防止重複）
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
-// 根據座位和莊家計算門風
-// 莊家 = 東, 下家(右手邊) = 南, 對家 = 西, 上家(左手邊) = 北
+// 根據座位和莊家計算門風（逆時針）
+// 莊家 = 東, 上家(左手邊) = 南, 對家 = 西, 下家(右手邊) = 北
 const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
-  const offset = (seatIndex - dealerIndex + 4) % 4;
+  const offset = (dealerIndex - seatIndex + 4) % 4;
   return WIND_ORDER[offset];
 };
 
@@ -174,11 +174,13 @@ export const useGameStore = create<GameStore>()(
         let newRoundCount = roundCount + 1;
 
         if (!isDealerWin) {
-          // 過莊：莊家順時針移動
-          newDealerIndex = (dealerIndex + 1) % 4;
+          // 過莊：莊家逆時針移動（移動到下家/右手邊）
+          newDealerIndex = (dealerIndex - 1 + 4) % 4;
           
-          // 如果回到東家，圈風改變
-          if (newDealerIndex === 0) {
+          // 如果莊家完成一圈（回到原點），圈風改變
+          // 這裡需要追蹤是否所有玩家都做過莊
+          // 簡化版：當莊家從北位(3)移動到東位(0)時，圈風改變
+          if (dealerIndex === 0 && newDealerIndex === 3) {
             const windIndex = WIND_ORDER.indexOf(prevailingWind);
             newPrevailingWind = WIND_ORDER[(windIndex + 1) % 4];
           }
@@ -234,11 +236,12 @@ export const useGameStore = create<GameStore>()(
           createdAt: new Date(),
         };
 
-        // 流局過莊
-        const newDealerIndex = (dealerIndex + 1) % 4;
+        // 流局過莊：莊家逆時針移動
+        const newDealerIndex = (dealerIndex - 1 + 4) % 4;
         let newPrevailingWind = prevailingWind;
         
-        if (newDealerIndex === 0) {
+        // 如果莊家完成一圈（從東位回到北位），圈風改變
+        if (dealerIndex === 0 && newDealerIndex === 3) {
           const windIndex = WIND_ORDER.indexOf(prevailingWind);
           newPrevailingWind = WIND_ORDER[(windIndex + 1) % 4];
         }
