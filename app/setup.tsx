@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { useGameStore } from '../src/store/gameStore';
 import { useThemeStore } from '../src/store/themeStore';
 import { Wind } from '../src/types';
+import { SetupMahjongTable } from '../src/components/setup/SetupMahjongTable';
 
 // 預設玩家名稱
 const DEFAULT_NAMES = ['阿明', '阿強', '阿華', '阿東'];
@@ -17,37 +18,8 @@ const WIND_LABELS: Record<Wind, string> = {
   NORTH: '北家',
 };
 
-// 風位顏色
-const WIND_COLORS: Record<Wind, string> = {
-  EAST: '#dc2626',   // 紅色 - 東
-  SOUTH: '#16a34a',  // 綠色 - 南
-  WEST: '#2563eb',   // 藍色 - 西
-  NORTH: '#1f2937',  // 黑色 - 北
-};
-
-const WIND_SYMBOLS: Record<Wind, string> = {
-  EAST: '東',
-  SOUTH: '南',
-  WEST: '西',
-  NORTH: '北',
-};
-
 // 座位順序（逆時針）
 const WIND_ORDER: Wind[] = ['EAST', 'SOUTH', 'WEST', 'NORTH'];
-
-// 座位位置（桌上位置）
-const SEAT_POSITIONS: Array<{
-  top?: string;
-  bottom?: string;
-  left?: string;
-  right?: string;
-  transform: Array<{ translateX?: number; translateY?: number }>;
-}> = [
-  { top: '15%', left: '50%', transform: [{ translateX: -30 }] },   // 0: 上 (東)
-  { top: '50%', right: '15%', transform: [{ translateY: -15 }] },   // 1: 右 (南)
-  { bottom: '15%', left: '50%', transform: [{ translateX: -30 }] }, // 2: 下 (西)
-  { top: '50%', left: '15%', transform: [{ translateY: -15 }] },    // 3: 左 (北)
-];
 
 // 步驟類型
 type SetupStep = 'names' | 'seating';
@@ -422,104 +394,16 @@ export default function SetupScreen() {
                 )}
               </View>
 
-              {/* 桌子和座位 */}
+              {/* 麻將桌 */}
               <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
                 <Text className={`${currentTheme.classes.textPrimary} font-bold mb-3`}>麻將桌</Text>
-                
-                {/* 桌子 */}
-                <View 
-                  className="relative items-center justify-center"
-                  style={{ height: 280 }}
-                >
-                  {/* 桌面背景 */}
-                  <View 
-                    className="absolute rounded-full"
-                    style={{
-                      width: 240,
-                      height: 240,
-                      backgroundColor: currentTheme.colors.mahjongTable.surface,
-                      borderWidth: 8,
-                      borderColor: currentTheme.colors.mahjongTable.frame,
-                    }}
-                  />
-                  
-                  {/* 中央文字 */}
-                  <View className="absolute items-center justify-center">
-                    <Text className={`${currentTheme.classes.textAccent} text-lg font-bold`}>
-                      麻將桌
-                    </Text>
-                    <Text className={`${currentTheme.classes.textSecondary} text-xs`}>
-                      點擊座位放置玩家
-                    </Text>
-                  </View>
-
-                  {/* 四個座位 */}
-                  {SEAT_POSITIONS.map((position, seatIndex) => {
-                    const assignedPlayerIndex = seatAssignments[seatIndex];
-                    const wind = WIND_ORDER[seatIndex];
-                    const isEmpty = assignedPlayerIndex === null;
-                    const isDraggingOver = draggingIndex !== null && isEmpty;
-                    
-                    return (
-                      <TouchableOpacity
-                        key={seatIndex}
-                        className="absolute items-center justify-center"
-                        style={{
-                          ...position,
-                          width: 60,
-                          height: 60,
-                        }}
-                        onPress={() => handleSeatClick(seatIndex)}
-                        activeOpacity={0.7}
-                      >
-                        {/* 座位背景 */}
-                        <View 
-                          className="absolute w-full h-full rounded-full"
-                          style={{
-                            backgroundColor: isEmpty 
-                              ? (isDraggingOver ? currentTheme.colors.button.primary + '40' : currentTheme.colors.panel.secondary)
-                              : WIND_COLORS[wind],
-                            borderWidth: 2,
-                            borderColor: isEmpty 
-                              ? (isDraggingOver ? currentTheme.colors.button.primary : currentTheme.colors.panel.border)
-                              : WIND_COLORS[wind],
-                            opacity: isEmpty ? 0.8 : 1,
-                          }}
-                        />
-                        
-                        {/* 座位內容 */}
-                        {isEmpty ? (
-                          <View className="items-center">
-                            <Text 
-                              className="font-bold text-lg"
-                              style={{ color: isDraggingOver ? currentTheme.colors.button.primary : currentTheme.colors.text.secondary }}
-                            >
-                              {WIND_SYMBOLS[wind]}
-                            </Text>
-                            <Text 
-                              className="text-xs"
-                              style={{ color: isDraggingOver ? currentTheme.colors.button.primary : currentTheme.colors.text.muted }}
-                            >
-                              {isDraggingOver ? '放置' : '空位'}
-                            </Text>
-                          </View>
-                        ) : (
-                          <TouchableOpacity
-                            className="items-center"
-                            onPress={() => handleRemoveSeat(seatIndex)}
-                          >
-                            <Text className="text-white font-bold text-sm">
-                              {WIND_SYMBOLS[wind]}
-                            </Text>
-                            <Text className="text-white text-xs font-medium" numberOfLines={1}>
-                              {playerNames[assignedPlayerIndex]}
-                            </Text>
-                          </TouchableOpacity>
-                        )}
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
+                <SetupMahjongTable
+                  seatAssignments={seatAssignments}
+                  playerNames={playerNames}
+                  draggingIndex={draggingIndex}
+                  onSeatClick={handleSeatClick}
+                  onRemoveSeat={handleRemoveSeat}
+                />
               </View>
 
               {/* 座位分配列表（備用） */}
@@ -534,10 +418,10 @@ export default function SetupScreen() {
                       <View key={wind} className="flex-row items-center mb-2">
                         <View 
                           className="w-8 h-8 rounded-full items-center justify-center mr-3"
-                          style={{ backgroundColor: WIND_COLORS[wind] }}
+                          style={{ backgroundColor: currentTheme.colors.mahjongTable.accent }}
                         >
                           <Text className="text-white font-bold text-sm">
-                            {WIND_SYMBOLS[wind]}
+                            {WIND_LABELS[wind].charAt(0)}
                           </Text>
                         </View>
                         <Text className={`${currentTheme.classes.textPrimary} flex-1`}>
