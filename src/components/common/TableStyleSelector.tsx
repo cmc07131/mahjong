@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, ScrollView, TextInput, Alert } from 'react-native';
 import { useTableStore, TableShape } from '../../store/tableStore';
 import { useThemeStore } from '../../store/themeStore';
-import { TABLE_SHAPES, PRESET_TABLE_COLORS, isValidHexColor } from '../../config/table';
+import { TABLE_SHAPES, PRESET_TABLE_COLORS, isValidHexColor, COLOR_PALETTE } from '../../config/table';
 
 interface TableStyleSelectorProps {
   visible: boolean;
@@ -298,9 +298,33 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
 
             {showColorPicker && (
               <View className={`mt-3 p-4 rounded-xl ${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`}>
-                {/* Surface Color */}
+                {/* Visual Color Picker for Surface */}
                 <View className="mb-4">
                   <Text className={`${currentTheme.classes.textSecondary} text-sm mb-2`}>桌面顏色</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
+                    <View className="flex-row gap-2">
+                      {COLOR_PALETTE.map((category) =>
+                        category.colors.map((color) => (
+                          <TouchableOpacity
+                            key={`surface-${color.hex}`}
+                            onPress={() => setTempSurface(color.hex)}
+                            className="items-center"
+                          >
+                            <View
+                              style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 8,
+                                backgroundColor: color.hex,
+                                borderWidth: tempSurface === color.hex ? 3 : 1,
+                                borderColor: tempSurface === color.hex ? currentTheme.colors.text.accent : 'rgba(255,255,255,0.2)',
+                              }}
+                            />
+                          </TouchableOpacity>
+                        ))
+                      )}
+                    </View>
+                  </ScrollView>
                   <View className="flex-row items-center">
                     <View 
                       className="w-10 h-10 rounded-lg mr-3 border border-gray-500"
@@ -326,9 +350,33 @@ export function TableStyleSelector({ visible, onClose }: TableStyleSelectorProps
                   ) : null}
                 </View>
 
-                {/* Frame Color */}
+                {/* Visual Color Picker for Frame */}
                 <View className="mb-4">
                   <Text className={`${currentTheme.classes.textSecondary} text-sm mb-2`}>木框顏色</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
+                    <View className="flex-row gap-2">
+                      {COLOR_PALETTE.map((category) =>
+                        category.colors.map((color) => (
+                          <TouchableOpacity
+                            key={`frame-${color.hex}`}
+                            onPress={() => setTempFrame(color.hex)}
+                            className="items-center"
+                          >
+                            <View
+                              style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 8,
+                                backgroundColor: color.hex,
+                                borderWidth: tempFrame === color.hex ? 3 : 1,
+                                borderColor: tempFrame === color.hex ? currentTheme.colors.text.accent : 'rgba(255,255,255,0.2)',
+                              }}
+                            />
+                          </TouchableOpacity>
+                        ))
+                      )}
+                    </View>
+                  </ScrollView>
                   <View className="flex-row items-center">
                     <View 
                       className="w-10 h-10 rounded-lg mr-3 border border-gray-500"
