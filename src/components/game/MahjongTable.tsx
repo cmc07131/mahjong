@@ -22,8 +22,8 @@ const WIND_LABELS: Record<Wind, string> = {
 const WIND_ORDER: Wind[] = ['EAST', 'SOUTH', 'WEST', 'NORTH'];
 
 // 根據座位和莊家計算門風（逆時針方向）
-// 座位順序：0(上/12點) → 3(左/9點) → 2(下/6點) → 1(右/3點) 逆時針
-// 莊家 = 東, 下家(右手邊) = 南, 對家 = 西, 上家(左手邊) = 北
+// 座位順序：0(上/12點) → 1(左/9點) → 2(下/6點) → 3(右/3點) 逆時針
+// 莊家 = 東, 上家(左手邊) = 南, 對家 = 西, 下家(右手邊) = 北
 const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
   const offset = (dealerIndex - seatIndex + 4) % 4;
   return WIND_ORDER[offset];
@@ -67,11 +67,11 @@ export function MahjongTable({
     return roundScoreChanges[playerId] || 0;
   };
 
-  // Four seat players (fixed positions)
-  const topPlayer = getPlayerBySeat(0);      // 12 o'clock
-  const rightPlayer = getPlayerBySeat(1);    // 3 o'clock
-  const bottomPlayer = getPlayerBySeat(2);   // 6 o'clock
-  const leftPlayer = getPlayerBySeat(3);     // 9 o'clock
+  // Four seat players (fixed positions) - anticlockwise like setup page
+  const topPlayer = getPlayerBySeat(0);      // 12 o'clock - 東 (EAST)
+  const leftPlayer = getPlayerBySeat(1);     // 9 o'clock - 南 (SOUTH)
+  const bottomPlayer = getPlayerBySeat(2);   // 6 o'clock - 西 (WEST)
+  const rightPlayer = getPlayerBySeat(3);    // 3 o'clock - 北 (NORTH)
 
   // Calculate consistent offset from edge for all positions
   // This ensures all player seats are equidistant from center
