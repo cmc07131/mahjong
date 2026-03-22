@@ -212,7 +212,7 @@ export function MahjongTable({
           )}
         </View>
 
-        {/* Left Player (9 o'clock) */}
+        {/* Left Player (9 o'clock) - 南 */}
         <View
           className="absolute"
           style={{ 
@@ -225,14 +225,14 @@ export function MahjongTable({
             <PlayerSeat
               player={leftPlayer}
               position="left"
-              windLabel={WIND_LABELS[getWindForSeat(3, dealerIndex)]}
+              windLabel={WIND_LABELS[getWindForSeat(1, dealerIndex)]}
               roundScoreChange={getRoundScoreChange(leftPlayer.id)}
               isDealer={leftPlayer.seatIndex === dealerIndex}
             />
           )}
         </View>
 
-        {/* Right Player (3 o'clock) */}
+        {/* Right Player (3 o'clock) - 北 */}
         <View
           className="absolute"
           style={{ 
@@ -245,7 +245,7 @@ export function MahjongTable({
             <PlayerSeat
               player={rightPlayer}
               position="right"
-              windLabel={WIND_LABELS[getWindForSeat(1, dealerIndex)]}
+              windLabel={WIND_LABELS[getWindForSeat(3, dealerIndex)]}
               roundScoreChange={getRoundScoreChange(rightPlayer.id)}
               isDealer={rightPlayer.seatIndex === dealerIndex}
             />
