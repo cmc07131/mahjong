@@ -25,7 +25,7 @@ const WIND_ORDER: Wind[] = ['EAST', 'SOUTH', 'WEST', 'NORTH'];
 // 座位順序：0(上/12點) → 1(左/9點) → 2(下/6點) → 3(右/3點) 逆時針
 // 莊家 = 東, 上家(左手邊) = 南, 對家 = 西, 下家(右手邊) = 北
 const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
-  const offset = (dealerIndex - seatIndex + 4) % 4;
+  const offset = (seatIndex - dealerIndex + 4) % 4;
   return WIND_ORDER[offset];
 };
 
