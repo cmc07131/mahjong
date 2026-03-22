@@ -42,9 +42,15 @@ export function SetupMahjongTable({
   const screenWidth = Dimensions.get('window').width;
   const tableSize = Math.min(screenWidth * 0.75, 300);
   const borderRadius = shape === 'round' ? tableSize / 2 : 16;
-  const edgeOffset = 4;
+  
+  // Calculate seat positions based on table center
+  const centerX = tableSize / 2;
+  const centerY = tableSize / 2;
+  const radius = (tableSize / 2) - 35; // Distance from center to seat center
+  const seatSize = 56;
+  const halfSeat = seatSize / 2;
 
-  const renderSeat = (seatIndex: number, position: { left?: string; right?: string; top?: string; bottom?: string }) => {
+  const renderSeat = (seatIndex: number, position: { left?: string; top?: string }) => {
     const assignedPlayerIndex = seatAssignments[seatIndex];
     const wind = WIND_ORDER[seatIndex];
     const isEmpty = assignedPlayerIndex === null;
@@ -55,9 +61,8 @@ export function SetupMahjongTable({
         className="absolute items-center justify-center"
         style={{
           ...position,
-          width: 56,
-          height: 56,
-          transform: [{ translateX: -28 }, { translateY: -28 }],
+          width: seatSize,
+          height: seatSize,
         } as any}
         onPress={() => isEmpty ? onSeatClick(seatIndex) : onRemoveSeat(seatIndex)}
         activeOpacity={0.7}
@@ -197,23 +202,23 @@ export function SetupMahjongTable({
         </View>
 
         {renderSeat(0, {
-          left: '50%',
-          top: `${edgeOffset}%`,
+          left: `${centerX - halfSeat}px`,
+          top: `${centerY - radius - halfSeat}px`,
         })}
 
         {renderSeat(3, {
-          left: `${edgeOffset}%`,
-          top: '50%',
+          left: `${centerX - radius - halfSeat}px`,
+          top: `${centerY - halfSeat}px`,
         })}
 
         {renderSeat(1, {
-          right: `${edgeOffset}%`,
-          top: '50%',
+          left: `${centerX + radius - halfSeat}px`,
+          top: `${centerY - halfSeat}px`,
         })}
 
         {renderSeat(2, {
-          left: '50%',
-          bottom: `${edgeOffset}%`,
+          left: `${centerX - halfSeat}px`,
+          top: `${centerY + radius - halfSeat}px`,
         })}
       </View>
     </View>
