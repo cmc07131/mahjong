@@ -21,8 +21,9 @@ const WIND_LABELS: Record<Wind, string> = {
 
 const WIND_ORDER: Wind[] = ['EAST', 'SOUTH', 'WEST', 'NORTH'];
 
-// 根據座位和莊家計算門風（逆時針）
-// 莊家 = 東, 上家(左手邊) = 南, 對家 = 西, 下家(右手邊) = 北
+// 根據座位和莊家計算門風（逆時針方向）
+// 座位順序：0(上/12點) → 3(左/9點) → 2(下/6點) → 1(右/3點) 逆時針
+// 莊家 = 東, 下家(右手邊) = 南, 對家 = 西, 上家(左手邊) = 北
 const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
   const offset = (dealerIndex - seatIndex + 4) % 4;
   return WIND_ORDER[offset];
