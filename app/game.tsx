@@ -224,6 +224,7 @@ export default function GameScreen() {
         <View className="items-center justify-center pt-2 pb-4">
           <MahjongTable
             players={players}
+            dealerIndex={dealerIndex}
             roundScoreChanges={previewChanges}
             prevailingWind={prevailingWind}
             roundNumber={roundCount + 1}

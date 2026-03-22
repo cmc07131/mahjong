@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Player, Wind, WinType } from '../../types';
+import { Player, Wind, WinType, WIND_ORDER } from '../../types';
 import { useThemeStore } from '../../store/themeStore';
+import { useGameStore } from '../../store/gameStore';
 
 interface WinTypeSelectorProps {
   selectedWinType: WinType | null;
@@ -21,6 +22,12 @@ const WIND_LABELS: Record<Wind, string> = {
   NORTH: '北',
 };
 
+// 根據座位和莊家計算門風
+const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
+  const offset = (seatIndex - dealerIndex + 4) % 4;
+  return WIND_ORDER[offset];
+};
+
 export function WinTypeSelector({
   selectedWinType,
   onSelectWinType,
@@ -32,6 +39,7 @@ export function WinTypeSelector({
   disabled = false,
 }: WinTypeSelectorProps) {
   const { currentTheme } = useThemeStore();
+  const dealerIndex = useGameStore((state) => state.dealerIndex);
   
   // 過濾掉贏家，只顯示可能的出銃者
   const potentialLosers = players.filter(p => p.id !== winnerId);
@@ -113,6 +121,7 @@ export function WinTypeSelector({
           <View className="flex-row justify-center">
             {potentialLosers.map((player) => {
               const isSelected = selectedLoserId === player.id;
+              const windLabel = WIND_LABELS[getWindForSeat(player.seatIndex, dealerIndex)];
               return (
                 <TouchableOpacity
                   key={player.id}
@@ -141,7 +150,7 @@ export function WinTypeSelector({
                       }
                     `}
                   >
-                    {WIND_LABELS[player.position]}
+                    {windLabel}
                   </Text>
                 </TouchableOpacity>
               );

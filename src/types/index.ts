@@ -14,9 +14,8 @@ export type GameStatus = 'SETUP' | 'PLAYING' | 'SETTLED';
 export interface Player {
   id: string;                    // 唯一識別碼
   name: string;                  // 玩家姓名
-  position: Wind;                // 當前座位風位 (東南西北)
+  seatIndex: number;             // 固定座位 (0=上, 1=右, 2=下, 3=左)
   score: number;                 // 累計分數 (正為贏，負為輸)
-  isDealer: boolean;             // 是否為莊家
 }
 
 // 分數變動記錄

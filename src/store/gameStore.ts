@@ -36,7 +36,7 @@ interface GameStore {
   history: GameSnapshot[];
 
   // Actions - 遊戲設定
-  startGame: (players: Omit<Player, 'score' | 'isDealer' | 'position'>[], unitAmount: number) => void;
+  startGame: (players: Omit<Player, 'score'>[], unitAmount: number) => void;
   resetGame: () => void;
 
   // Actions - 回合操作
@@ -74,6 +74,13 @@ const initialState = {
 // 生成唯一 ID（加入時間戳防止重複）
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
+// 根據座位和莊家計算門風
+// 莊家 = 東, 下家(右手邊) = 南, 對家 = 西, 上家(左手邊) = 北
+const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
+  const offset = (seatIndex - dealerIndex + 4) % 4;
+  return WIND_ORDER[offset];
+};
+
 // 建立 Zustand Store
 export const useGameStore = create<GameStore>()(
   persist(
@@ -82,12 +89,11 @@ export const useGameStore = create<GameStore>()(
 
       // Actions - 遊戲設定
       startGame: (playerInputs, unitAmount) => {
-        const players: Player[] = playerInputs.map((input, index) => ({
+        const players: Player[] = playerInputs.map((input) => ({
           id: generateId(),
           name: input.name,
-          position: WIND_ORDER[index],
+          seatIndex: input.seatIndex,
           score: 0,
-          isDealer: index === 0,
         }));
 
         set({
@@ -178,13 +184,6 @@ export const useGameStore = create<GameStore>()(
           }
         }
 
-        // 更新玩家的莊家標記
-        const finalPlayers = updatedPlayers.map((player, index) => ({
-          ...player,
-          isDealer: index === newDealerIndex,
-          position: WIND_ORDER[index], // 保持位置對應
-        }));
-
         // 建立快照
         const snapshot: GameSnapshot = {
           id: generateId(),
@@ -202,7 +201,7 @@ export const useGameStore = create<GameStore>()(
 
         // 更新狀態
         set({
-          players: finalPlayers,
+          players: updatedPlayers,
           dealerIndex: newDealerIndex,
           prevailingWind: newPrevailingWind,
           rounds: [...rounds, newRound],
@@ -244,10 +243,9 @@ export const useGameStore = create<GameStore>()(
           newPrevailingWind = WIND_ORDER[(windIndex + 1) % 4];
         }
 
-        // 更新玩家的莊家標記
-        const updatedPlayers = players.map((player, index) => ({
+        // 更新玩家分數（流局無變動）
+        const updatedPlayers = players.map((player) => ({
           ...player,
-          isDealer: index === newDealerIndex,
         }));
 
         // 建立快照

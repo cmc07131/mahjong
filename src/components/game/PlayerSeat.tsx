@@ -1,29 +1,24 @@
 import { View, Text } from 'react-native';
-import { Player, Wind } from '../../types';
+import { Player } from '../../types';
 import { useThemeStore } from '../../store/themeStore';
 
 interface PlayerSeatProps {
   player: Player;
   position: 'top' | 'right' | 'bottom' | 'left';
+  windLabel: string;
   roundScoreChange?: number;
+  isDealer?: boolean;
 }
-
-const WIND_LABELS: Record<Wind, string> = {
-  EAST: '東',
-  SOUTH: '南',
-  WEST: '西',
-  NORTH: '北',
-};
 
 // Animal avatar emojis for each player position
 const getAvatarEmoji = (player: Player, index: number): string => {
   // Use different animal emojis for each player
-  // 🐯 Tiger (East), 🐉 Dragon (South), 🐔 Rooster (West), 🐍 Snake (North)
+  // 🐯 Tiger, 🐉 Dragon, 🐔 Rooster, 🐍 Snake
   const animalAvatars = ['🐯', '🐉', '🐔', '🐍'];
   return animalAvatars[index % 4];
 };
 
-export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSeatProps) {
+export function PlayerSeat({ player, position, windLabel, roundScoreChange = 0, isDealer = false }: PlayerSeatProps) {
   const { currentTheme } = useThemeStore();
   
   const formatScore = (score: number) => {
@@ -37,8 +32,8 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
     return currentTheme.classes.textPrimary;
   };
 
-  // Get player index for avatar selection
-  const playerIndex = ['EAST', 'SOUTH', 'WEST', 'NORTH'].indexOf(player.position);
+  // Get player index for avatar selection (use seatIndex)
+  const playerIndex = player.seatIndex;
 
   // Determine if this is a horizontal position (left/right) or vertical position (top/bottom)
   const isHorizontal = position === 'left' || position === 'right';
@@ -58,7 +53,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
             {/* Avatar with Crown */}
             <View className="relative items-center justify-center">
               {/* Dealer Crown - positioned directly above the emoji */}
-              {player.isDealer && (
+              {isDealer && (
                 <View className="absolute -top-4 z-10">
                   <Text className="text-base">👑</Text>
                 </View>
@@ -68,7 +63,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
                 className={`
                   w-10 h-10 rounded-full items-center justify-center
                   ${currentTheme.classes.panelBorder}
-                  ${player.isDealer ? 'bg-gold-500/20' : currentTheme.classes.panel}
+                  ${isDealer ? 'bg-gold-500/20' : currentTheme.classes.panel}
                 `}
                 style={{
                   shadowColor: currentTheme.colors.shadow.color,
@@ -95,7 +90,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
               }}
             >
               <Text className={`${currentTheme.classes.textAccent} text-[10px] font-medium text-center`}>
-                {WIND_LABELS[player.position]}
+                {windLabel}
               </Text>
               <Text
                 className={`${currentTheme.classes.textPrimary} text-xs font-bold text-center mt-0.5`}
@@ -130,7 +125,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
               }}
             >
               <Text className={`${currentTheme.classes.textAccent} text-[10px] font-medium text-center`}>
-                {WIND_LABELS[player.position]}
+                {windLabel}
               </Text>
               <Text
                 className={`${currentTheme.classes.textPrimary} text-xs font-bold text-center mt-0.5`}
@@ -150,7 +145,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
             {/* Avatar with Crown */}
             <View className="relative items-center justify-center">
               {/* Dealer Crown - positioned directly above the emoji */}
-              {player.isDealer && (
+              {isDealer && (
                 <View className="absolute -top-4 z-10">
                   <Text className="text-base">👑</Text>
                 </View>
@@ -160,7 +155,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
                 className={`
                   w-10 h-10 rounded-full items-center justify-center
                   border-2 border-gold-500
-                  ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
+                  ${isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
                 `}
                 style={{
                   shadowColor: '#D4AF37',
@@ -190,7 +185,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
       {position === 'top' && (
         <>
           {/* Dealer Crown - positioned directly above the emoji */}
-          {player.isDealer && (
+          {isDealer && (
             <View className="absolute -top-4 z-10">
               <Text className="text-base">👑</Text>
             </View>
@@ -200,7 +195,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
             className={`
               w-10 h-10 rounded-full items-center justify-center
               ${currentTheme.classes.panelBorder}
-              ${player.isDealer ? 'bg-gold-500/20' : currentTheme.classes.panel}
+              ${isDealer ? 'bg-gold-500/20' : currentTheme.classes.panel}
             `}
             style={{
               shadowColor: currentTheme.colors.shadow.color,
@@ -226,7 +221,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
             }}
           >
             <Text className={`${currentTheme.classes.textAccent} text-[10px] font-medium text-center`}>
-              {WIND_LABELS[player.position]}
+              {windLabel}
             </Text>
             <Text
               className={`${currentTheme.classes.textPrimary} text-xs font-bold text-center mt-0.5`}
@@ -261,7 +256,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
             }}
           >
             <Text className={`${currentTheme.classes.textAccent} text-[10px] font-medium text-center`}>
-              {WIND_LABELS[player.position]}
+              {windLabel}
             </Text>
             <Text
               className={`${currentTheme.classes.textPrimary} text-xs font-bold text-center mt-0.5`}
@@ -281,7 +276,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
           {/* Avatar with Crown */}
           <View className="relative items-center justify-center">
             {/* Dealer Crown - positioned directly above the emoji */}
-            {player.isDealer && (
+            {isDealer && (
               <View className="absolute -top-4 z-10">
                 <Text className="text-base">👑</Text>
               </View>
@@ -290,7 +285,7 @@ export function PlayerSeat({ player, position, roundScoreChange = 0 }: PlayerSea
               className={`
                 w-10 h-10 rounded-full items-center justify-center
                 border-2 border-gold-500
-                ${player.isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
+                ${isDealer ? 'bg-gold-500/20' : 'bg-emerald-800'}
               `}
               style={{
                 shadowColor: '#D4AF37',

@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Player, Wind } from '../../types';
+import { Player, Wind, WIND_ORDER } from '../../types';
 import { useThemeStore } from '../../store/themeStore';
+import { useGameStore } from '../../store/gameStore';
 
 interface WinnerSelectorProps {
   players: Player[];
@@ -16,6 +17,12 @@ const WIND_LABELS: Record<Wind, string> = {
   NORTH: '北',
 };
 
+// 根據座位和莊家計算門風
+const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
+  const offset = (seatIndex - dealerIndex + 4) % 4;
+  return WIND_ORDER[offset];
+};
+
 export function WinnerSelector({ 
   players, 
   selectedWinnerId, 
@@ -23,11 +30,13 @@ export function WinnerSelector({
   disabled = false 
 }: WinnerSelectorProps) {
   const { currentTheme } = useThemeStore();
+  const dealerIndex = useGameStore((state) => state.dealerIndex);
   
   return (
     <View className="flex-row justify-center">
       {players.map((player) => {
         const isSelected = selectedWinnerId === player.id;
+        const windLabel = WIND_LABELS[getWindForSeat(player.seatIndex, dealerIndex)];
         return (
           <TouchableOpacity
             key={player.id}
@@ -56,7 +65,7 @@ export function WinnerSelector({
                 }
               `}
             >
-              {WIND_LABELS[player.position]}
+              {windLabel}
             </Text>
             <Text
               className={`

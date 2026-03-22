@@ -7,12 +7,7 @@ import { useThemeStore } from '../src/store/themeStore';
 import { Wind } from '../src/types';
 
 // 預設玩家名稱
-const DEFAULT_PLAYERS: { wind: Wind; name: string }[] = [
-  { wind: 'EAST', name: '阿明' },
-  { wind: 'SOUTH', name: '阿強' },
-  { wind: 'WEST', name: '阿華' },
-  { wind: 'NORTH', name: '阿東' },
-];
+const DEFAULT_NAMES = ['阿明', '阿強', '阿華', '阿東'];
 
 // 風位標籤
 const WIND_LABELS: Record<Wind, string> = {
@@ -37,39 +32,118 @@ const WIND_SYMBOLS: Record<Wind, string> = {
   NORTH: '北',
 };
 
+// 座位順序（逆時針）
+const WIND_ORDER: Wind[] = ['EAST', 'SOUTH', 'WEST', 'NORTH'];
+
+// 步驟類型
+type SetupStep = 'names' | 'seating';
+
 export default function SetupScreen() {
   const startGame = useGameStore((state) => state.startGame);
   const { currentTheme } = useThemeStore();
   
+  // 步驟狀態
+  const [step, setStep] = useState<SetupStep>('names');
+  
   // 玩家名稱狀態
-  const [players, setPlayers] = useState<{ wind: Wind; name: string }[]>(DEFAULT_PLAYERS);
+  const [playerNames, setPlayerNames] = useState<string[]>(DEFAULT_NAMES);
+  
+  // 座位分配狀態
+  const [dealerIndex, setDealerIndex] = useState<number | null>(null);
+  const [seatAssignments, setSeatAssignments] = useState<(number | null)[]>([null, null, null, null]);
+  
   // 單位金額狀態
   const [unitAmount, setUnitAmount] = useState(128);
+  
   // 載入狀態
   const [isLoading, setIsLoading] = useState(false);
 
   // 更新玩家名稱
-  const handlePlayerChange = (wind: Wind, name: string) => {
-    setPlayers((prev) =>
-      prev.map((p) => (p.wind === wind ? { ...p, name } : p))
-    );
+  const handleNameChange = (index: number, name: string) => {
+    setPlayerNames((prev) => {
+      const newNames = [...prev];
+      newNames[index] = name;
+      return newNames;
+    });
+  };
+
+  // 檢查是否可以進入下一步
+  const canProceedToSeating = playerNames.every((name) => name.trim().length > 0);
+
+  // 選擇莊家
+  const handleSelectDealer = (playerIndex: number) => {
+    setDealerIndex(playerIndex);
+    // 重置座位分配
+    setSeatAssignments([null, null, null, null]);
+    // 自動分配莊家到東位
+    const newAssignments: (number | null)[] = [null, null, null, null];
+    newAssignments[0] = playerIndex; // 東位 = seat 0
+    setSeatAssignments(newAssignments);
+  };
+
+  // 選擇其他座位
+  const handleSelectSeat = (seatIndex: number, playerIndex: number) => {
+    setSeatAssignments((prev) => {
+      const newAssignments = [...prev];
+      // 移除該玩家之前的位置
+      const prevSeat = newAssignments.indexOf(playerIndex);
+      if (prevSeat !== -1) {
+        newAssignments[prevSeat] = null;
+      }
+      // 分配新位置
+      newAssignments[seatIndex] = playerIndex;
+      return newAssignments;
+    });
+  };
+
+  // 隨機分配座位
+  const handleRandomSeating = () => {
+    // 隨機選擇莊家
+    const randomDealer = Math.floor(Math.random() * 4);
+    setDealerIndex(randomDealer);
+    
+    // 建立玩家索引陣列
+    const playerIndices = [0, 1, 2, 3];
+    
+    // 隨機打亂
+    for (let i = playerIndices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [playerIndices[i], playerIndices[j]] = [playerIndices[j], playerIndices[i]];
+    }
+    
+    // 找到莊家在打亂後的位置
+    const dealerPosition = playerIndices.indexOf(randomDealer);
+    
+    // 重新排列，使莊家在位置 0
+    const rotatedIndices = [
+      ...playerIndices.slice(dealerPosition),
+      ...playerIndices.slice(0, dealerPosition),
+    ];
+    
+    setSeatAssignments(rotatedIndices);
+  };
+
+  // 檢查座位分配是否完成
+  const isSeatingComplete = dealerIndex !== null && seatAssignments.every((s) => s !== null);
+
+  // 取得未分配的玩家
+  const getUnassignedPlayers = () => {
+    const assigned = seatAssignments.filter((s) => s !== null);
+    return [0, 1, 2, 3].filter((i) => !assigned.includes(i));
   };
 
   // 開始遊戲
   const handleStartGame = async () => {
-    // 檢查所有玩家都有名稱
-    const allPlayersNamed = players.every((p) => p.name.trim().length > 0);
-    if (!allPlayersNamed) {
-      return;
-    }
+    if (!isSeatingComplete) return;
 
     setIsLoading(true);
     
     try {
       // 準備玩家資料
-      const playerInputs = players.map((p) => ({
-        id: p.wind.toLowerCase(),
-        name: p.name.trim(),
+      const playerInputs = seatAssignments.map((playerIndex, seatIndex) => ({
+        id: `player-${seatIndex}`,
+        name: playerNames[playerIndex!].trim(),
+        seatIndex: seatIndex,
       }));
 
       // 呼叫 store 的 startGame
@@ -83,9 +157,6 @@ export default function SetupScreen() {
       setIsLoading(false);
     }
   };
-
-  // 檢查是否可以開始遊戲
-  const canStart = players.every((p) => p.name.trim().length > 0);
 
   return (
     <SafeAreaView className={`flex-1 ${currentTheme.classes.background}`} edges={['top']}>
@@ -104,131 +175,329 @@ export default function SetupScreen() {
               香港麻將計分
             </Text>
             <Text className={`text-sm ${currentTheme.classes.textSecondary}`}>
-              設定玩家與金額，開始牌局
+              {step === 'names' ? '輸入玩家名稱' : '選擇座位分配'}
             </Text>
           </View>
 
-          {/* 玩家設定卡片 */}
-          <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
-            <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-4`}>玩家設定</Text>
-            {players.map((player) => (
-              <View key={player.wind} className="flex-row items-center mb-3">
-                {/* Wind Badge */}
-                <View 
-                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                  style={{
-                    backgroundColor: WIND_COLORS[player.wind],
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 2,
-                    elevation: 2,
-                  }}
-                >
-                  <Text className="text-white font-bold text-base">
-                    {WIND_SYMBOLS[player.wind]}
-                  </Text>
+          {/* Step 1: 輸入名稱 */}
+          {step === 'names' && (
+            <>
+              {/* 玩家名稱卡片 */}
+              <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
+                <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-4`}>玩家名稱</Text>
+                {playerNames.map((name, index) => (
+                  <View key={index} className="flex-row items-center mb-3">
+                    {/* Player Number Badge */}
+                    <View 
+                      className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                      style={{
+                        backgroundColor: currentTheme.colors.button.primary,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 2,
+                        elevation: 2,
+                      }}
+                    >
+                      <Text className="text-white font-bold text-base">
+                        {index + 1}
+                      </Text>
+                    </View>
+                    
+                    {/* Input */}
+                    <View className="flex-1">
+                      <View 
+                        className={`${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} rounded-xl px-4 py-3`}
+                        style={{
+                          shadowColor: '#000',
+                          shadowOffset: { width: 0, height: 1 },
+                          shadowOpacity: 0.2,
+                          shadowRadius: 2,
+                          elevation: 1,
+                        }}
+                      >
+                        <TextInput
+                          value={name}
+                          onChangeText={(text) => handleNameChange(index, text)}
+                          placeholder={`玩家 ${index + 1} 名稱`}
+                          placeholderTextColor={currentTheme.colors.text.muted}
+                          className={`${currentTheme.classes.textPrimary} text-base`}
+                          style={{ color: currentTheme.colors.text.primary, fontSize: 16 }}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+
+              {/* 金額設定卡片 */}
+              <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
+                <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-4`}>金額設定</Text>
+                <Text className={`${currentTheme.classes.textSecondary} text-sm mb-3`}>10番多少錢？</Text>
+                
+                {/* Preset amounts */}
+                <View className="flex-row flex-wrap gap-2 mb-3">
+                  {[128, 256, 512].map((amount) => {
+                    const isSelected = unitAmount === amount;
+                    return (
+                      <TouchableOpacity
+                        key={amount}
+                        className={`
+                          px-4 py-2.5 rounded-xl items-center justify-center
+                          ${isSelected 
+                            ? 'gold-gradient' 
+                            : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                          }
+                        `}
+                        style={{ minWidth: 70 }}
+                        onPress={() => setUnitAmount(amount)}
+                        activeOpacity={0.8}
+                      >
+                        <Text 
+                          className={`
+                            font-bold text-base
+                            ${isSelected ? 'text-emerald-950' : currentTheme.classes.textPrimary}
+                          `}
+                        >
+                          ${amount}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
                 
-                {/* Input */}
-                <View className="flex-1">
-                  <View 
-                    className={`${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} rounded-xl px-4 py-3`}
-                    style={{
-                      shadowColor: '#000',
-                      shadowOffset: { width: 0, height: 1 },
-                      shadowOpacity: 0.2,
-                      shadowRadius: 2,
-                      elevation: 1,
-                    }}
+                {/* Custom amount hint */}
+                <Text className={`${currentTheme.classes.textSecondary} text-xs`}>
+                  目前設定：10番 ${unitAmount}
+                </Text>
+              </View>
+
+              {/* 下一步按鈕 */}
+              <View className="mt-6 mb-8">
+                <TouchableOpacity
+                  className={`
+                    rounded-xl py-4 items-center justify-center
+                    ${canProceedToSeating 
+                      ? 'gold-gradient' 
+                      : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                    }
+                  `}
+                  style={{
+                    shadowColor: canProceedToSeating ? '#D4AF37' : '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: canProceedToSeating ? 0.5 : 0.2,
+                    shadowRadius: 4,
+                    elevation: canProceedToSeating ? 4 : 1,
+                  }}
+                  onPress={canProceedToSeating ? () => setStep('seating') : undefined}
+                  disabled={!canProceedToSeating}
+                  activeOpacity={0.8}
+                >
+                  <Text 
+                    className={`
+                      font-bold text-lg
+                      ${canProceedToSeating ? 'text-emerald-950' : currentTheme.classes.textSecondary}
+                    `}
                   >
-                    <TextInput
-                      value={player.name}
-                      onChangeText={(text) => handlePlayerChange(player.wind, text)}
-                      placeholder={`輸入${WIND_LABELS[player.wind]}名稱`}
-                      placeholderTextColor={currentTheme.colors.text.muted}
-                      className={`${currentTheme.classes.textPrimary} text-base`}
-                      style={{ color: currentTheme.colors.text.primary, fontSize: 16 }}
-                    />
-                  </View>
+                    下一步：選擇座位
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+
+          {/* Step 2: 選擇座位 */}
+          {step === 'seating' && (
+            <>
+              {/* 選擇莊家 */}
+              <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
+                <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-2`}>選擇莊家（東位）</Text>
+                <Text className={`${currentTheme.classes.textSecondary} text-sm mb-4`}>莊家坐在東位，是第一局的開始者</Text>
+                
+                <View className="flex-row flex-wrap gap-2">
+                  {playerNames.map((name, index) => {
+                    const isSelected = dealerIndex === index;
+                    return (
+                      <TouchableOpacity
+                        key={index}
+                        className={`
+                          px-4 py-3 rounded-xl items-center justify-center
+                          ${isSelected 
+                            ? 'gold-gradient' 
+                            : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                          }
+                        `}
+                        onPress={() => handleSelectDealer(index)}
+                        activeOpacity={0.8}
+                      >
+                        <View 
+                          className="w-8 h-8 rounded-full items-center justify-center mb-1"
+                          style={{ backgroundColor: WIND_COLORS.EAST }}
+                        >
+                          <Text className="text-white font-bold text-sm">東</Text>
+                        </View>
+                        <Text 
+                          className={`
+                            font-bold text-sm
+                            ${isSelected ? 'text-emerald-950' : currentTheme.classes.textPrimary}
+                          `}
+                        >
+                          {name}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               </View>
-            ))}
-          </View>
 
-          {/* 金額設定卡片 */}
-          <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
-            <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-4`}>金額設定</Text>
-            <Text className={`${currentTheme.classes.textSecondary} text-sm mb-3`}>10番多少錢？</Text>
-            
-            {/* Preset amounts */}
-            <View className="flex-row flex-wrap gap-2 mb-3">
-              {[128, 256, 512].map((amount) => {
-                const isSelected = unitAmount === amount;
-                return (
-                  <TouchableOpacity
-                    key={amount}
+              {/* 選擇其他座位 */}
+              {dealerIndex !== null && (
+                <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
+                  <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-2`}>選擇其他座位</Text>
+                  <Text className={`${currentTheme.classes.textSecondary} text-sm mb-4`}>
+                    莊家的右手邊是南位，對面是西位，左手邊是北位
+                  </Text>
+                  
+                  {WIND_ORDER.map((wind, seatIndex) => {
+                    // 跳過東位（已分配給莊家）
+                    if (seatIndex === 0) return null;
+                    
+                    const assignedPlayerIndex = seatAssignments[seatIndex];
+                    const unassignedPlayers = getUnassignedPlayers();
+                    
+                    return (
+                      <View key={wind} className="mb-4">
+                        <View className="flex-row items-center mb-2">
+                          <View 
+                            className="w-8 h-8 rounded-full items-center justify-center mr-2"
+                            style={{ backgroundColor: WIND_COLORS[wind] }}
+                          >
+                            <Text className="text-white font-bold text-sm">
+                              {WIND_SYMBOLS[wind]}
+                            </Text>
+                          </View>
+                          <Text className={`${currentTheme.classes.textPrimary} font-medium`}>
+                            {WIND_LABELS[wind]}
+                          </Text>
+                        </View>
+                        
+                        <View className="flex-row flex-wrap gap-2">
+                          {unassignedPlayers.map((playerIndex) => (
+                            <TouchableOpacity
+                              key={playerIndex}
+                              className={`
+                                px-3 py-2 rounded-lg
+                                ${assignedPlayerIndex === playerIndex
+                                  ? 'gold-gradient' 
+                                  : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                                }
+                              `}
+                              onPress={() => handleSelectSeat(seatIndex, playerIndex)}
+                              activeOpacity={0.8}
+                            >
+                              <Text 
+                                className={`
+                                  font-medium text-sm
+                                  ${assignedPlayerIndex === playerIndex ? 'text-emerald-950' : currentTheme.classes.textPrimary}
+                                `}
+                              >
+                                {playerNames[playerIndex]}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
+
+              {/* 隨機分配按鈕 */}
+              <View className="mb-4">
+                <TouchableOpacity
+                  className={`${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} rounded-xl py-3 items-center justify-center`}
+                  onPress={handleRandomSeating}
+                  activeOpacity={0.8}
+                >
+                  <Text className={`${currentTheme.classes.textPrimary} font-bold`}>
+                    🎲 隨機分配座位
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* 座位分配預覽 */}
+              {isSeatingComplete && (
+                <View className={`${currentTheme.classes.panel} rounded-2xl ${currentTheme.classes.panelBorder} p-4 mb-4`}>
+                  <Text className={`${currentTheme.classes.textPrimary} font-bold text-lg mb-3`}>座位分配預覽</Text>
+                  
+                  <View className="flex-row flex-wrap justify-center gap-3">
+                    {WIND_ORDER.map((wind, seatIndex) => {
+                      const playerIndex = seatAssignments[seatIndex];
+                      if (playerIndex === null) return null;
+                      
+                      return (
+                        <View key={wind} className="items-center">
+                          <View 
+                            className="w-12 h-12 rounded-full items-center justify-center mb-1"
+                            style={{ backgroundColor: WIND_COLORS[wind] }}
+                          >
+                            <Text className="text-white font-bold text-base">
+                              {WIND_SYMBOLS[wind]}
+                            </Text>
+                          </View>
+                          <Text className={`${currentTheme.classes.textPrimary} text-xs font-medium`}>
+                            {playerNames[playerIndex]}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </View>
+              )}
+
+              {/* 操作按鈕 */}
+              <View className="flex-row gap-3 mt-4 mb-8">
+                <TouchableOpacity
+                  className={`flex-1 ${currentTheme.classes.panel} ${currentTheme.classes.panelBorder} rounded-xl py-4 items-center justify-center`}
+                  onPress={() => setStep('names')}
+                  activeOpacity={0.8}
+                >
+                  <Text className={`${currentTheme.classes.textPrimary} font-bold`}>
+                    ← 返回
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  className={`
+                    flex-1 rounded-xl py-4 items-center justify-center
+                    ${isSeatingComplete 
+                      ? 'gold-gradient' 
+                      : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
+                    }
+                  `}
+                  style={{
+                    shadowColor: isSeatingComplete ? '#D4AF37' : '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: isSeatingComplete ? 0.5 : 0.2,
+                    shadowRadius: 4,
+                    elevation: isSeatingComplete ? 4 : 1,
+                  }}
+                  onPress={isSeatingComplete && !isLoading ? handleStartGame : undefined}
+                  disabled={!isSeatingComplete || isLoading}
+                  activeOpacity={0.8}
+                >
+                  <Text 
                     className={`
-                      px-4 py-2.5 rounded-xl items-center justify-center
-                      ${isSelected 
-                        ? 'gold-gradient' 
-                        : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
-                      }
+                      font-bold text-lg
+                      ${isSeatingComplete ? 'text-emerald-950' : currentTheme.classes.textSecondary}
                     `}
-                    style={{ minWidth: 70 }}
-                    onPress={() => setUnitAmount(amount)}
-                    activeOpacity={0.8}
                   >
-                    <Text 
-                      className={`
-                        font-bold text-base
-                        ${isSelected ? 'text-emerald-950' : currentTheme.classes.textPrimary}
-                      `}
-                    >
-                      ${amount}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-            
-            {/* Custom amount hint */}
-            <Text className={`${currentTheme.classes.textSecondary} text-xs`}>
-              目前設定：10番 ${unitAmount}
-            </Text>
-          </View>
-
-          {/* 開始按鈕 */}
-          <View className="mt-6 mb-8">
-            <TouchableOpacity
-              className={`
-                rounded-xl py-4 items-center justify-center
-                ${canStart 
-                  ? 'gold-gradient' 
-                  : `${currentTheme.classes.panel} ${currentTheme.classes.panelBorder}`
-                }
-              `}
-              style={{
-                shadowColor: canStart ? '#D4AF37' : '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: canStart ? 0.5 : 0.2,
-                shadowRadius: 4,
-                elevation: canStart ? 4 : 1,
-              }}
-              onPress={canStart && !isLoading ? handleStartGame : undefined}
-              disabled={!canStart || isLoading}
-              activeOpacity={0.8}
-            >
-              <Text 
-                className={`
-                  font-bold text-lg
-                  ${canStart ? 'text-emerald-950' : currentTheme.classes.textSecondary}
-                `}
-              >
-                {isLoading ? '載入中...' : '開始牌局'}
-              </Text>
-            </TouchableOpacity>
-          </View>
+                    {isLoading ? '載入中...' : '開始牌局'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

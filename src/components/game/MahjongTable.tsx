@@ -6,6 +6,7 @@ import { useTableStore } from '../../store/tableStore';
 
 interface MahjongTableProps {
   players: Player[];
+  dealerIndex: number;
   roundScoreChanges?: Record<string, number>;
   prevailingWind: Wind;
   roundNumber: number;
@@ -20,8 +21,16 @@ const WIND_LABELS: Record<Wind, string> = {
 
 const WIND_ORDER: Wind[] = ['EAST', 'SOUTH', 'WEST', 'NORTH'];
 
+// 根據座位和莊家計算門風
+// 莊家 = 東, 下家(右手邊) = 南, 對家 = 西, 上家(左手邊) = 北
+const getWindForSeat = (seatIndex: number, dealerIndex: number): Wind => {
+  const offset = (seatIndex - dealerIndex + 4) % 4;
+  return WIND_ORDER[offset];
+};
+
 export function MahjongTable({
   players,
+  dealerIndex = 0,
   roundScoreChanges = {},
   prevailingWind,
   roundNumber
@@ -47,9 +56,9 @@ export function MahjongTable({
   // Determine border radius based on shape
   const borderRadius = shape === 'round' ? tableSize / 2 : 0;
 
-  // Find player by wind position
-  const getPlayerByWind = (wind: Wind): Player | undefined => {
-    return players.find(p => p.position === wind);
+  // Find player by seat index
+  const getPlayerBySeat = (seatIndex: number): Player | undefined => {
+    return players.find(p => p.seatIndex === seatIndex);
   };
 
   // Get round score change for a player
@@ -57,11 +66,11 @@ export function MahjongTable({
     return roundScoreChanges[playerId] || 0;
   };
 
-  // Four seat players
-  const eastPlayer = getPlayerByWind('EAST');
-  const southPlayer = getPlayerByWind('SOUTH');
-  const westPlayer = getPlayerByWind('WEST');
-  const northPlayer = getPlayerByWind('NORTH');
+  // Four seat players (fixed positions)
+  const topPlayer = getPlayerBySeat(0);      // 12 o'clock
+  const rightPlayer = getPlayerBySeat(1);    // 3 o'clock
+  const bottomPlayer = getPlayerBySeat(2);   // 6 o'clock
+  const leftPlayer = getPlayerBySeat(3);     // 9 o'clock
 
   // Calculate consistent offset from edge for all positions
   // This ensures all player seats are equidistant from center
@@ -182,8 +191,7 @@ export function MahjongTable({
           />
         </View>
 
-        {/* North Player (12 o'clock - Top Center) */}
-        {/* Avatar on outer edge (top), info box toward center (below avatar) */}
+        {/* Top Player (12 o'clock) */}
         <View
           className="absolute items-center"
           style={{
@@ -192,17 +200,17 @@ export function MahjongTable({
             transform: [{ translateX: -28 }]
           }}
         >
-          {northPlayer && (
+          {topPlayer && (
             <PlayerSeat
-              player={northPlayer}
+              player={topPlayer}
               position="top"
-              roundScoreChange={getRoundScoreChange(northPlayer.id)}
+              windLabel={WIND_LABELS[getWindForSeat(0, dealerIndex)]}
+              roundScoreChange={getRoundScoreChange(topPlayer.id)}
             />
           )}
         </View>
 
-        {/* West Player (9 o'clock - Left Center) */}
-        {/* Avatar on outer edge (left), info box toward center (right of avatar) */}
+        {/* Left Player (9 o'clock) */}
         <View
           className="absolute"
           style={{ 
@@ -211,17 +219,17 @@ export function MahjongTable({
             transform: [{ translateY: -35 }]
           }}
         >
-          {westPlayer && (
+          {leftPlayer && (
             <PlayerSeat
-              player={westPlayer}
+              player={leftPlayer}
               position="left"
-              roundScoreChange={getRoundScoreChange(westPlayer.id)}
+              windLabel={WIND_LABELS[getWindForSeat(3, dealerIndex)]}
+              roundScoreChange={getRoundScoreChange(leftPlayer.id)}
             />
           )}
         </View>
 
-        {/* East Player (3 o'clock - Right Center) */}
-        {/* Avatar on outer edge (right), info box toward center (left of avatar) */}
+        {/* Right Player (3 o'clock) */}
         <View
           className="absolute"
           style={{ 
@@ -230,17 +238,17 @@ export function MahjongTable({
             transform: [{ translateY: -35 }]
           }}
         >
-          {eastPlayer && (
+          {rightPlayer && (
             <PlayerSeat
-              player={eastPlayer}
+              player={rightPlayer}
               position="right"
-              roundScoreChange={getRoundScoreChange(eastPlayer.id)}
+              windLabel={WIND_LABELS[getWindForSeat(1, dealerIndex)]}
+              roundScoreChange={getRoundScoreChange(rightPlayer.id)}
             />
           )}
         </View>
 
-        {/* South Player (6 o'clock - Bottom Center) */}
-        {/* Avatar on outer edge (bottom), info box toward center (above avatar) */}
+        {/* Bottom Player (6 o'clock) */}
         <View
           className="absolute items-center"
           style={{
@@ -249,11 +257,12 @@ export function MahjongTable({
             transform: [{ translateX: -28 }]
           }}
         >
-          {southPlayer && (
+          {bottomPlayer && (
             <PlayerSeat
-              player={southPlayer}
+              player={bottomPlayer}
               position="bottom"
-              roundScoreChange={getRoundScoreChange(southPlayer.id)}
+              windLabel={WIND_LABELS[getWindForSeat(2, dealerIndex)]}
+              roundScoreChange={getRoundScoreChange(bottomPlayer.id)}
             />
           )}
         </View>
