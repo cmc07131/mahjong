@@ -198,7 +198,7 @@ export function MahjongTable({
           style={{
             left: '50%',
             top: `${edgeOffset}%`,
-            transform: [{ translateX: -28 }]
+            transform: [{ translateX: '-50%' }]
           }}
         >
           {topPlayer && (
@@ -214,11 +214,11 @@ export function MahjongTable({
 
         {/* Left Player (9 o'clock) - 南 */}
         <View
-          className="absolute"
+          className="absolute items-center"
           style={{ 
             left: `${edgeOffset}%`, 
             top: '50%',
-            transform: [{ translateY: -35 }]
+            transform: [{ translateY: '-50%' }]
           }}
         >
           {leftPlayer && (
@@ -234,11 +234,11 @@ export function MahjongTable({
 
         {/* Right Player (3 o'clock) - 北 */}
         <View
-          className="absolute"
+          className="absolute items-center"
           style={{ 
             right: `${edgeOffset}%`, 
             top: '50%',
-            transform: [{ translateY: -35 }]
+            transform: [{ translateY: '-50%' }]
           }}
         >
           {rightPlayer && (
@@ -258,7 +258,7 @@ export function MahjongTable({
           style={{
             left: '50%',
             bottom: `${edgeOffset}%`,
-            transform: [{ translateX: -28 }]
+            transform: [{ translateX: '-50%' }]
           }}
         >
           {bottomPlayer && (
