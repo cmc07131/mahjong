@@ -202,23 +202,23 @@ export function SetupMahjongTable({
         </View>
 
         {renderSeat(0, {
-          left: `${centerX - halfSeat}px`,
+          left: `${centerX - halfSeat}px`,           // 東 (上)
           top: `${centerY - radius - halfSeat}px`,
         })}
 
-        {renderSeat(3, {
-          left: `${centerX - radius - halfSeat}px`,
-          top: `${centerY - halfSeat}px`,
-        })}
-
         {renderSeat(1, {
-          left: `${centerX + radius - halfSeat}px`,
+          left: `${centerX - radius - halfSeat}px`,  // 南 (左) - 逆時針
           top: `${centerY - halfSeat}px`,
         })}
 
         {renderSeat(2, {
-          left: `${centerX - halfSeat}px`,
+          left: `${centerX - halfSeat}px`,           // 西 (下)
           top: `${centerY + radius - halfSeat}px`,
+        })}
+
+        {renderSeat(3, {
+          left: `${centerX + radius - halfSeat}px`,  // 北 (右) - 逆時針
+          top: `${centerY - halfSeat}px`,
         })}
       </View>
     </View>
